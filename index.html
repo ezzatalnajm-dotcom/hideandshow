@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ذاكر بالإخفاء من نجم الأحياء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1b2e; --navy-900:#0f2740; --navy-850:#122d4a; --navy-800:#153351; --navy-700:#1c4266;
+    --gold-400:#f0c948; --gold-500:#e0b62f; --gold-600:#c79a1f;
+    --ink:#0a1b2e; --paper:#f4f1ea; --card:#ffffff; --muted:#5c6b7a;
+    --ok:#2e9e5b; --warn:#d9822b; --danger:#c94b4b;
+    --radius-lg:20px; --radius-md:13px; --radius-sm:9px;
+    --shadow:0 10px 30px rgba(10,27,46,.18);
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{margin:0;font-family:'Cairo','Tajawal',sans-serif;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent;}
+  :root:not([data-theme="light"]){--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
+  @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#f4f1ea;--card:#ffffff;--ink:#0a1b2e;--muted:#5c6b7a;}}
+  :root[data-theme="light"]{--paper:#f4f1ea;--card:#ffffff;--ink:#0a1b2e;--muted:#5c6b7a;}
+  :root[data-theme="dark"]{--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
+
+  .app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+  .topbar{background:linear-gradient(160deg,var(--navy-900),var(--navy-950));padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand .star{font-size:20px;filter:drop-shadow(0 0 6px rgba(240,201,72,.7));}
+  .brand h1{font-size:14px;margin:0;font-weight:800;line-height:1.3;}
+  .brand h1 small{display:block;font-weight:400;font-size:10px;opacity:.75;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;position:relative;}
+  .icon-btn:active{background:rgba(255,255,255,.2);}
+  .icon-btn .dot{position:absolute;top:-2px;left:-2px;background:var(--danger);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+  .topbar-actions{display:flex;gap:7px;}
+
+  .home-hero{padding:22px 18px 6px;text-align:center;}
+  .home-hero .badge{display:inline-flex;align-items:center;gap:6px;background:var(--navy-900);color:var(--gold-400);padding:7px 16px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--shadow);}
+  .home-hero h2{font-size:20px;margin:14px 0 4px;font-weight:800;}
+  .home-hero p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7;}
+  .contact-strip{display:flex;gap:8px;padding:14px 18px 4px;}
+  .contact-strip a,.contact-strip button{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .cs-wa{background:#25D366;color:#fff;}
+  .cs-call{background:var(--navy-900);color:#fff;}
+  .cs-tg{background:#229ED9;color:#fff;}
+
+  .section-title{font-size:13px;color:var(--muted);font-weight:700;padding:18px 18px 8px;display:flex;justify-content:space-between;align-items:center;}
+  .add-btn{background:var(--navy-900);color:var(--gold-400);border:none;width:30px;height:30px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .malzama-list{padding:0 16px 8px;display:flex;flex-direction:column;gap:10px;}
+  .malzama-card{background:var(--card);border-radius:var(--radius-md);padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(10,27,46,.10);border:1px solid rgba(10,27,46,.06);}
+  .malzama-main{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer;}
+  .malzama-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .malzama-info{flex:1;min-width:0;}
+  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
+  .malzama-del:active{color:var(--danger);}
+  .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
+  .upload-hint b{color:var(--ink);}
+
+  .unit-topinfo{padding:14px 18px 2px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .unit-title{font-size:17px;font-weight:800;margin:0 0 2px;}
+  .unit-sub{color:var(--muted);font-size:12px;margin:0;}
+  .review-pill{background:rgba(217,130,43,.14);color:var(--warn);border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
+
+  .mode-row{display:flex;gap:7px;padding:12px 18px 2px;overflow-x:auto;}
+  .mode-btn{flex:0 0 auto;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:normal;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:140px;}
+  :root:not([data-theme="light"]) .mode-btn{border-color:rgba(255,255,255,.14);}
+  .mode-btn .mt{display:flex;align-items:center;gap:5px;}
+  .mode-btn .mtime{font-size:9.5px;font-weight:600;color:var(--muted);}
+  .mode-btn.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
+  .mode-btn.active .mtime{color:var(--gold-400);}
+
+  .shuffle-note{margin:8px 18px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+
+  .progress-wrap{padding:10px 18px 2px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+  .progress-track{height:7px;border-radius:999px;background:rgba(10,27,46,.08);overflow:hidden;}
+  :root:not([data-theme="light"]) .progress-track{background:rgba(255,255,255,.10);}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-500),var(--gold-400));border-radius:999px;transition:width .35s ease;}
+
+  .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
+
+  .doc-wrap{padding:8px 18px 16px;flex:1;}
+  .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
+  .doc-heading{background:var(--navy-900);color:#fff;padding:11px 16px;font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px;}
+  .doc-heading .star{color:var(--gold-400);font-size:13px;}
+  .doc-subheading{color:var(--navy-700);font-weight:800;font-size:13.5px;padding:14px 16px 2px;}
+  :root:not([data-theme="light"]) .doc-subheading{color:var(--gold-400);}
+  .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
+  .doc-block b{font-weight:800;}
+
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);}
+  .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
+  .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
+  :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
+  :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
+  .doc-subheading .blank{font-weight:800;}
+
+  .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
+  .block-rate.show{display:flex;}
+  .block-rate .lbl{font-size:11.5px;color:var(--muted);font-weight:700;}
+  .rate-btn{border:none;border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .rate-know{background:rgba(46,158,91,.12);color:var(--ok);}
+  .rate-know.active{background:var(--ok);color:#fff;}
+  .rate-review{background:rgba(217,130,43,.14);color:var(--warn);}
+  .rate-review.active{background:var(--warn);color:#fff;}
+  .mic-mini{border:none;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;}
+  .mic-mini.on{color:var(--danger);}
+  .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
+
+  .bottombar{position:sticky;bottom:0;background:var(--card);border-top:1px solid rgba(10,27,46,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 -6px 16px rgba(10,27,46,.08);}
+  :root:not([data-theme="light"]) .bottombar{border-top-color:rgba(255,255,255,.08);}
+  .nav-btn{flex:1;background:rgba(10,27,46,.07);color:var(--ink);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  :root:not([data-theme="light"]) .nav-btn{background:rgba(255,255,255,.08);}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .reveal-btn{flex:1.5;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:800;font-size:13px;cursor:pointer;}
+  .reveal-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .done-screen{padding:36px 22px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .done-screen .emoji{font-size:48px;margin-bottom:8px;}
+  .done-screen h2{font-size:19px;margin:6px 0;}
+  .done-screen p{color:var(--muted);font-size:13px;line-height:1.8;max-width:320px;}
+  .done-stats{display:flex;gap:14px;margin:16px 0;}
+  .done-stat{background:var(--card);border-radius:var(--radius-md);padding:12px 16px;box-shadow:var(--shadow);min-width:80px;}
+  .done-stat .n{font-size:20px;font-weight:800;}
+  .done-stat.ok .n{color:var(--ok);}
+  .done-stat.warn .n{color:var(--warn);}
+  .done-stat .l{font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .done-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
+  .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) .btn-ghost{background:rgba(255,255,255,.08);}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto;}
+  .modal h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;justify-content:space-between;}
+  .modal .close-x{cursor:pointer;color:var(--muted);font-size:15px;}
+  .modal p, .modal li{font-size:13.5px;line-height:1.9;color:var(--ink);}
+  .modal ol,.modal ul{padding-inline-start:20px;margin:8px 0;}
+  .modal .contact-row{display:flex;gap:10px;margin-top:14px;}
+  .modal .contact-row a{flex:1;text-align:center;padding:11px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:13px;}
+  .wa{background:#25D366;color:#fff;}
+  .tg{background:#229ED9;color:#fff;}
+  .modal .file-choice{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+  .file-choice button{border:1px solid rgba(10,27,46,.15);background:var(--paper);color:var(--ink);border-radius:var(--radius-sm);padding:13px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:right;display:flex;align-items:center;gap:10px;}
+  .review-item{background:var(--paper);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:9px;font-size:13px;line-height:1.8;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  :root:not([data-theme="light"]) .review-item{background:rgba(255,255,255,.05);}
+  .review-item .txt{flex:1;}
+  .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .empty-note{color:var(--muted);font-size:13px;text-align:center;padding:20px 0;}
+  .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:88%;text-align:center;}
+  .toast.show{opacity:1;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <span class="star">⭐</span>
+        <h1>ذاكر بالإخفاء<small>من نجم الأحياء</small></h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btnTheme" title="الوضع الفاتح/الداكن">🌓</button>
+        <button class="icon-btn" id="btnInfo" title="تعليمات الاستخدام">؟</button>
+        <button class="icon-btn hidden" id="btnHome" title="الرئيسية">🏠</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewHome">
+    <div class="home-hero">
+      <span class="badge">⭐ النجم في الأحياء</span>
+      <h2>ذاكر بالإخفاء</h2>
+      <p>اقرا الملزمة زي ما هي، وحاول تفتكر الأجزاء المموّهة قبل ما تكشفها.</p>
+    </div>
+    <div class="contact-strip">
+      <a class="cs-wa" href="https://wa.me/97477107247" target="_blank">💬 واتساب</a>
+      <a class="cs-call" href="tel:+97477107247">📞 اتصال</a>
+      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 قناة التليجرام</a>
+    </div>
+    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة جديدة">+</button></div>
+    <div class="malzama-list" id="malzamaList"></div>
+    <div class="upload-hint">تقدر ترفع ملزمة أي مادة (مش بس الأحياء) — <b>Word</b> أو <b>PDF</b> — وهتتحول تلقائيًا لنفس أسلوب المراجعة دي.</div>
+  </div>
+
+  <div id="viewUnit" class="hidden" style="display:flex;flex-direction:column;flex:1;">
+    <div class="unit-topinfo">
+      <div>
+        <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
+        <p class="unit-sub" id="unitSub">العضلات والحركة</p>
+      </div>
+      <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
+    </div>
+
+    <div class="mode-row" id="modeRow">
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
+    </div>
+    <div class="shuffle-note">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+    </div>
+    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر أو تقول الإجابة بصوت عالٍ الأول، وبعدين اكشفها</div>
+    <div class="doc-wrap" id="docWrap"></div>
+
+    <div class="bottombar">
+      <button class="nav-btn" id="btnPrevPage">◀ السابقة</button>
+      <button class="reveal-btn" id="btnReveal">إظهار التالي</button>
+      <button class="nav-btn" id="btnNextPage">التالية ▶</button>
+    </div>
+  </div>
+
+  <div id="viewDone" class="hidden done-screen">
+    <div class="emoji">🎉</div>
+    <h2>أحسنت! خلّصت المحاولة دي</h2>
+    <p>كده تكون راجعت كل حاجة في الملزمة دي بالمود اللي اخترته.</p>
+    <div class="done-stats">
+      <div class="done-stat ok"><div class="n" id="statKnow">0</div><div class="l">عرفتها</div></div>
+      <div class="done-stat warn"><div class="n" id="statReview">0</div><div class="l">محتاج مراجعة</div></div>
+    </div>
+    <div class="done-actions">
+      <button class="btn-gold" id="btnReviewNeeded">📋 راجع اللي محتاج مراجعة</button>
+      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة (تجديد عشوائي)</button>
+      <button class="btn-ghost" id="btnBackHome">الرئيسية</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalInfo">
+  <div class="modal">
+    <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
+    <ol>
+      <li>اختار مود المراجعة: العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
+      <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
+      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف.</li>
+      <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
+      <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
+      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق، من كل المودات مع بعض.</li>
+      <li>كل مود بيختار أجزاء مختلفة عشوائيًا في كل محاولة جديدة — مش نفس الأماكن كل مرة.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalContact">
+  <div class="modal">
+    <h3>راسلنا <span class="close-x" data-close="modalContact">✕</span></h3>
+    <p>لأي استفسار أو اقتراح، تواصل مباشرة مع أ. عزت شعبان.</p>
+    <div class="contact-row">
+      <a class="wa" href="https://wa.me/97477107247" target="_blank">واتساب</a>
+      <a class="tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">تليجرام</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal">
+    <h3>ارفع ملزمة جديدة <span class="close-x" data-close="modalUpload">✕</span></h3>
+    <p>اختار ملف Word (.docx) أو PDF من جهازك. لو عندك الملف على Google Drive، حمّله على جهازك الأول من تطبيق درايف وبعدين ارفعه من هنا.</p>
+    <div class="file-choice">
+      <button id="pickFile">📄 اختيار ملف من الجهاز (Word أو PDF)</button>
+    </div>
+    <input type="file" id="fileInput" accept=".docx,.pdf" class="hidden">
+    <p id="uploadStatus" style="display:none;"></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalReview">
+  <div class="modal">
+    <h3>محتاج مراجعة <span class="close-x" data-close="modalReview">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">القائمة دي مجمّعة من كل المودات — أي فقرة قيّمتها "محتاج مراجعة" في أي مود هتلاقيها هنا.</p>
+    <div id="reviewListWrap"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+  }
+
+  /* ============================================================
+     Built-in seed content (ملزمة ١ — العضلات والحركة).
+     Every uploaded ملزمة is normalized into this exact shape:
+     { heading, sections:[ { sub, blocks:[ htmlString, ... ] } ] }
+     ============================================================ */
+  var SEED_RAW_PAGES = [
+    { heading: "الوحدة (١) العضلات والحركة", sections: [
+      { sub: null, blocks: [
+        "العضلات هي التراكيب المسؤولة عن الحركة في الكائنات متعدّدة الخلايا، ويحتوي جسم الإنسان على أكثر من 650 عضلة.",
+        "تتراوح أحجام العضلات بين عضلات الساق الكبيرة والعضلات الدقيقة التي تحرّك الجفون."
+      ]},
+      { sub: "أنواع الأنسجة الأوّلية", blocks: [
+        "هناك أربعة أنواع من الأنسجة الأولية في البشر والحيوانات الأخرى ذات التركيب المعقّد، وهي الأنسجة الطلائية، والضامة (الرابطة)، والعضلية، والعصبية. يتكوّن كل جهاز من أعضاء، ويتكوّن كل عضو من نوع واحد أو أكثر من أنواع الأنسجة الأربعة."
+      ]},
+      { sub: "أولًا: الأنسجة الطلائية Epithelial tissues", blocks: [
+        "<b>الوظيفة:</b> تغطي السطوح الخارجية كالجلد، وتُبطّن التجاويف الداخلية للجسم. وبعض الأعضاء تُغطى بطبقة واحدة أو عدة طبقات من الخلايا.",
+        "<b>مثال:</b> الجلد، وبطانة الفم، وبطانة المريء، وبطانة المعدة."
+      ]},
+      { sub: "ثانيًا: الأنسجة الضامة Connective tissues", blocks: [
+        "<b>الوظيفة:</b> ربط الأعضاء المختلفة في الجسم ودعمها وتثبيتها.",
+        "<b>التركيب:</b> يتكوّن النسيج الضام من موادّ صلبة كثيفة كـ العظام أو شبه صلبة كـ الغضروف أو سائلة كـ الدم. كما تحتوي الأنسجة الضامة أيضًا على موادّ غير عضوية مثل الكالسيوم والفسفور.",
+        "<b>أمثلة:</b> الدم Blood يجري في الأوردة والشرايين وهو من الأنسجة الضامة السائلة. الأوتار Tendons هي أنسجة ضامة قوية مرنة تربط العضلات بالعظام. الأربطة Ligaments هي أشرطة من نسيج ضام مرن تثبّت المفاصل وتفصل العظام بعضها عن بعض لمنع الاحتكاك."
+      ]},
+      { sub: "ثالثًا: الأنسجة العضلية Muscle tissues", blocks: [
+        "<b>الوظيفة:</b> تتكوّن من خلايا عضلية يمكن أن تنقبض استجابة لإشارات عصبية. وتُنتج هذه الأنسجة حركة وقوى لتحريك الجسم، وضخّ الدم، وتحريك الطعام داخل الجهاز الهضمي.",
+        "<b>الأنواع:</b> عضلات هيكلية، وعضلات قلبية، وعضلات ملساء."
+      ]},
+      { sub: "رابعًا: الأنسجة العصبية Nerve tissues", blocks: [
+        "<b>الوظيفة:</b> خلايا تنتج إشارات كهروكيميائية سيالات عصبية وتنقلها من مناطق الجسم إلى الجهاز العصبي المركزي الدماغ والنخاع الشوكي وبالعكس.",
+        "<b>التركيب:</b> الخلايا العصبية هي المكوّن الأساسي في النسيج العصبي. كما توجد خلايا داعمة تدعم وظائف الخلايا العصبية."
+      ]}
+    ]},
+    { heading: "الجهاز العضلي وأنواع العضلات", sections: [
+      { sub: null, blocks: [
+        "الجهاز العضلي عبارة عن مجموعة من العضلات المتخصصة في جسم الإنسان. والعضلات تُمكّن الجسم من الحركة، وتحافظ على وضعية الجسم، وتحريك الطعام داخل الجهاز الهضمي، وضخّ الدم."
+      ]},
+      { sub: "تقسيم العضلات حسب نشاطها", blocks: [
+        "الحركات الإرادية هي الحركات التي يتم التحكم فيها بإدراك، مثل الركض وتحريك الذراع. الحركات اللاإرادية هي وظائف يتم التحكم فيها من قبل الجسم دون إدراك لذلك، مثل نبض القلب."
+      ]},
+      { sub: "١. العضلات الهيكلية Skeletal muscle", blocks: [
+        "<b>الموقع:</b> ترتبط بالعظام. <b>الوظيفة:</b> مسؤولة عن حركة الجسم ودعمه. وتعمل في الحركات الإرادية والأفعال المنعكسة اللاإرادية.",
+        "<b>التركيب:</b> تتشكّل خلايا العضلات الهيكلية من ألياف طويلة تنتظم بجانب بعضها، وتقصر عندما تنقبض."
+      ]},
+      { sub: "٢. العضلات القلبية Cardiac muscle", blocks: [
+        "<b>الموقع:</b> توجد في القلب. <b>الوظيفة:</b> تعمل بشكل لا إرادي لضخّ الدم.",
+        "<b>التركيب:</b> تشبه عضلة القلب العضلات الهيكلية، لكنها تشكّل شبكة ذات فراغات بين الخلايا، والألياف أقصر. وتنقبض في الوقت نفسه لأنها مترابطة كهربائيًا."
+      ]},
+      { sub: "٣. العضلات الملساء Smooth muscle", blocks: [
+        "<b>الوظيفة:</b> تعمل لا إراديًا لتحريك المواد عبر الجهاز الهضمي. وتوجد أيضًا في جدر الأوعية الدموية والمثانة والمريء.",
+        "<b>التركيب:</b> سُمّيت بهذا الاسم لأنها تظهر بدون خطوط ليفية تحت المجهر. ولأن خيوط الأكتين والميوسين لا تصطف بانتظام داخل الخلية."
+      ]}
+    ]},
+    { heading: "تركيب العضلة الهيكلية والعضلات المتضادّة", sections: [
+      { sub: "تركيب العضلة الهيكلية", blocks: [
+        "تتكوّن العضلة الواحدة من عدة حُزم عضلية Fascicles تحتوي على نسيج عضلي محاط بنسيج ضام. تتكوّن الحزمة العضلية من عدد من الخلايا العضلية التي تُسمّى الألياف العضلية.",
+        "الليف العضلي يتكوّن من حزمة من تراكيب طولية تُسمّى اللييفات العضلية. اللييفات العضلية تتكوّن من وحدات متكررة تُسمّى القطع العضلية Sarcomeres، وهي الوحدات الوظيفية للخلايا العضلية لأنها تنقبض فتسبب حركة العضلة الهيكلية."
+      ]},
+      { sub: "زوج العضلات المتضادّة Antagonistic pair", blocks: [
+        "عندما تفعل مجموعتان عضليتان فعلين متعاكسين، فإنهما يُعرفان بزوج العضلات المتضادة. مثال على ذلك في أعلى الذراع: العضلة ذات الرأسين، والعضلة ثلاثية الرؤوس.",
+        "إذا قمت برفع وزن ويرتفع الساعد واليد إلى أعلى: تنقبض العضلة ذات الرأسين لإنتاج قوة الرفع، بينما تنبسط العضلة ثلاثية الرؤوس. ولإعادة الوزن إلى أسفل: تنقبض العضلة ثلاثية الرؤوس بينما تنبسط العضلة ذات الرأسين وتتمدّد.",
+        "العضلة المسبِّبة للحركة من خلال انقباضها تُسمّى العضلة الناهضة Agonist، والعضلة التي تعاكس عملها تُسمّى العضلة المناهضة Antagonist."
+      ]}
+    ]}
+  ];
+
+  var MODE_LABELS = { headings:"العناوين والفقرات", sentences:"الجمل" };
+  var MODE_HINTS = {
+    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا. الفقرة اللي من غير عنوان، هتتخفي منها جمل بس مش كلها",
+    sentences: "✂️ جمل مفرّقة من كل الملزمة مموّهة عشوائيًا — بيتغيّر مكانها كل محاولة جديدة"
+  };
+
+  var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+  function ar(n){ return String(n).split("").map(function(ch){ return /[0-9]/.test(ch)?ARABIC_DIGITS[+ch]:ch; }).join(""); }
+  function stripHtml(html){ var d=document.createElement("div"); d.innerHTML=html; return (d.textContent||"").trim(); }
+  function slugify(str){
+    return "m_" + String(str).trim().toLowerCase()
+      .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
+  }
+  function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function splitSentences(text){
+    var parts = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    return parts.length ? parts : (text.trim()?[text.trim()]:[]);
+  }
+  function shuffleWith(arr, rnd){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function seededRandom(seed){
+    var s = seed % 2147483647; if(s<=0) s += 2147483646;
+    return function(){ s = s*16807 % 2147483647; return (s-1)/2147483646; };
+  }
+
+  /* ---------- Library ---------- */
+  var LIB_INDEX_KEY = "najm_lib_index_v2";
+  function getLibraryIndex(){
+    try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+    var seed = [{ key:"seed_u1l1", title:"ملزمة ١", subtitle:"العضلات والحركة — الدرس ١‑١" }];
+    saveLibraryIndex(seed);
+    return seed;
+  }
+  function saveLibraryIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
+  function getMalzamaContent(key){
+    if(key === "seed_u1l1") return SEED_RAW_PAGES;
+    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
+    return null;
+  }
+  function saveMalzamaContent(key, rawPages){ try{ localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages)); }catch(e){} }
+
+  /* ---------- Cross-mode aggregated review list ---------- */
+  function reviewKey(malzamaKey){ return "najm_review_" + malzamaKey; }
+  function loadReviewMap(malzamaKey){
+    try{ var raw = localStorage.getItem(reviewKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveReviewMap(malzamaKey, map){ try{ localStorage.setItem(reviewKey(malzamaKey), JSON.stringify(map)); }catch(e){} }
+  function setReviewStatus(malzamaKey, blockKey, rating, text){
+    var map = loadReviewMap(malzamaKey);
+    if(rating === "review"){ map[blockKey] = { text:text, updatedAt: Date.now() }; }
+    else { delete map[blockKey]; }
+    saveReviewMap(malzamaKey, map);
+    updateReviewBadge();
+  }
+  function updateReviewBadge(){
+    if(!state.malzamaKey) return;
+    var map = loadReviewMap(state.malzamaKey);
+    var count = Object.keys(map).length;
+    var el = $("reviewCount");
+    if(el) el.textContent = ar(count);
+  }
+
+  /* ---------- Reveal-engine model builder ----------
+     Two modes, both operating at sentence/paragraph granularity:
+     - 'headings': a block with a detectable heading (an inline
+       "<b>label:</b>" lead-in, or a section's sub-heading for that
+       section's first block) randomly hides either the heading or
+       the whole detail. A block with NO heading source instead has
+       some of its individual sentences hidden (not the whole thing).
+     - 'sentences': every block keeps any leading bold label visible,
+       and individual sentences across the whole document are hidden
+       at random (a paragraph can have more than one hidden sentence).
+     Random selection is stored per (malzama, mode) "attempt" and
+     only reshuffled when the student starts a fresh attempt.
+  ------------------------------------------------- */
+  function flattenBlocks(rawPages){
+    var flat = [];
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        sec.blocks.forEach(function(html, bi){
+          flat.push({ pageIdx:pi, secIdx:si, blockIdx:bi, html:html, sectionSub:sec.sub, isFirstInSection: bi===0 });
+        });
+      });
+    });
+    return flat;
+  }
+
+  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
+
+  function buildModel(rawPages, mode, seed){
+    var flat = flattenBlocks(rawPages);
+    var rnd = seededRandom(seed || 1);
+    var globalId = 0, allIds = [];
+    var unitByBlockKey = {}; // blockKey -> { renderHtml, blankIds:[...], sectionHeadingHidden:bool }
+
+    flat.forEach(function(b){
+      var key = b.pageIdx+"_"+b.secIdx+"_"+b.blockIdx;
+      var m = b.html.match(LEAD_RE);
+      var label = m ? m[2] : null;
+      var restHtml = m ? b.html.slice(m[0].length) : b.html;
+
+      if(mode === "headings"){
+        var headingSource = m ? "inline" : (b.isFirstInSection && b.sectionSub ? "section" : null);
+        if(headingSource){
+          var hideHeading = rnd() < 0.5;
+          if(headingSource === "inline"){
+            if(hideHeading){
+              globalId++; var id1=globalId; allIds.push(id1);
+              unitByBlockKey[key] = { renderHtml: '<b><span class="blank" data-id="'+id1+'">'+label+':</span></b> '+restHtml, blankIds:[id1] };
+            } else {
+              globalId++; var id2=globalId; allIds.push(id2);
+              unitByBlockKey[key] = { renderHtml: '<b>'+label+':</b> <span class="blank" data-id="'+id2+'">'+stripHtml(restHtml)+'</span>', blankIds:[id2] };
+            }
+          } else { // section
+            if(hideHeading){
+              globalId++; var id3=globalId; allIds.push(id3);
+              unitByBlockKey[key] = { renderHtml: b.html, blankIds:[], sectionHeadingBlankId:id3 };
+            } else {
+              globalId++; var id4=globalId; allIds.push(id4);
+              unitByBlockKey[key] = { renderHtml: '<span class="blank" data-id="'+id4+'">'+b.html+'</span>', blankIds:[id4] };
+            }
+          }
+        } else {
+          var sentences = splitSentences(stripHtml(restHtml));
+          if(sentences.length <= 1){
+            globalId++; var id5=globalId; allIds.push(id5);
+            unitByBlockKey[key] = { renderHtml: '<span class="blank" data-id="'+id5+'">'+b.html+'</span>', blankIds:[id5] };
+          } else {
+            var hideCount = Math.max(1, Math.round(sentences.length*0.6));
+            var order = shuffleWith(sentences.map(function(_,i){return i;}), rnd);
+            var hideSet = {}; order.slice(0,hideCount).forEach(function(ix){ hideSet[ix]=true; });
+            var ids = [];
+            var html = sentences.map(function(s,i){
+              if(hideSet[i]){ globalId++; ids.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+              return s;
+            }).join(" ");
+            unitByBlockKey[key] = { renderHtml: (label?'<b>'+label+':</b> ':'') + html, blankIds: ids };
+          }
+        }
+      } else { // 'sentences' mode
+        var sents = splitSentences(stripHtml(restHtml));
+        if(sents.length === 0){
+          unitByBlockKey[key] = { renderHtml: b.html, blankIds:[] };
+        } else {
+          var ids2 = [];
+          var html2 = sents.map(function(s){
+            if(rnd() < 0.5){ globalId++; ids2.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+            return s;
+          }).join(" ");
+          unitByBlockKey[key] = { renderHtml: (label?'<b>'+label+':</b> ':'') + html2, blankIds: ids2 };
+        }
+      }
+    });
+
+    var pages = rawPages.map(function(page, pi){
+      var sections = page.sections.map(function(sec, si){
+        var firstKey = pi+"_"+si+"_0";
+        var firstUnit = unitByBlockKey[firstKey];
+        var subBlankId = (firstUnit && firstUnit.sectionHeadingBlankId) ? firstUnit.sectionHeadingBlankId : null;
+        var blocks = sec.blocks.map(function(html, bi){
+          var key = pi+"_"+si+"_"+bi;
+          var unit = unitByBlockKey[key];
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html) };
+        });
+        return { sub: sec.sub, subBlankId: subBlankId, blocks: blocks };
+      });
+      return { heading: page.heading, sections: sections };
+    });
+
+    return { pages: pages, allIds: allIds };
+  }
+
+  /* ---------- State ---------- */
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null };
+  var MODEL = null, RAW_PAGES = null;
+
+  function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
+  function loadProgress(reshuffle){
+    var pk = progressKey(state.malzamaKey, state.mode);
+    var seed = null;
+    try{
+      var raw = localStorage.getItem(pk);
+      if(raw && !reshuffle){
+        var d = JSON.parse(raw);
+        state.revealedIds = d.revealedIds || {}; state.blockRatings = d.blockRatings || {}; state.page = d.page || 0;
+        seed = d.seed;
+      }
+    }catch(e){}
+    if(!seed){ seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0; }
+    state.seed = seed;
+    MODEL = buildModel(RAW_PAGES, state.mode, seed);
+    saveProgress();
+  }
+  function saveProgress(){
+    try{ localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({ revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed })); }catch(e){}
+  }
+  function loadTheme(){ try{ var t = localStorage.getItem("najm_theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} }
+  function toggleTheme(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next = cur==="dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("najm_theme", next); }catch(e){}
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var viewHome=$("viewHome"), viewUnit=$("viewUnit"), viewDone=$("viewDone"), btnHome=$("btnHome");
+
+  function showToast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2200); }
+  function switchView(name){
+    viewHome.classList.toggle("hidden", name!=="home");
+    viewUnit.classList.toggle("hidden", name!=="unit");
+    viewDone.classList.toggle("hidden", name!=="done");
+    btnHome.classList.toggle("hidden", name==="home");
+    window.scrollTo(0,0);
+  }
+
+  function completionFor(malzamaKey, mode){
+    var raw = getMalzamaContent(malzamaKey);
+    if(!raw) return {done:0,total:0,pct:0};
+    var pk = progressKey(malzamaKey, mode);
+    var revealed = {}, seed = null;
+    try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
+    if(!seed) return {done:0,total:null,pct:0};
+    var model = buildModel(raw, mode, seed);
+    var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
+    return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
+  }
+
+  /* ---------- Home ---------- */
+  function renderHome(){
+    var list = $("malzamaList"); list.innerHTML="";
+    var index = getLibraryIndex();
+    index.forEach(function(entry, i){
+      var comp = completionFor(entry.key, "headings");
+      var card = document.createElement("div");
+      card.className = "malzama-card";
+      var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
+      card.innerHTML =
+        '<div class="malzama-main" data-key="'+entry.key+'">' +
+          '<div class="malzama-num">'+ar(i+1)+'</div>' +
+          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
+        '</div>' +
+        '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
+      card.querySelector(".malzama-del").addEventListener("click", function(e){
+        e.stopPropagation();
+        if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
+          saveLibraryIndex(getLibraryIndex().filter(function(x){ return x.key!==entry.key; }));
+          renderHome();
+        }
+      });
+      list.appendChild(card);
+    });
+  }
+
+  function openUnit(key, title, subtitle){
+    var raw = getMalzamaContent(key);
+    if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة دي"); return; }
+    state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
+    RAW_PAGES = raw;
+    $("unitTitle").textContent = title;
+    $("unitSub").textContent = subtitle||"";
+    switchView("unit");
+    updateReviewBadge();
+    setMode(state.mode || "headings", true);
+  }
+
+  function setMode(mode, skipToast, reshuffle){
+    state.mode = mode; state.freeMode = false;
+    loadProgress(reshuffle);
+    document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
+    $("hintBanner").textContent = MODE_HINTS[mode];
+    if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
+    renderPage();
+  }
+
+  function blankIndex(id){ return MODEL.allIds.indexOf(id); }
+  function isUnlocked(id){
+    if(state.freeMode) return true;
+    var idx = blankIndex(id);
+    if(idx===0) return true;
+    return !!state.revealedIds[MODEL.allIds[idx-1]];
+  }
+  function computeCompletion(){
+    var done=0; MODEL.allIds.forEach(function(id){ if(state.revealedIds[id]) done++; });
+    return { done:done, total: MODEL.allIds.length, pct: MODEL.allIds.length? Math.round(done/MODEL.allIds.length*100):0 };
+  }
+  function renderProgress(){
+    var comp = computeCompletion();
+    $("progressText").textContent = ar(comp.done) + " من " + ar(comp.total);
+    $("progressFill").style.width = comp.pct + "%";
+    $("pageText").textContent = "صفحة " + ar(state.page+1) + " من " + ar(MODEL.pages.length);
+  }
+
+  function renderPage(){
+    renderProgress();
+    var wrap = $("docWrap");
+    wrap.innerHTML = "";
+    var page = MODEL.pages[state.page];
+    var docCard = document.createElement("div");
+    docCard.className = "doc-card";
+    docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
+
+    page.sections.forEach(function(sec){
+      if(sec.sub){
+        var sh = document.createElement("div");
+        sh.className = "doc-subheading";
+        sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
+        docCard.appendChild(sh);
+      }
+      sec.blocks.forEach(function(block){
+        var bd = document.createElement("div");
+        bd.className = "doc-block";
+        bd.dataset.blockKey = block.key;
+        bd.innerHTML = block.html;
+        docCard.appendChild(bd);
+
+        if(block.blankIds.length > 0){
+          var rateRow = document.createElement("div");
+          rateRow.className = "block-rate";
+          rateRow.dataset.blockKey = block.key;
+          var rating = state.blockRatings[block.key];
+          rateRow.innerHTML =
+            '<span class="lbl">قيّم نفسك:</span>' +
+            '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
+            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>' +
+            '<button class="mic-mini" data-key="'+block.key+'" title="قول إجابتك بصوتك">🎤</button>';
+          docCard.appendChild(rateRow);
+          var saidEl = document.createElement("div");
+          saidEl.className = "said-inline";
+          saidEl.id = "said-" + block.key;
+          docCard.appendChild(saidEl);
+        }
+      });
+    });
+    wrap.appendChild(docCard);
+
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      var id = +span.dataset.id;
+      var revealed = !!state.revealedIds[id];
+      var unlocked = isUnlocked(id);
+      span.classList.toggle("revealed", revealed);
+      span.classList.toggle("locked", !revealed && !unlocked);
+    });
+    wrap.querySelectorAll(".block-rate").forEach(function(row){
+      var key = row.dataset.blockKey;
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+      var blanksInBlock = blockEl.querySelectorAll(".blank");
+      var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
+      row.classList.toggle("show", allRevealed);
+    });
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      span.addEventListener("click", function(){
+        var id = +span.dataset.id;
+        if(state.revealedIds[id]) return;
+        if(!isUnlocked(id)){ showToast("خلّص الجزء اللي قبل ده الأول"); return; }
+        revealBlank(id);
+      });
+    });
+    wrap.querySelectorAll(".rate-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var key = btn.dataset.key;
+        state.blockRatings[key] = btn.dataset.rate;
+        saveProgress();
+        var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+        setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
+        renderPage();
+      });
+    });
+    wrap.querySelectorAll(".mic-mini").forEach(function(btn){
+      btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+    });
+
+    updateNavButtons();
+  }
+
+  function revealBlank(id){
+    state.revealedIds[id] = true;
+    saveProgress();
+    renderPage();
+    var comp = computeCompletion();
+    if(comp.total>0 && comp.done === comp.total){ setTimeout(finishUnit, 350); }
+  }
+  function nextUnrevealedOnPage(){
+    var page = MODEL.pages[state.page];
+    for(var s=0;s<page.sections.length;s++){
+      var sec = page.sections[s];
+      if(sec.subBlankId && !state.revealedIds[sec.subBlankId] && isUnlocked(sec.subBlankId)) return sec.subBlankId;
+      for(var b=0;b<sec.blocks.length;b++){
+        var ids = sec.blocks[b].blankIds;
+        for(var i=0;i<ids.length;i++){
+          if(!state.revealedIds[ids[i]] && isUnlocked(ids[i])) return ids[i];
+        }
+      }
+    }
+    return null;
+  }
+  function updateNavButtons(){
+    $("btnPrevPage").disabled = state.page===0;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1;
+    var next = nextUnrevealedOnPage();
+    $("btnReveal").disabled = !next;
+    $("btnReveal").onclick = function(){ if(next) revealBlank(next); };
+  }
+  function finishUnit(){
+    var know=0, review=0;
+    Object.keys(state.blockRatings).forEach(function(k){
+      if(state.blockRatings[k]==="know") know++; else if(state.blockRatings[k]==="review") review++;
+    });
+    $("statKnow").textContent = ar(know);
+    $("statReview").textContent = ar(review);
+    switchView("done");
+  }
+
+  function startSpeech(key, btn){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ showToast("المتصفح ده مش بيدعم التعرف على الصوت"); return; }
+    var rec = new SR(); rec.lang="ar-SA"; rec.interimResults=false;
+    btn.classList.add("on");
+    rec.onresult = function(e){
+      var text = e.results[0][0].transcript;
+      var out = $("said-" + key);
+      if(out){ out.style.display="block"; out.textContent = "🎤 قلت: " + text; }
+    };
+    rec.onerror = function(){ showToast("مقدرش أسمعك، جرب تاني"); };
+    rec.onend = function(){ btn.classList.remove("on"); };
+    try{ rec.start(); }catch(e){ btn.classList.remove("on"); }
+  }
+
+  /* ---------- Review list modal ---------- */
+  function renderReviewModal(){
+    var map = loadReviewMap(state.malzamaKey);
+    var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
+    var wrap = $("reviewListWrap");
+    if(keys.length === 0){
+      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة دلوقتي 🎉</div>';
+      return;
+    }
+    wrap.innerHTML = "";
+    keys.forEach(function(k){
+      var item = document.createElement("div");
+      item.className = "review-item";
+      item.innerHTML = '<div class="txt">'+escapeHtml(map[k].text)+'</div><button data-key="'+k+'">✓ خلصت</button>';
+      item.querySelector("button").addEventListener("click", function(){
+        var m = loadReviewMap(state.malzamaKey);
+        delete m[k];
+        saveReviewMap(state.malzamaKey, m);
+        updateReviewBadge();
+        renderReviewModal();
+      });
+      wrap.appendChild(item);
+    });
+  }
+
+  /* ---------- Upload pipeline ---------- */
+  function htmlToRawPages(htmlString, fallbackTitle){
+    var container = document.createElement("div");
+    container.innerHTML = htmlString;
+    var nodes = Array.prototype.slice.call(container.children);
+    var docHeading = null;
+    var pages = [];
+    var currentPage = null, currentSection = null;
+    function newPage(h){ currentPage = { heading:h, sections:[] }; pages.push(currentPage); }
+    function newSection(sub){ currentSection = { sub:sub, blocks:[] }; currentPage.sections.push(currentSection); }
+
+    nodes.forEach(function(node){
+      var tag = node.tagName ? node.tagName.toLowerCase() : "";
+      var text = node.textContent.trim();
+      if(!text) return;
+      if(tag === "h1"){
+        if(!docHeading) docHeading = text;
+        newPage(text); newSection(null);
+      } else if(tag === "h2" || tag === "h3"){
+        if(!currentPage) newPage(docHeading || fallbackTitle);
+        newSection(text);
+      } else if(tag === "p" || tag === "li"){
+        if(!currentPage) newPage(docHeading || fallbackTitle);
+        if(!currentSection) newSection(null);
+        var innerHtml = node.innerHTML.replace(/<(?!\/?(b|strong)\b)[^>]*>/gi, "");
+        innerHtml = innerHtml.replace(/<strong>/gi,"<b>").replace(/<\/strong>/gi,"</b>");
+        currentSection.blocks.push(innerHtml);
+      }
+    });
+    if(pages.length === 0){
+      newPage(fallbackTitle); newSection(null);
+      currentSection.blocks.push(stripHtml(htmlString));
+    }
+    var flat = [];
+    pages.forEach(function(pg){ pg.sections.forEach(function(sec){ flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curPage = null, curHeading = null;
+    flat.forEach(function(item){
+      if(!curPage || curHeading !== item.heading || curBlocks >= 6){
+        curPage = { heading:item.heading, sections:[] };
+        rechunked.push(curPage);
+        curHeading = item.heading; curBlocks = 0;
+      }
+      curPage.sections.push({ sub:item.sub, blocks:item.blocks });
+      curBlocks += item.blocks.length;
+    });
+    return { rawPages: rechunked, heading: docHeading || fallbackTitle };
+  }
+
+  function handleDocx(file){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      mammoth.convertToHtml({ arrayBuffer: e.target.result })
+        .then(function(result){
+          var parsed = htmlToRawPages(result.value, file.name.replace(/\.docx$/i,""));
+          finishUpload(parsed.rawPages, file.name.replace(/\.docx$/i,""), parsed.heading);
+        })
+        .catch(function(err){ uploadFailed("مقدرش أقرا ملف الوورد: " + err.message); });
+    };
+    reader.onerror = function(){ uploadFailed("مقدرش أفتح الملف"); };
+    reader.readAsArrayBuffer(file);
+  }
+  function handlePdf(file){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var typedarray = new Uint8Array(e.target.result);
+      pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
+        var pagesText = [], pending = Promise.resolve();
+        for(var i=1;i<=pdf.numPages;i++){
+          (function(pageNum){
+            pending = pending.then(function(){
+              return pdf.getPage(pageNum).then(function(page){ return page.getTextContent(); })
+                .then(function(tc){ pagesText.push(tc.items.map(function(it){return it.str;}).join(" ")); });
+            });
+          })(i);
+        }
+        return pending.then(function(){ return pagesText.join("\n\n"); });
+      }).then(function(fullText){
+        structureViaAI(fullText, file.name.replace(/\.pdf$/i,""));
+      }).catch(function(err){ uploadFailed("مقدرش أقرا ملف الـ PDF: " + err.message); });
+    };
+    reader.onerror = function(){ uploadFailed("مقدرش أفتح الملف"); };
+    reader.readAsArrayBuffer(file);
+  }
+  function structureViaAI(rawText, fallbackTitle){
+    setUploadStatus("بستخدم الذكاء الاصطناعي أرتب محتوى الملف...");
+    if(!window.claude || !claude.use){ uploadFailed("الترتيب الذكي للـ PDF مش متاح في هذا العرض. جرب ملف Word بدل كده."); return; }
+    claude.use("sample").then(function(sample){
+      if(!sample){ uploadFailed("الترتيب الذكي للـ PDF مش متاح دلوقتي. جرب ملف Word بدل كده."); return; }
+      var prompt = "لديك نص مستخرج من ملف PDF تعليمي بالعربية. رتّبه في JSON فقط بالشكل التالي:\n" +
+        '{"heading":"عنوان عام للملف","pages":[{"heading":"عنوان الصفحة","sections":[{"sub":"عنوان فرعي أو null","blocks":["فقرة 1","فقرة 2"]}]}]}\n' +
+        "قسّم لفقرات قصيرة منطقية. تجاهل أرقام الصفحات والترويسات المتكررة وروابط التواصل. لا تخترع محتوى غير موجود. النص:\n\n" + rawText.slice(0, 12000);
+      sample.json(prompt, { modelTier:"default" }).then(function(json){
+        if(!json || !json.pages){ uploadFailed("الذكاء الاصطناعي مقدرش يرتب الملف ده. جرب ملف Word بدل كده."); return; }
+        finishUpload(json.pages, fallbackTitle, json.heading || fallbackTitle);
+      }).catch(function(err){ uploadFailed("حصل خطأ في الترتيب الذكي: " + (err&&err.message?err.message:"غير معروف")); });
+    }).catch(function(){ uploadFailed("الترتيب الذكي للـ PDF مش متاح دلوقتي. جرب ملف Word بدل كده."); });
+  }
+  function setUploadStatus(msg){ var el=$("uploadStatus"); el.style.display="block"; el.textContent=msg; }
+  function uploadFailed(msg){ setUploadStatus("⚠️ " + msg); }
+  function finishUpload(rawPages, fallbackTitle, headingGuess){
+    var title = headingGuess || fallbackTitle || "ملزمة جديدة";
+    var key = slugify(title);
+    saveMalzamaContent(key, rawPages);
+    var index = getLibraryIndex();
+    if(!index.some(function(e){ return e.key===key; })){
+      index.push({ key:key, title:title, subtitle: fallbackTitle });
+      saveLibraryIndex(index);
+    }
+    $("modalUpload").classList.remove("show");
+    setUploadStatus("");
+    renderHome();
+    showToast('اتضافت "'+title+'" للملازم');
+    openUnit(key, title, fallbackTitle);
+  }
+
+  /* ---------- Wiring ---------- */
+  $("btnTheme").addEventListener("click", toggleTheme);
+  $("btnInfo").addEventListener("click", function(){ $("modalInfo").classList.add("show"); });
+  $("btnHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
+  document.querySelectorAll("[data-close]").forEach(function(x){ x.addEventListener("click", function(){ $(x.dataset.close).classList.remove("show"); }); });
+  document.querySelectorAll(".modal-overlay").forEach(function(ov){ ov.addEventListener("click", function(e){ if(e.target===ov) ov.classList.remove("show"); }); });
+
+  document.querySelectorAll(".mode-btn").forEach(function(btn){ btn.addEventListener("click", function(){ setMode(btn.dataset.mode); }); });
+  $("btnPrevPage").addEventListener("click", function(){ if(state.page>0){ state.page--; saveProgress(); renderPage(); } });
+  $("btnNextPage").addEventListener("click", function(){ if(state.page<MODEL.pages.length-1){ state.page++; saveProgress(); renderPage(); } });
+
+  $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
+  $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
+  $("btnRestart").addEventListener("click", function(){
+    switchView("unit");
+    setMode(state.mode, true, true);
+    showToast("محاولة جديدة — أجزاء مختلفة اتخفت هالمرة");
+  });
+  $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
+
+  $("btnAdd").addEventListener("click", function(){ $("modalUpload").classList.add("show"); });
+  $("pickFile").addEventListener("click", function(){ $("fileInput").click(); });
+  $("fileInput").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    setUploadStatus("بيتقرا الملف...");
+    if(/\.docx$/i.test(file.name)) handleDocx(file);
+    else if(/\.pdf$/i.test(file.name)) handlePdf(file);
+    else uploadFailed("الصيغة دي مش مدعومة — استخدم Word (.docx) أو PDF");
+    e.target.value = "";
+  });
+
+  loadTheme();
+  renderHome();
+  switchView("home");
+})();
+</script>
+</body>
+</html>
