@@ -103,13 +103,15 @@
   .doc-subheading .blank{font-weight:800;}
 
   /* Custom selection mode */
-  .selectable{cursor:pointer;border-radius:5px;padding:1px 3px;transition:background .15s ease;}
-  .selectable:hover{background:rgba(224,182,47,.12);}
-  .selectable.selected{background:rgba(224,182,47,.35);outline:2px solid var(--gold-500);}
+  .selectable{cursor:pointer;border-radius:5px;padding:1px 3px;transition:background .15s ease;display:inline;}
+  .selectable:hover{background:rgba(224,182,47,.18);}
+  .selectable.selected{background:rgba(224,182,47,.40);outline:2px solid var(--gold-500);}
   .selecting-mode .doc-block, .selecting-mode .doc-subheading{user-select:none;}
+  .selecting-mode .doc-block{line-height:2.3;}
   #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
   #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
   :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
+  :root:not([data-theme="light"]) #btnRestartUnit{background:rgba(255,255,255,.1);color:var(--ink);}
 
   .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
   .block-rate.show{display:flex;}
@@ -210,17 +212,20 @@
         <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
-      <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:rgba(10,27,46,.08);color:var(--ink);">🔀 إعادة</button>
+        <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
+      </div>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">اختر بنفسك ما يُخفى</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">اختر بنفسك (جملة بجملة)</span></button>
       <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
       <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
     <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">✏️ ابدأ التحديد</button>
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">✏️ ابدأ التحديد (جملة بجملة)</button>
       <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;background:rgba(46,158,91,.15);color:var(--ok);">💾 حفظ التخصيص</button>
       <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح التحديد</button>
       <span id="customSelectCount" style="font-size:12px;color:var(--muted);align-self:center;"></span>
@@ -332,7 +337,7 @@
 
   var MODE_LABELS = { custom:"تخصيص", headings:"العناوين والفقرات", sentences:"الجمل" };
   var MODE_HINTS = {
-    custom: "✏️ اضغط «ابدأ التحديد» ثم اضغط على الجمل أو الفقرات اللي عايز تخفيها. بعدين احفظ التخصيص.",
+    custom: "✏️ اضغط «ابدأ التحديد» ثم اضغط على الجمل اللي عايز تخفيها (جملة بجملة). بعدين احفظ التخصيص.",
     headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا مع ترك مفتاح تذكير. مش هتخفي جملتين ورا بعض.",
     sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين"
   };
@@ -536,18 +541,25 @@
         var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
         blocksInfo.forEach(function(bi2){
           if(mode === "custom"){
-            // Custom: hide whole block if user selected it
-            if(customSelected[bi2.key]){
-              globalId++; var idC = globalId; allIds.push(idC);
-              var plain = stripHtml(bi2.html);
-              var krC = splitKeyAndRest(plain);
-              if(krC){
-                unitByBlockKey[bi2.key] = { renderHtml: krC.key + ' <span class="blank" data-id="'+idC+'">'+krC.rest+'</span>', blankIds:[idC] };
-              } else {
-                unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idC+'">'+plain+'</span>', blankIds:[idC] };
-              }
-            } else {
+            // Custom: hide individual sentences the user selected (key = blockKey|sentIdx)
+            var plainFull = stripHtml(bi2.html);
+            var sentsC = splitSentences(plainFull).filter(function(s){ return !VERSE_RE.test(s) && !isTrivialFragment(s); });
+            if(sentsC.length === 0){
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else {
+              var idsC = [];
+              var htmlC = sentsC.map(function(s, si){
+                var selKey = bi2.key + "|" + si;
+                if(customSelected[selKey]){
+                  globalId++; idsC.push(globalId); allIds.push(globalId);
+                  var krC = splitKeyAndRest(s);
+                  if(krC) return krC.key + ' <span class="blank" data-id="'+globalId+'">'+krC.rest+'</span>';
+                  return '<span class="blank" data-id="'+globalId+'">'+s+'</span>';
+                }
+                return s;
+              }).join(" ");
+              // keep original label if present
+              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + htmlC, blankIds: idsC };
             }
           } else if(mode === "headings"){
             if(bi2.label){
@@ -781,7 +793,7 @@
 
     // If custom mode and nothing selected yet (and not currently selecting)
     if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» فوق واختار الفقرات اللي عايز تخفيها، وبعدين احفظ.</div>';
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش جمل للإخفاء.<br>اضغط «ابدأ التحديد» فوق واختار الجمل اللي عايز تخفيها، وبعدين احفظ.</div>';
       updateNavButtons();
       return;
     }
@@ -806,11 +818,31 @@
       }
       sec.blocks.forEach(function(block){
         var bd = document.createElement("div");
-        bd.className = "doc-block" + (useClean ? " selectable" : "");
+        bd.className = "doc-block";
         bd.dataset.blockKey = block.key;
         if(useClean){
-          bd.innerHTML = block.plainText ? escapeHtml(block.plainText) : block.html;
-          if(state.customSelected[block.key]) bd.classList.add("selected");
+          // Split into sentences and make each selectable
+          var plain = block.plainText || stripHtml(block.html);
+          var sents = splitSentences(plain).filter(function(s){ return !VERSE_RE.test(s); });
+          if(sents.length === 0){
+            bd.textContent = plain;
+          } else {
+            sents.forEach(function(s, si){
+              if(isTrivialFragment(s)){
+                var spanT = document.createElement("span");
+                spanT.textContent = s + " ";
+                bd.appendChild(spanT);
+              } else {
+                var span = document.createElement("span");
+                span.className = "selectable";
+                span.dataset.selKey = block.key + "|" + si;
+                span.textContent = s;
+                if(state.customSelected[span.dataset.selKey]) span.classList.add("selected");
+                bd.appendChild(span);
+                bd.appendChild(document.createTextNode(" "));
+              }
+            });
+          }
         } else {
           bd.innerHTML = block.html;
         }
@@ -837,10 +869,10 @@
     wrap.appendChild(docCard);
 
     if(useClean){
-      // Selection mode: tap block to toggle
+      // Selection mode: tap sentence to toggle
       wrap.querySelectorAll(".selectable").forEach(function(el){
         el.addEventListener("click", function(){
-          var key = el.dataset.blockKey;
+          var key = el.dataset.selKey;
           if(state.customSelected[key]){
             delete state.customSelected[key];
             el.classList.remove("selected");
@@ -849,7 +881,7 @@
             el.classList.add("selected");
           }
           var count = Object.keys(state.customSelected).length;
-          $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "";
+          $("customSelectCount").textContent = count ? ar(count) + " جملة محددة" : "اضغط على الجمل لتحديدها";
         });
       });
     } else {
@@ -1465,8 +1497,8 @@
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
     var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "اضغط على الفقرات لتحديدها";
-    showToast("وضع التحديد — اضغط على الفقرة عشان تخفيها");
+    $("customSelectCount").textContent = count ? ar(count) + " جملة محددة" : "اضغط على الجمل لتحديدها";
+    showToast("وضع التحديد — اضغط على أي جملة عشان تخفيها");
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
@@ -1482,18 +1514,25 @@
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
-    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
+    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جملة" : "";
+    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جملة)" : "مفيش حاجة محددة");
     renderPage();
   });
   $("btnClearCustom").addEventListener("click", function(){
     if(!confirm("تمسح كل التحديد الحالي؟")) return;
     state.customSelected = {};
     saveCustomSelection(state.malzamaKey, {});
-    var count = 0;
-    $("customSelectCount").textContent = "اضغط على الفقرات لتحديدها";
+    $("customSelectCount").textContent = "اضغط على الجمل لتحديدها";
     document.querySelectorAll(".selectable.selected").forEach(function(el){ el.classList.remove("selected"); });
     showToast("تم مسح التحديد");
+  });
+
+  // Restart button (any mode): reset progress + new random hides for headings/sentences
+  $("btnRestartUnit").addEventListener("click", function(){
+    if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
+    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم" + (state.mode !== "custom" ? " ويتخفي أجزاء عشوائية جديدة" : "") + ".")) return;
+    setMode(state.mode, true, true); // reshuffle=true
+    showToast(state.mode === "custom" ? "تم الإعادة من الأول" : "محاولة جديدة — أجزاء مختلفة اتخفت");
   });
 
   loadTheme();
