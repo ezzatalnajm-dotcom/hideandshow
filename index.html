@@ -268,12 +268,19 @@
 <div class="modal-overlay" id="modalUpload">
   <div class="modal">
     <h3>ارفع ملزمة جديدة <span class="close-x" data-close="modalUpload">✕</span></h3>
-    <p>اختار ملف Word (.docx) أو PDF من جهازك. لو عندك الملف على Google Drive، حمّله على جهازك الأول من تطبيق درايف وبعدين ارفعه من هنا.</p>
+    <p>اختار ملف أو أكتر (Word أو PDF) من جهازك. لو عندك الملف على Google Drive، حمّله على جهازك الأول من تطبيق درايف وبعدين ارفعه من هنا.</p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
+      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (هتتضاف لملف المكتبة المشتركة اللي بترفعه مع الموقع)
+    </label>
     <div class="file-choice">
-      <button id="pickFile">📄 اختيار ملف من الجهاز (Word أو PDF)</button>
+      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز (Word أو PDF)</button>
     </div>
-    <input type="file" id="fileInput" accept=".docx,.pdf" class="hidden">
+    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
     <p id="uploadStatus" style="display:none;"></p>
+    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
+      <p style="font-size:12.5px;color:var(--muted);">اترفعت <span id="pendingCount">٠</span> ملزمة رسمية في الجلسة دي. نزّل الملف وحطه مع index.html على GitHub/Vercel.</p>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
+    </div>
   </div>
 </div>
 
@@ -389,16 +396,46 @@
     return function(){ s = s*16807 % 2147483647; return (s-1)/2147483646; };
   }
 
-  /* ---------- Library ---------- */
+  /* ---------- Library ----------
+     Two sources merged together:
+     - SHARED (library.json, fetched once at boot if present next to
+       index.html on the deployed site) — same for every visitor,
+       no upload needed. Read-only, never written by this browser.
+     - PERSONAL (localStorage) — whatever this one visitor uploaded
+       themselves (e.g. a student adding a different subject).
+  ------------------------------------------------- */
   var LIB_INDEX_KEY = "najm_lib_index_v2";
-  function getLibraryIndex(){
-    try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) return JSON.parse(raw); }catch(e){}
-    var seed = [{ key:"seed_u1l1", title:"ملزمة ١", subtitle:"العضلات والحركة — الدرس ١‑١" }];
-    saveLibraryIndex(seed);
-    return seed;
+  var SHARED_INDEX = [];   // [{key,title,subtitle}]
+  var SHARED_CONTENT = {}; // key -> rawPages
+
+  function fetchSharedLibrary(){
+    return fetch("./library.json").then(function(res){
+      if(!res.ok) throw new Error("no library.json");
+      return res.json();
+    }).then(function(data){
+      if(data && Array.isArray(data.items)){
+        SHARED_INDEX = data.items.map(function(it){ return { key:it.key, title:it.title, subtitle:it.subtitle }; });
+        data.items.forEach(function(it){ SHARED_CONTENT[it.key] = it.rawPages; });
+      }
+    }).catch(function(){ /* no shared library deployed yet — that's fine */ });
   }
-  function saveLibraryIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
+
+  function getLibraryIndex(){
+    var personal = [];
+    try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
+    if(SHARED_INDEX.length === 0 && personal.length === 0){
+      // nothing deployed yet and nothing uploaded locally — show the built-in seed so the app isn't empty
+      personal = [{ key:"seed_u1l1", title:"ملزمة ١", subtitle:"العضلات والحركة — الدرس ١‑١" }];
+      saveLibraryIndex(personal);
+    }
+    var sharedTagged = SHARED_INDEX.map(function(x){ return Object.assign({shared:true}, x); });
+    var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
+    return sharedTagged.concat(personalTagged);
+  }
+  function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
+  function saveLibraryIndex(list){ savePersonalIndex(list); } // back-compat name used below
   function getMalzamaContent(key){
+    if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
     if(key === "seed_u1l1") return SEED_RAW_PAGES;
     try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
     return null;
@@ -602,20 +639,25 @@
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
+      var delBtn = entry.shared
+        ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
+        : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
       card.innerHTML =
         '<div class="malzama-main" data-key="'+entry.key+'">' +
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
           '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
-        '</div>' +
-        '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+        '</div>' + delBtn;
       card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
-      card.querySelector(".malzama-del").addEventListener("click", function(e){
-        e.stopPropagation();
-        if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
-          saveLibraryIndex(getLibraryIndex().filter(function(x){ return x.key!==entry.key; }));
-          renderHome();
-        }
-      });
+      var delEl = card.querySelector(".malzama-del");
+      if(delEl && !entry.shared){
+        delEl.addEventListener("click", function(e){
+          e.stopPropagation();
+          if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
+            savePersonalIndex(getLibraryIndex().filter(function(x){ return !x.shared; }).filter(function(x){ return x.key!==entry.key; }));
+            renderHome();
+          }
+        });
+      }
       list.appendChild(card);
     });
   }
@@ -868,70 +910,220 @@
   }
 
   function handleDocx(file){
-    var reader = new FileReader();
-    reader.onload = function(e){
-      mammoth.convertToHtml({ arrayBuffer: e.target.result })
-        .then(function(result){
-          var parsed = htmlToRawPages(result.value, file.name.replace(/\.docx$/i,""));
-          finishUpload(parsed.rawPages, file.name.replace(/\.docx$/i,""), parsed.heading);
-        })
-        .catch(function(err){ uploadFailed("مقدرش أقرا ملف الوورد: " + err.message); });
-    };
-    reader.onerror = function(){ uploadFailed("مقدرش أفتح الملف"); };
-    reader.readAsArrayBuffer(file);
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        mammoth.convertToHtml({ arrayBuffer: e.target.result })
+          .then(function(result){
+            var parsed = htmlToRawPages(result.value, file.name.replace(/\.docx$/i,""));
+            resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+          })
+          .catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + err.message); });
+      };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.readAsArrayBuffer(file);
+    });
   }
+
+  /* PDF structuring: purely client-side heuristic (works the same
+     whether the page is hosted on claude.ai, GitHub Pages, or Vercel —
+     no AI call, no backend). Groups text items into lines by their
+     vertical position, then classifies a short line in a larger-than-
+     usual font as a heading; everything else merges into paragraphs. */
   function handlePdf(file){
-    var reader = new FileReader();
-    reader.onload = function(e){
-      var typedarray = new Uint8Array(e.target.result);
-      pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
-        var pagesText = [], pending = Promise.resolve();
-        for(var i=1;i<=pdf.numPages;i++){
-          (function(pageNum){
-            pending = pending.then(function(){
-              return pdf.getPage(pageNum).then(function(page){ return page.getTextContent(); })
-                .then(function(tc){ pagesText.push(tc.items.map(function(it){return it.str;}).join(" ")); });
-            });
-          })(i);
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var typedarray = new Uint8Array(e.target.result);
+        pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
+          var pageLinesList = [], pending = Promise.resolve();
+          for(var i=1;i<=pdf.numPages;i++){
+            (function(pageNum){
+              pending = pending.then(function(){
+                return pdf.getPage(pageNum).then(function(page){ return page.getTextContent(); })
+                  .then(function(tc){ pageLinesList.push(groupIntoLines(tc.items)); });
+              });
+            })(i);
+          }
+          return pending.then(function(){ return pageLinesList; });
+        }).then(function(pageLinesList){
+          var cleaned = filterNoiseLines(pageLinesList);
+          var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
+          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.pdf$/i,""), heading: parsed.heading });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
+      };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function groupIntoLines(items){
+    var lines = [];
+    items.forEach(function(it){
+      var y = Math.round(it.transform[5]);
+      var size = Math.abs(it.transform[3]) || Math.abs(it.transform[0]) || 10;
+      var line = lines.find(function(l){ return Math.abs(l.y - y) <= 2; });
+      if(!line){ line = { y:y, size:size, text:"" }; lines.push(line); }
+      line.text += (line.text ? " " : "") + it.str;
+      line.size = Math.max(line.size, size);
+    });
+    lines.sort(function(a,b){ return b.y - a.y; }); // top to bottom (PDF y grows upward)
+    return lines.filter(function(l){ return l.text.trim(); });
+  }
+
+  /* Drop lines that are clearly page furniture, not real content:
+     - a line whose exact text repeats across most pages (a running
+       header/footer — teacher's name, phone number, brand line,
+       "النجم" watermark, etc.) — generic, works for any teacher/brand
+     - a line containing a web link or Telegram/website URL
+     - a short line that's mostly a phone number */
+  function filterNoiseLines(pageLinesList){
+    if(pageLinesList.length <= 1) return pageLinesList;
+    var freq = {};
+    pageLinesList.forEach(function(lines){
+      var seenThisPage = {};
+      lines.forEach(function(l){
+        var norm = l.text.trim().replace(/\s+/g," ");
+        if(!norm || seenThisPage[norm]) return;
+        seenThisPage[norm] = true;
+        freq[norm] = (freq[norm]||0) + 1;
+      });
+    });
+    var repeatThreshold = Math.max(2, Math.ceil(pageLinesList.length * 0.5));
+    return pageLinesList.map(function(lines){
+      return lines.filter(function(l){
+        var norm = l.text.trim().replace(/\s+/g," ");
+        if(!norm) return false;
+        if(freq[norm] >= repeatThreshold) return false;
+        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b/i.test(norm)) return false;
+        if(/\d{7,}/.test(norm) && norm.length < 40) return false;
+        return true;
+      });
+    });
+  }
+
+  function pdfLinesToRawPages(pageLinesList, fallbackTitle){
+    var allSizes = [];
+    pageLinesList.forEach(function(lines){ lines.forEach(function(l){ allSizes.push(Math.round(l.size)); }); });
+    var freq = {}; allSizes.forEach(function(s){ freq[s]=(freq[s]||0)+1; });
+    var baseline = 12;
+    var best = 0;
+    Object.keys(freq).forEach(function(s){ if(freq[s]>best){ best=freq[s]; baseline=+s; } });
+    var headingMin = baseline * 1.15;
+
+    var rawPages = [];
+    var docHeading = null;
+    var curPage = null, curSection = null;
+
+    function newPage(h){ curPage = { heading:h, sections:[] }; rawPages.push(curPage); }
+    function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+    function pushParagraph(text){
+      if(!text.trim()) return;
+      if(!curPage) newPage(fallbackTitle);
+      if(!curSection) newSection(null);
+      curSection.blocks.push(escapeHtml(text.trim()));
+    }
+
+    pageLinesList.forEach(function(lines, pageIdx){
+      var buffer = "";
+      var sawHeadingThisPage = false;
+      lines.forEach(function(l){
+        var txt = l.text.trim();
+        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 70 && !/^[0-9\s.\-–|]+$/.test(txt);
+        if(isHeading){
+          pushParagraph(buffer); buffer = "";
+          if(!docHeading) docHeading = txt;
+          if(!curPage || (!sawHeadingThisPage && pageIdx>0)) newPage(txt);
+          else if(!curPage) newPage(txt);
+          newSection(txt);
+          sawHeadingThisPage = true;
+        } else {
+          buffer += (buffer ? " " : "") + txt;
+          if(buffer.length > 260){ pushParagraph(buffer); buffer=""; }
         }
-        return pending.then(function(){ return pagesText.join("\n\n"); });
-      }).then(function(fullText){
-        structureViaAI(fullText, file.name.replace(/\.pdf$/i,""));
-      }).catch(function(err){ uploadFailed("مقدرش أقرا ملف الـ PDF: " + err.message); });
-    };
-    reader.onerror = function(){ uploadFailed("مقدرش أفتح الملف"); };
-    reader.readAsArrayBuffer(file);
+      });
+      pushParagraph(buffer);
+    });
+
+    if(rawPages.length === 0){ newPage(fallbackTitle); newSection(null); }
+
+    // re-chunk to a manageable number of blocks per page (max ~6)
+    var flat = [];
+    rawPages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curP = null, curH = null;
+    flat.forEach(function(item){
+      if(!curP || curH !== item.heading || curBlocks >= 6){
+        curP = { heading:item.heading, sections:[] }; rechunked.push(curP);
+        curH = item.heading; curBlocks = 0;
+      }
+      curP.sections.push({ sub:item.sub, blocks:item.blocks });
+      curBlocks += item.blocks.length;
+    });
+    return { rawPages: rechunked.length?rechunked:rawPages, heading: docHeading || fallbackTitle };
   }
-  function structureViaAI(rawText, fallbackTitle){
-    setUploadStatus("بستخدم الذكاء الاصطناعي أرتب محتوى الملف...");
-    if(!window.claude || !claude.use){ uploadFailed("الترتيب الذكي للـ PDF مش متاح في هذا العرض. جرب ملف Word بدل كده."); return; }
-    claude.use("sample").then(function(sample){
-      if(!sample){ uploadFailed("الترتيب الذكي للـ PDF مش متاح دلوقتي. جرب ملف Word بدل كده."); return; }
-      var prompt = "لديك نص مستخرج من ملف PDF تعليمي بالعربية. رتّبه في JSON فقط بالشكل التالي:\n" +
-        '{"heading":"عنوان عام للملف","pages":[{"heading":"عنوان الصفحة","sections":[{"sub":"عنوان فرعي أو null","blocks":["فقرة 1","فقرة 2"]}]}]}\n' +
-        "قسّم لفقرات قصيرة منطقية. تجاهل أرقام الصفحات والترويسات المتكررة وروابط التواصل. لا تخترع محتوى غير موجود. النص:\n\n" + rawText.slice(0, 12000);
-      sample.json(prompt, { modelTier:"default" }).then(function(json){
-        if(!json || !json.pages){ uploadFailed("الذكاء الاصطناعي مقدرش يرتب الملف ده. جرب ملف Word بدل كده."); return; }
-        finishUpload(json.pages, fallbackTitle, json.heading || fallbackTitle);
-      }).catch(function(err){ uploadFailed("حصل خطأ في الترتيب الذكي: " + (err&&err.message?err.message:"غير معروف")); });
-    }).catch(function(){ uploadFailed("الترتيب الذكي للـ PDF مش متاح دلوقتي. جرب ملف Word بدل كده."); });
-  }
+
   function setUploadStatus(msg){ var el=$("uploadStatus"); el.style.display="block"; el.textContent=msg; }
   function uploadFailed(msg){ setUploadStatus("⚠️ " + msg); }
-  function finishUpload(rawPages, fallbackTitle, headingGuess){
-    var title = headingGuess || fallbackTitle || "ملزمة جديدة";
-    var key = slugify(title);
-    saveMalzamaContent(key, rawPages);
-    var index = getLibraryIndex();
-    if(!index.some(function(e){ return e.key===key; })){
-      index.push({ key:key, title:title, subtitle: fallbackTitle });
-      saveLibraryIndex(index);
-    }
-    $("modalUpload").classList.remove("show");
+
+  var pendingSharedBatch = []; // items uploaded this session with "official" checked
+
+  function processFiles(files){
+    var isOfficial = $("officialCheck").checked;
+    var queue = Promise.resolve();
+    var results = [];
+    Array.prototype.forEach.call(files, function(file){
+      queue = queue.then(function(){
+        setUploadStatus("بيتقرا: " + file.name + "...");
+        var task = /\.docx$/i.test(file.name) ? handleDocx(file)
+                  : /\.pdf$/i.test(file.name) ? handlePdf(file)
+                  : Promise.reject("الصيغة دي مش مدعومة: " + file.name);
+        return task.then(function(r){ results.push(r); })
+          .catch(function(err){ showToast(typeof err==="string"?err:"حصل خطأ في: "+file.name); });
+      });
+    });
+    return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
+  }
+
+  function finishUploadBatch(results, isOfficial){
+    var lastKey = null, lastTitle = null, lastSub = null;
+    results.forEach(function(r){
+      var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
+      var key = slugify(title);
+      saveMalzamaContent(key, r.rawPages);
+      if(isOfficial){
+        pendingSharedBatch.push({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
+      } else {
+        var index = getLibraryIndex().filter(function(x){ return !x.shared; });
+        if(!index.some(function(e){ return e.key===key; })){
+          index.push({ key:key, title:title, subtitle:r.fallbackTitle });
+          savePersonalIndex(index);
+        }
+      }
+      lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
+    });
     setUploadStatus("");
-    renderHome();
-    showToast('اتضافت "'+title+'" للملازم');
-    openUnit(key, title, fallbackTitle);
+    if(results.length===0) return;
+    if(isOfficial){
+      $("exportBox").classList.remove("hidden");
+      $("pendingCount").textContent = ar(pendingSharedBatch.length);
+      showToast("اترفع "+results.length+" ملزمة رسمية — نزّل ملف المكتبة لما تخلّص");
+      renderHome();
+    } else {
+      $("modalUpload").classList.remove("show");
+      renderHome();
+      showToast('اتضافت "'+lastTitle+'" للملازم');
+      openUnit(lastKey, lastTitle, lastSub);
+    }
+  }
+
+  function downloadLibraryJson(){
+    var payload = { items: pendingSharedBatch };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "library.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
   }
 
   /* ---------- Wiring ---------- */
@@ -954,21 +1146,24 @@
   });
   $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
 
-  $("btnAdd").addEventListener("click", function(){ $("modalUpload").classList.add("show"); });
+  $("btnAdd").addEventListener("click", function(){
+    $("exportBox").classList.toggle("hidden", pendingSharedBatch.length===0);
+    $("pendingCount").textContent = ar(pendingSharedBatch.length);
+    $("modalUpload").classList.add("show");
+  });
   $("pickFile").addEventListener("click", function(){ $("fileInput").click(); });
   $("fileInput").addEventListener("change", function(e){
-    var file = e.target.files[0];
-    if(!file) return;
-    setUploadStatus("بيتقرا الملف...");
-    if(/\.docx$/i.test(file.name)) handleDocx(file);
-    else if(/\.pdf$/i.test(file.name)) handlePdf(file);
-    else uploadFailed("الصيغة دي مش مدعومة — استخدم Word (.docx) أو PDF");
+    var files = e.target.files;
+    if(!files || !files.length) return;
+    processFiles(files).then(function(res){ finishUploadBatch(res.results, res.isOfficial); });
     e.target.value = "";
   });
+  $("downloadLibrary").addEventListener("click", downloadLibraryJson);
 
   loadTheme();
   renderHome();
   switchView("home");
+  fetchSharedLibrary().then(function(){ renderHome(); });
 })();
 </script>
 </body>
