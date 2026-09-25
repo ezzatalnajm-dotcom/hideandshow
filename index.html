@@ -102,6 +102,15 @@
   :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
   .doc-subheading .blank{font-weight:800;}
 
+  /* Custom selection mode */
+  .selectable{cursor:pointer;border-radius:5px;padding:1px 3px;transition:background .15s ease;}
+  .selectable:hover{background:rgba(224,182,47,.12);}
+  .selectable.selected{background:rgba(224,182,47,.35);outline:2px solid var(--gold-500);}
+  .selecting-mode .doc-block, .selecting-mode .doc-subheading{user-select:none;}
+  #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
+  #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
+
   .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
   .block-rate.show{display:flex;}
   .block-rate .lbl{font-size:11.5px;color:var(--muted);font-weight:700;}
@@ -173,6 +182,7 @@
       <div class="topbar-actions">
         <button class="icon-btn" id="btnTheme" title="الوضع الفاتح/الداكن">🌓</button>
         <button class="icon-btn" id="btnInfo" title="تعليمات الاستخدام">؟</button>
+        <button class="icon-btn" id="btnSettings" title="الإعدادات">⚙️</button>
         <button class="icon-btn hidden" id="btnHome" title="الرئيسية">🏠</button>
       </div>
     </div>
@@ -204,10 +214,17 @@
     </div>
 
     <div class="mode-row" id="modeRow">
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">اختر بنفسك ما يُخفى</span></button>
       <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
       <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
     </div>
-    <div class="shuffle-note">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
+    <div class="shuffle-note" id="shuffleNote">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
+    <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">✏️ ابدأ التحديد</button>
+      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;background:rgba(46,158,91,.15);color:var(--ok);">💾 حفظ التخصيص</button>
+      <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح التحديد</button>
+      <span id="customSelectCount" style="font-size:12px;color:var(--muted);align-self:center;"></span>
+    </div>
 
     <div class="progress-wrap">
       <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
@@ -243,13 +260,14 @@
   <div class="modal">
     <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li>اختار مود المراجعة: العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
+      <li>اختار مود المراجعة: <b>تخصيص</b> (تخفي بنفسك)، أو العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
+      <li>في مود التخصيص: اضغط «ابدأ التحديد» ثم اضغط على الفقرات اللي عايز تخفيها، وبعدين «حفظ التخصيص».</li>
       <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
-      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف.</li>
+      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف — وفيها مفتاح تذكير ظاهر.</li>
       <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
       <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
-      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق، من كل المودات مع بعض.</li>
-      <li>كل مود بيختار أجزاء مختلفة عشوائيًا في كل محاولة جديدة — مش نفس الأماكن كل مرة.</li>
+      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق.</li>
+      <li>مود العناوين والجمل بيختاروا أجزاء مختلفة عشوائيًا في كل محاولة جديدة.</li>
     </ol>
   </div>
 </div>
@@ -278,7 +296,8 @@
     <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
     <p id="uploadStatus" style="display:none;"></p>
     <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
-      <p style="font-size:12.5px;color:var(--muted);">اترفعت <span id="pendingCount">٠</span> ملزمة رسمية في الجلسة دي. نزّل الملف وحطه مع index.html على GitHub/Vercel.</p>
+      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية الحالية (اللي هتتصدّر في library.json) — <span id="pendingCount">٠</span> ملزمة. شيل أي واحدة قبل ما تنزّل لو محتاجة تتغيّر.</p>
+      <div id="pendingListWrap"></div>
       <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
     </div>
   </div>
@@ -292,9 +311,17 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="modalSettings">
+  <div class="modal">
+    <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها. مش بيأثر على الملازم الرسمية اللي جايه من library.json.</p>
+    <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج (حذف كل حاجة محلية)</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <script>
 (function(){
@@ -303,75 +330,11 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
   }
 
-  /* ============================================================
-     Built-in seed content (ملزمة ١ — العضلات والحركة).
-     Every uploaded ملزمة is normalized into this exact shape:
-     { heading, sections:[ { sub, blocks:[ htmlString, ... ] } ] }
-     ============================================================ */
-  var SEED_RAW_PAGES = [
-    { heading: "الوحدة (١) العضلات والحركة", sections: [
-      { sub: null, blocks: [
-        "العضلات هي التراكيب المسؤولة عن الحركة في الكائنات متعدّدة الخلايا، ويحتوي جسم الإنسان على أكثر من 650 عضلة.",
-        "تتراوح أحجام العضلات بين عضلات الساق الكبيرة والعضلات الدقيقة التي تحرّك الجفون."
-      ]},
-      { sub: "أنواع الأنسجة الأوّلية", blocks: [
-        "هناك أربعة أنواع من الأنسجة الأولية في البشر والحيوانات الأخرى ذات التركيب المعقّد، وهي الأنسجة الطلائية، والضامة (الرابطة)، والعضلية، والعصبية. يتكوّن كل جهاز من أعضاء، ويتكوّن كل عضو من نوع واحد أو أكثر من أنواع الأنسجة الأربعة."
-      ]},
-      { sub: "أولًا: الأنسجة الطلائية Epithelial tissues", blocks: [
-        "<b>الوظيفة:</b> تغطي السطوح الخارجية كالجلد، وتُبطّن التجاويف الداخلية للجسم. وبعض الأعضاء تُغطى بطبقة واحدة أو عدة طبقات من الخلايا.",
-        "<b>مثال:</b> الجلد، وبطانة الفم، وبطانة المريء، وبطانة المعدة."
-      ]},
-      { sub: "ثانيًا: الأنسجة الضامة Connective tissues", blocks: [
-        "<b>الوظيفة:</b> ربط الأعضاء المختلفة في الجسم ودعمها وتثبيتها.",
-        "<b>التركيب:</b> يتكوّن النسيج الضام من موادّ صلبة كثيفة كـ العظام أو شبه صلبة كـ الغضروف أو سائلة كـ الدم. كما تحتوي الأنسجة الضامة أيضًا على موادّ غير عضوية مثل الكالسيوم والفسفور.",
-        "<b>أمثلة:</b> الدم Blood يجري في الأوردة والشرايين وهو من الأنسجة الضامة السائلة. الأوتار Tendons هي أنسجة ضامة قوية مرنة تربط العضلات بالعظام. الأربطة Ligaments هي أشرطة من نسيج ضام مرن تثبّت المفاصل وتفصل العظام بعضها عن بعض لمنع الاحتكاك."
-      ]},
-      { sub: "ثالثًا: الأنسجة العضلية Muscle tissues", blocks: [
-        "<b>الوظيفة:</b> تتكوّن من خلايا عضلية يمكن أن تنقبض استجابة لإشارات عصبية. وتُنتج هذه الأنسجة حركة وقوى لتحريك الجسم، وضخّ الدم، وتحريك الطعام داخل الجهاز الهضمي.",
-        "<b>الأنواع:</b> عضلات هيكلية، وعضلات قلبية، وعضلات ملساء."
-      ]},
-      { sub: "رابعًا: الأنسجة العصبية Nerve tissues", blocks: [
-        "<b>الوظيفة:</b> خلايا تنتج إشارات كهروكيميائية سيالات عصبية وتنقلها من مناطق الجسم إلى الجهاز العصبي المركزي الدماغ والنخاع الشوكي وبالعكس.",
-        "<b>التركيب:</b> الخلايا العصبية هي المكوّن الأساسي في النسيج العصبي. كما توجد خلايا داعمة تدعم وظائف الخلايا العصبية."
-      ]}
-    ]},
-    { heading: "الجهاز العضلي وأنواع العضلات", sections: [
-      { sub: null, blocks: [
-        "الجهاز العضلي عبارة عن مجموعة من العضلات المتخصصة في جسم الإنسان. والعضلات تُمكّن الجسم من الحركة، وتحافظ على وضعية الجسم، وتحريك الطعام داخل الجهاز الهضمي، وضخّ الدم."
-      ]},
-      { sub: "تقسيم العضلات حسب نشاطها", blocks: [
-        "الحركات الإرادية هي الحركات التي يتم التحكم فيها بإدراك، مثل الركض وتحريك الذراع. الحركات اللاإرادية هي وظائف يتم التحكم فيها من قبل الجسم دون إدراك لذلك، مثل نبض القلب."
-      ]},
-      { sub: "١. العضلات الهيكلية Skeletal muscle", blocks: [
-        "<b>الموقع:</b> ترتبط بالعظام. <b>الوظيفة:</b> مسؤولة عن حركة الجسم ودعمه. وتعمل في الحركات الإرادية والأفعال المنعكسة اللاإرادية.",
-        "<b>التركيب:</b> تتشكّل خلايا العضلات الهيكلية من ألياف طويلة تنتظم بجانب بعضها، وتقصر عندما تنقبض."
-      ]},
-      { sub: "٢. العضلات القلبية Cardiac muscle", blocks: [
-        "<b>الموقع:</b> توجد في القلب. <b>الوظيفة:</b> تعمل بشكل لا إرادي لضخّ الدم.",
-        "<b>التركيب:</b> تشبه عضلة القلب العضلات الهيكلية، لكنها تشكّل شبكة ذات فراغات بين الخلايا، والألياف أقصر. وتنقبض في الوقت نفسه لأنها مترابطة كهربائيًا."
-      ]},
-      { sub: "٣. العضلات الملساء Smooth muscle", blocks: [
-        "<b>الوظيفة:</b> تعمل لا إراديًا لتحريك المواد عبر الجهاز الهضمي. وتوجد أيضًا في جدر الأوعية الدموية والمثانة والمريء.",
-        "<b>التركيب:</b> سُمّيت بهذا الاسم لأنها تظهر بدون خطوط ليفية تحت المجهر. ولأن خيوط الأكتين والميوسين لا تصطف بانتظام داخل الخلية."
-      ]}
-    ]},
-    { heading: "تركيب العضلة الهيكلية والعضلات المتضادّة", sections: [
-      { sub: "تركيب العضلة الهيكلية", blocks: [
-        "تتكوّن العضلة الواحدة من عدة حُزم عضلية Fascicles تحتوي على نسيج عضلي محاط بنسيج ضام. تتكوّن الحزمة العضلية من عدد من الخلايا العضلية التي تُسمّى الألياف العضلية.",
-        "الليف العضلي يتكوّن من حزمة من تراكيب طولية تُسمّى اللييفات العضلية. اللييفات العضلية تتكوّن من وحدات متكررة تُسمّى القطع العضلية Sarcomeres، وهي الوحدات الوظيفية للخلايا العضلية لأنها تنقبض فتسبب حركة العضلة الهيكلية."
-      ]},
-      { sub: "زوج العضلات المتضادّة Antagonistic pair", blocks: [
-        "عندما تفعل مجموعتان عضليتان فعلين متعاكسين، فإنهما يُعرفان بزوج العضلات المتضادة. مثال على ذلك في أعلى الذراع: العضلة ذات الرأسين، والعضلة ثلاثية الرؤوس.",
-        "إذا قمت برفع وزن ويرتفع الساعد واليد إلى أعلى: تنقبض العضلة ذات الرأسين لإنتاج قوة الرفع، بينما تنبسط العضلة ثلاثية الرؤوس. ولإعادة الوزن إلى أسفل: تنقبض العضلة ثلاثية الرؤوس بينما تنبسط العضلة ذات الرأسين وتتمدّد.",
-        "العضلة المسبِّبة للحركة من خلال انقباضها تُسمّى العضلة الناهضة Agonist، والعضلة التي تعاكس عملها تُسمّى العضلة المناهضة Antagonist."
-      ]}
-    ]}
-  ];
-
-  var MODE_LABELS = { headings:"العناوين والفقرات", sentences:"الجمل" };
+  var MODE_LABELS = { custom:"تخصيص", headings:"العناوين والفقرات", sentences:"الجمل" };
   var MODE_HINTS = {
-    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا. الفقرة اللي من غير عنوان، هتتخفي منها جمل بس مش كلها",
-    sentences: "✂️ جمل مفرّقة من كل الملزمة مموّهة عشوائيًا — بيتغيّر مكانها كل محاولة جديدة"
+    custom: "✏️ اضغط «ابدأ التحديد» ثم اضغط على الجمل أو الفقرات اللي عايز تخفيها. بعدين احفظ التخصيص.",
+    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا مع ترك مفتاح تذكير. مش هتخفي جملتين ورا بعض.",
+    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين"
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -423,11 +386,8 @@
   function getLibraryIndex(){
     var personal = [];
     try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
-    if(SHARED_INDEX.length === 0 && personal.length === 0){
-      // nothing deployed yet and nothing uploaded locally — show the built-in seed so the app isn't empty
-      personal = [{ key:"seed_u1l1", title:"ملزمة ١", subtitle:"العضلات والحركة — الدرس ١‑١" }];
-      saveLibraryIndex(personal);
-    }
+    // also drop any leftover reference to the old built-in seed ملزمة ١
+    personal = personal.filter(function(x){ return x.key !== "seed_u1l1"; });
     var sharedTagged = SHARED_INDEX.map(function(x){ return Object.assign({shared:true}, x); });
     var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
     return sharedTagged.concat(personalTagged);
@@ -436,7 +396,6 @@
   function saveLibraryIndex(list){ savePersonalIndex(list); } // back-compat name used below
   function getMalzamaContent(key){
     if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
-    if(key === "seed_u1l1") return SEED_RAW_PAGES;
     try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
     return null;
   }
@@ -465,18 +424,76 @@
   }
 
   /* ---------- Reveal-engine model builder ----------
-     Two modes, both operating at sentence/paragraph granularity:
-     - 'headings': a block with a detectable heading (an inline
-       "<b>label:</b>" lead-in, or a section's sub-heading for that
-       section's first block) randomly hides either the heading or
-       the whole detail. A block with NO heading source instead has
-       some of its individual sentences hidden (not the whole thing).
-     - 'sentences': every block keeps any leading bold label visible,
-       and individual sentences across the whole document are hidden
-       at random (a paragraph can have more than one hidden sentence).
+     Two modes, both operating at sentence/paragraph granularity,
+     built per SECTION so we can coordinate rules across sibling
+     blocks (never hide a section's heading and its paragraphs at
+     the same time; alternate heading/detail across a run of
+     inline-labeled paragraphs; never hide two adjacent sentences).
+     - 'headings': if a section has a sub-heading, ONE coin-flip
+       decides whether to hide that heading (in which case every
+       block under it stays fully visible this round) or show it
+       (in which case blocks are processed individually: a block
+       with its own inline "<b>label:</b>" lead-in alternates
+       hide-label/hide-detail across a run of such blocks; a block
+       with neither gets some of its sentences hidden).
+     - 'sentences': every block keeps any leading bold label
+       visible, and individual sentences are hidden at random
+       across the whole document, never two in a row.
      Random selection is stored per (malzama, mode) "attempt" and
      only reshuffled when the student starts a fresh attempt.
   ------------------------------------------------- */
+  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
+  var VERSE_RE = /\*\*\*/; // poetry/proverb separator seen in his ملازم
+  // Common key/reminder starters that should stay visible when possible
+  var KEY_STARTERS = /^(مثال|مثل|كـ|كـ |أي|منها|مثلًا|مثلا|مثلًا:|مثال:|مثل:|وهي|وهو|وهم|هن|هي|هو|وذلك|أي أن|بمعنى|مثلًا|على سبيل المثال)/i;
+
+  function isTrivialFragment(s){
+    var t = s.trim();
+    if(t.length < 2) return true;
+    // bare enumeration letters: أ  ب  ج  د ... or أ) ب- etc.
+    if(/^[\u0621-\u064A]\s*[-.):]?\s*$/.test(t)) return true;
+    if(/^\(?[0-9]+\)?[-.:]?\s*$/.test(t)) return true; // bare number/list marker
+    // short list markers like "1-" or "أ-"
+    if(/^[\u0621-\u064A0-9]{1,2}\s*[-–—.]\s*$/.test(t)) return true;
+    return false;
+  }
+
+  // Try to split a sentence into (key part that stays visible) + (rest that can be hidden)
+  function splitKeyAndRest(sentence){
+    var t = sentence.trim();
+    var m = t.match(KEY_STARTERS);
+    if(m){
+      var key = m[0];
+      var rest = t.slice(key.length).trim();
+      if(rest.length > 8) return { key: key, rest: rest };
+    }
+    // fallback: keep first 1-2 words as key if sentence is long enough
+    var words = t.split(/\s+/);
+    if(words.length >= 5){
+      var key2 = words.slice(0, 2).join(" ");
+      var rest2 = words.slice(2).join(" ");
+      if(rest2.length > 10) return { key: key2, rest: rest2 };
+    }
+    return null;
+  }
+
+  // Pick a hidden subset of sentence indices: no two adjacent, never
+  // all of them, never none of them (when 2+ real candidates exist).
+  // Prefer sentences that have a good key/reminder split.
+  function pickSentenceHides(sentences, ratio, rnd){
+    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){ return !isTrivialFragment(sentences[i]); });
+    if(candidates.length === 0) return {};
+    var order = shuffleWith(candidates, rnd);
+    var target = Math.max(1, Math.min(candidates.length - (candidates.length>1?1:0), Math.round(candidates.length*ratio)));
+    var hideSet = {};
+    order.forEach(function(i){
+      if(Object.keys(hideSet).length >= target) return;
+      if(hideSet[i-1] || hideSet[i+1]) return; // keep no-two-adjacent
+      hideSet[i] = true;
+    });
+    return hideSet;
+  }
+
   function flattenBlocks(rawPages){
     var flat = [];
     rawPages.forEach(function(page, pi){
@@ -489,78 +506,110 @@
     return flat;
   }
 
-  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
-
-  function buildModel(rawPages, mode, seed){
-    var flat = flattenBlocks(rawPages);
+  function buildModel(rawPages, mode, seed, customSelected){
+    customSelected = customSelected || {};
     var rnd = seededRandom(seed || 1);
     var globalId = 0, allIds = [];
-    var unitByBlockKey = {}; // blockKey -> { renderHtml, blankIds:[...], sectionHeadingHidden:bool }
+    var unitByBlockKey = {};
+    var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
 
-    flat.forEach(function(b){
-      var key = b.pageIdx+"_"+b.secIdx+"_"+b.blockIdx;
-      var m = b.html.match(LEAD_RE);
-      var label = m ? m[2] : null;
-      var restHtml = m ? b.html.slice(m[0].length) : b.html;
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        var secKeyPrefix = pi+"_"+si+"_";
+        var blocksInfo = sec.blocks.map(function(html, bi){
+          var m = html.match(LEAD_RE);
+          return { key: secKeyPrefix+bi, html: html, label: m?m[2]:null, restHtml: m?html.slice(m[0].length):html };
+        });
 
-      if(mode === "headings"){
-        var headingSource = m ? "inline" : (b.isFirstInSection && b.sectionSub ? "section" : null);
-        if(headingSource){
-          var hideHeading = rnd() < 0.5;
-          if(headingSource === "inline"){
-            if(hideHeading){
-              globalId++; var id1=globalId; allIds.push(id1);
-              unitByBlockKey[key] = { renderHtml: '<b><span class="blank" data-id="'+id1+'">'+label+':</span></b> '+restHtml, blankIds:[id1] };
-            } else {
-              globalId++; var id2=globalId; allIds.push(id2);
-              unitByBlockKey[key] = { renderHtml: '<b>'+label+':</b> <span class="blank" data-id="'+id2+'">'+stripHtml(restHtml)+'</span>', blankIds:[id2] };
-            }
-          } else { // section
-            if(hideHeading){
-              globalId++; var id3=globalId; allIds.push(id3);
-              unitByBlockKey[key] = { renderHtml: b.html, blankIds:[], sectionHeadingBlankId:id3 };
-            } else {
-              globalId++; var id4=globalId; allIds.push(id4);
-              unitByBlockKey[key] = { renderHtml: '<span class="blank" data-id="'+id4+'">'+b.html+'</span>', blankIds:[id4] };
-            }
+        if(mode === "headings" && sec.sub){
+          var hideSectionHeading = rnd() < 0.5;
+          if(hideSectionHeading){
+            globalId++; var shid = globalId; allIds.push(shid);
+            sectionHeadingBlankByKey[pi+"_"+si] = shid;
+            // whole section stays fully visible this round so the
+            // heading is still guessable from context
+            blocksInfo.forEach(function(bi2){ unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; });
+            return; // section done
           }
-        } else {
-          var sentences = splitSentences(stripHtml(restHtml));
-          if(sentences.length <= 1){
-            globalId++; var id5=globalId; allIds.push(id5);
-            unitByBlockKey[key] = { renderHtml: '<span class="blank" data-id="'+id5+'">'+b.html+'</span>', blankIds:[id5] };
+        }
+
+        var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
+        blocksInfo.forEach(function(bi2){
+          if(mode === "custom"){
+            // Custom: hide whole block if user selected it
+            if(customSelected[bi2.key]){
+              globalId++; var idC = globalId; allIds.push(idC);
+              var plain = stripHtml(bi2.html);
+              var krC = splitKeyAndRest(plain);
+              if(krC){
+                unitByBlockKey[bi2.key] = { renderHtml: krC.key + ' <span class="blank" data-id="'+idC+'">'+krC.rest+'</span>', blankIds:[idC] };
+              } else {
+                unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idC+'">'+plain+'</span>', blankIds:[idC] };
+              }
+            } else {
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            }
+          } else if(mode === "headings"){
+            if(bi2.label){
+              var hideHeading;
+              if(lastInlineHid === null) hideHeading = rnd() < 0.5;
+              else hideHeading = !lastInlineHid;
+              lastInlineHid = hideHeading;
+              if(hideHeading){
+                globalId++; var idL=globalId; allIds.push(idL);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
+              } else {
+                globalId++; var idD=globalId; allIds.push(idD);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+bi2.label+':</b> <span class="blank" data-id="'+idD+'">'+stripHtml(bi2.restHtml)+'</span>', blankIds:[idD] };
+              }
+            } else {
+              lastInlineHid = null;
+              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+              if(sentences.length <= 1){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; // too short to safely blank — stays visible
+              } else {
+                var hideSet = pickSentenceHides(sentences, 0.45, rnd);
+                var ids = [];
+                var html2 = sentences.map(function(s,i){
+                  if(hideSet[i]){
+                    globalId++; ids.push(globalId); allIds.push(globalId);
+                    var kr = splitKeyAndRest(s);
+                    if(kr) return kr.key + ' <span class="blank" data-id="'+globalId+'">'+kr.rest+'</span>';
+                    return '<span class="blank" data-id="'+globalId+'">'+s+'</span>';
+                  }
+                  return s;
+                }).join(" ");
+                unitByBlockKey[bi2.key] = { renderHtml: html2, blankIds: ids };
+              }
+            }
+          } else if(mode === "sentences"){ // 'sentences' mode
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+            if(sents.length === 0){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else {
+              var hSet = pickSentenceHides(sents, 0.45, rnd);
+              var ids2 = [];
+              var html3 = sents.map(function(s,i){
+                if(hSet[i]){
+                  globalId++; ids2.push(globalId); allIds.push(globalId);
+                  var kr2 = splitKeyAndRest(s);
+                  if(kr2) return kr2.key + ' <span class="blank" data-id="'+globalId+'">'+kr2.rest+'</span>';
+                  return '<span class="blank" data-id="'+globalId+'">'+s+'</span>';
+                }
+                return s;
+              }).join(" ");
+              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + html3, blankIds: ids2 };
+            }
           } else {
-            var hideCount = Math.max(1, Math.round(sentences.length*0.6));
-            var order = shuffleWith(sentences.map(function(_,i){return i;}), rnd);
-            var hideSet = {}; order.slice(0,hideCount).forEach(function(ix){ hideSet[ix]=true; });
-            var ids = [];
-            var html = sentences.map(function(s,i){
-              if(hideSet[i]){ globalId++; ids.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
-              return s;
-            }).join(" ");
-            unitByBlockKey[key] = { renderHtml: (label?'<b>'+label+':</b> ':'') + html, blankIds: ids };
+            unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
           }
-        }
-      } else { // 'sentences' mode
-        var sents = splitSentences(stripHtml(restHtml));
-        if(sents.length === 0){
-          unitByBlockKey[key] = { renderHtml: b.html, blankIds:[] };
-        } else {
-          var ids2 = [];
-          var html2 = sents.map(function(s){
-            if(rnd() < 0.5){ globalId++; ids2.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
-            return s;
-          }).join(" ");
-          unitByBlockKey[key] = { renderHtml: (label?'<b>'+label+':</b> ':'') + html2, blankIds: ids2 };
-        }
-      }
+        });
+      });
     });
 
     var pages = rawPages.map(function(page, pi){
       var sections = page.sections.map(function(sec, si){
-        var firstKey = pi+"_"+si+"_0";
-        var firstUnit = unitByBlockKey[firstKey];
-        var subBlankId = (firstUnit && firstUnit.sectionHeadingBlankId) ? firstUnit.sectionHeadingBlankId : null;
+        var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
         var blocks = sec.blocks.map(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
           var unit = unitByBlockKey[key];
@@ -575,10 +624,19 @@
   }
 
   /* ---------- State ---------- */
-  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null };
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
   var MODEL = null, RAW_PAGES = null;
 
   function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
+  function customKey(malzamaKey){ return "najm_custom_" + malzamaKey; }
+  function loadCustomSelection(malzamaKey){
+    try{ var raw = localStorage.getItem(customKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {}; // { blockKey: true, ... }
+  }
+  function saveCustomSelection(malzamaKey, sel){
+    try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
+  }
+
   function loadProgress(reshuffle){
     var pk = progressKey(state.malzamaKey, state.mode);
     var seed = null;
@@ -592,7 +650,8 @@
     }catch(e){}
     if(!seed){ seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0; }
     state.seed = seed;
-    MODEL = buildModel(RAW_PAGES, state.mode, seed);
+    state.customSelected = loadCustomSelection(state.malzamaKey);
+    MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected);
     saveProgress();
   }
   function saveProgress(){
@@ -625,7 +684,8 @@
     var revealed = {}, seed = null;
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
-    var model = buildModel(raw, mode, seed);
+    var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
+    var model = buildModel(raw, mode, seed, customSel);
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
   }
@@ -634,6 +694,10 @@
   function renderHome(){
     var list = $("malzamaList"); list.innerHTML="";
     var index = getLibraryIndex();
+    if(index.length === 0){
+      list.innerHTML = '<div class="empty-note">لسه مفيش ملازم — دوس على + فوق وابدأ ارفع أول ملزمة</div>';
+      return;
+    }
     index.forEach(function(entry, i){
       var comp = completionFor(entry.key, "headings");
       var card = document.createElement("div");
@@ -671,14 +735,21 @@
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    setMode(state.mode || "headings", true);
+    setMode(state.mode || "custom", true);
   }
 
   function setMode(mode, skipToast, reshuffle){
-    state.mode = mode; state.freeMode = false;
+    state.mode = mode; state.freeMode = false; state.selecting = false;
     loadProgress(reshuffle);
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
-    $("hintBanner").textContent = MODE_HINTS[mode];
+    $("hintBanner").textContent = MODE_HINTS[mode] || "";
+    var isCustom = mode === "custom";
+    $("shuffleNote").classList.toggle("hidden", isCustom);
+    $("customToolbar").classList.toggle("hidden", !isCustom);
+    $("btnStartSelect").classList.remove("hidden");
+    $("btnSaveCustom").classList.add("hidden");
+    $("btnClearCustom").classList.add("hidden");
+    $("customSelectCount").textContent = "";
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -706,25 +777,46 @@
     var wrap = $("docWrap");
     wrap.innerHTML = "";
     var page = MODEL.pages[state.page];
+    if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
+
+    // If custom mode and nothing selected yet (and not currently selecting)
+    if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» فوق واختار الفقرات اللي عايز تخفيها، وبعدين احفظ.</div>';
+      updateNavButtons();
+      return;
+    }
+
     var docCard = document.createElement("div");
-    docCard.className = "doc-card";
+    docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
     docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
+
+    // When selecting in custom mode, show original clean text (no blanks)
+    var useClean = state.selecting && state.mode === "custom";
 
     page.sections.forEach(function(sec){
       if(sec.sub){
         var sh = document.createElement("div");
         sh.className = "doc-subheading";
-        sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
+        if(useClean){
+          sh.textContent = sec.sub;
+        } else {
+          sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
+        }
         docCard.appendChild(sh);
       }
       sec.blocks.forEach(function(block){
         var bd = document.createElement("div");
-        bd.className = "doc-block";
+        bd.className = "doc-block" + (useClean ? " selectable" : "");
         bd.dataset.blockKey = block.key;
-        bd.innerHTML = block.html;
+        if(useClean){
+          bd.innerHTML = block.plainText ? escapeHtml(block.plainText) : block.html;
+          if(state.customSelected[block.key]) bd.classList.add("selected");
+        } else {
+          bd.innerHTML = block.html;
+        }
         docCard.appendChild(bd);
 
-        if(block.blankIds.length > 0){
+        if(!useClean && block.blankIds.length > 0){
           var rateRow = document.createElement("div");
           rateRow.className = "block-rate";
           rateRow.dataset.blockKey = block.key;
@@ -744,51 +836,107 @@
     });
     wrap.appendChild(docCard);
 
-    wrap.querySelectorAll(".blank").forEach(function(span){
-      var id = +span.dataset.id;
-      var revealed = !!state.revealedIds[id];
-      var unlocked = isUnlocked(id);
-      span.classList.toggle("revealed", revealed);
-      span.classList.toggle("locked", !revealed && !unlocked);
-    });
-    wrap.querySelectorAll(".block-rate").forEach(function(row){
-      var key = row.dataset.blockKey;
-      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
-      var blanksInBlock = blockEl.querySelectorAll(".blank");
-      var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
-      row.classList.toggle("show", allRevealed);
-    });
-    wrap.querySelectorAll(".blank").forEach(function(span){
-      span.addEventListener("click", function(){
+    if(useClean){
+      // Selection mode: tap block to toggle
+      wrap.querySelectorAll(".selectable").forEach(function(el){
+        el.addEventListener("click", function(){
+          var key = el.dataset.blockKey;
+          if(state.customSelected[key]){
+            delete state.customSelected[key];
+            el.classList.remove("selected");
+          } else {
+            state.customSelected[key] = true;
+            el.classList.add("selected");
+          }
+          var count = Object.keys(state.customSelected).length;
+          $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "";
+        });
+      });
+    } else {
+      wrap.querySelectorAll(".blank").forEach(function(span){
         var id = +span.dataset.id;
-        if(state.revealedIds[id]) return;
-        if(!isUnlocked(id)){ showToast("خلّص الجزء اللي قبل ده الأول"); return; }
-        revealBlank(id);
+        var revealed = !!state.revealedIds[id];
+        var unlocked = isUnlocked(id);
+        span.classList.toggle("revealed", revealed);
+        span.classList.toggle("locked", !revealed && !unlocked);
       });
-    });
-    wrap.querySelectorAll(".rate-btn").forEach(function(btn){
-      btn.addEventListener("click", function(){
-        var key = btn.dataset.key;
-        state.blockRatings[key] = btn.dataset.rate;
-        saveProgress();
+      wrap.querySelectorAll(".block-rate").forEach(function(row){
+        var key = row.dataset.blockKey;
         var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
-        setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
-        renderPage();
+        if(!blockEl) return;
+        var blanksInBlock = blockEl.querySelectorAll(".blank");
+        var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
+        row.classList.toggle("show", allRevealed);
       });
-    });
-    wrap.querySelectorAll(".mic-mini").forEach(function(btn){
-      btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
-    });
+      wrap.querySelectorAll(".blank").forEach(function(span){
+        span.addEventListener("click", function(){
+          var id = +span.dataset.id;
+          if(state.revealedIds[id]) return;
+          if(!isUnlocked(id)){
+            state.stuckTaps = (state.stuckTaps||0) + 1;
+            if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
+            else showToast("خلّص الجزء اللي قبل ده الأول");
+            return;
+          }
+          state.stuckTaps = 0;
+          revealBlank(id);
+        });
+      });
+      wrap.querySelectorAll(".rate-btn").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          var key = btn.dataset.key;
+          state.blockRatings[key] = btn.dataset.rate;
+          saveProgress();
+          var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+          setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
+          renderPage();
+        });
+      });
+      wrap.querySelectorAll(".mic-mini").forEach(function(btn){
+        btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+      });
+    }
 
     updateNavButtons();
   }
 
   function revealBlank(id){
     state.revealedIds[id] = true;
+    state.stuckTaps = 0;
     saveProgress();
     renderPage();
     var comp = computeCompletion();
     if(comp.total>0 && comp.done === comp.total){ setTimeout(finishUnit, 350); }
+  }
+  function firstUnrevealedGlobal(){
+    for(var i=0;i<MODEL.allIds.length;i++){ var id=MODEL.allIds[i]; if(!state.revealedIds[id]) return id; }
+    return null;
+  }
+  /* Safety valve: if the student taps a locked item 3 times (most
+     likely they're stuck on whatever is actually blocking, even if
+     it's off-screen), auto-reveal that blocking item, flag it as
+     "needs review", and let them continue instead of getting stuck. */
+  function handleStuckSkip(){
+    var blockId = firstUnrevealedGlobal();
+    if(!blockId) return;
+    state.revealedIds[blockId] = true;
+    saveProgress();
+    renderPage();
+    var el = document.querySelector('.blank[data-id="'+blockId+'"]');
+    if(el){
+      var blockEl = el.closest(".doc-block");
+      if(blockEl){
+        var key = blockEl.dataset.blockKey;
+        state.blockRatings[key] = "review";
+        saveProgress();
+        setReviewStatus(state.malzamaKey, key, "review", blockEl.textContent.trim());
+      } else {
+        var subEl = el.closest(".doc-subheading");
+        if(subEl) setReviewStatus(state.malzamaKey, "sec_"+blockId, "review", subEl.textContent.trim());
+      }
+    }
+    renderPage();
+    showToast("تخطينا الجزء ده وحطيناه في «محتاج مراجعة» — كمّل عادي");
   }
   function nextUnrevealedOnPage(){
     var page = MODEL.pages[state.page];
@@ -805,11 +953,43 @@
     return null;
   }
   function updateNavButtons(){
-    $("btnPrevPage").disabled = state.page===0;
-    $("btnNextPage").disabled = state.page===MODEL.pages.length-1;
+    $("btnPrevPage").disabled = state.page===0 || state.selecting;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1 || state.selecting;
     var next = nextUnrevealedOnPage();
-    $("btnReveal").disabled = !next;
-    $("btnReveal").onclick = function(){ if(next) revealBlank(next); };
+    // Also look globally if nothing on current page (student may not see it)
+    if(!next) next = firstUnrevealedGlobal();
+    $("btnReveal").disabled = !next || state.selecting;
+    $("btnReveal").onclick = function(){
+      if(state.selecting) return;
+      var onPage = nextUnrevealedOnPage();
+      if(onPage){
+        state.stuckTaps = 0;
+        revealBlank(onPage);
+        return;
+      }
+      // Nothing visible on this page — count as stuck press
+      state.stuckTaps = (state.stuckTaps||0) + 1;
+      if(state.stuckTaps >= 3){
+        state.stuckTaps = 0;
+        handleStuckSkip();
+      } else {
+        var globalNext = firstUnrevealedGlobal();
+        if(globalNext){
+          // try to jump to the page that contains it
+          for(var pi=0; pi<MODEL.pages.length; pi++){
+            var p = MODEL.pages[pi];
+            for(var s=0;s<p.sections.length;s++){
+              var sec = p.sections[s];
+              if(sec.subBlankId === globalNext){ state.page = pi; saveProgress(); renderPage(); showToast("انتقلنا للصفحة اللي فيها الجزء المخفي"); return; }
+              for(var b=0;b<sec.blocks.length;b++){
+                if(sec.blocks[b].blankIds.indexOf(globalNext) >= 0){ state.page = pi; saveProgress(); renderPage(); showToast("انتقلنا للصفحة اللي فيها الجزء المخفي"); return; }
+              }
+            }
+          }
+        }
+        showToast("مفيش جزء ظاهر هنا — اضغط تاني أو غيّر الصفحة (" + ar(state.stuckTaps) + "/٣)");
+      }
+    };
   }
   function finishUnit(){
     var know=0, review=0;
@@ -861,64 +1041,130 @@
     });
   }
 
-  /* ---------- Upload pipeline ---------- */
-  function htmlToRawPages(htmlString, fallbackTitle){
-    var container = document.createElement("div");
-    container.innerHTML = htmlString;
-    var nodes = Array.prototype.slice.call(container.children);
-    var docHeading = null;
-    var pages = [];
-    var currentPage = null, currentSection = null;
-    function newPage(h){ currentPage = { heading:h, sections:[] }; pages.push(currentPage); }
-    function newSection(sub){ currentSection = { sub:sub, blocks:[] }; currentPage.sections.push(currentSection); }
+  /* ---------- Upload pipeline: Word (.docx) ----------
+     Parsed directly from the raw docx XML (via JSZip) instead of a
+     generic HTML converter, specifically so struck-through runs can
+     be detected and dropped — a plain HTML conversion doesn't expose
+     that formatting, so a library that hides it wouldn't work. */
+  var WNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  function wEls(node, tag){ return Array.prototype.slice.call(node.getElementsByTagNameNS(WNS, tag)); }
+  function wAttrVal(el){
+    if(!el) return null;
+    var v = el.getAttributeNS(WNS, "val");
+    if(v === null || v === "") v = el.getAttribute("w:val");
+    return v;
+  }
+  function isFlagOn(el){ // OOXML boolean run property: present + no val, or val is 1/true/on
+    if(!el) return false;
+    var v = wAttrVal(el);
+    return v === null || v === "" || v === "1" || v === "true" || v === "on";
+  }
 
-    nodes.forEach(function(node){
-      var tag = node.tagName ? node.tagName.toLowerCase() : "";
-      var text = node.textContent.trim();
-      if(!text) return;
-      if(tag === "h1"){
-        if(!docHeading) docHeading = text;
-        newPage(text); newSection(null);
-      } else if(tag === "h2" || tag === "h3"){
-        if(!currentPage) newPage(docHeading || fallbackTitle);
-        newSection(text);
-      } else if(tag === "p" || tag === "li"){
-        if(!currentPage) newPage(docHeading || fallbackTitle);
-        if(!currentSection) newSection(null);
-        var innerHtml = node.innerHTML.replace(/<(?!\/?(b|strong)\b)[^>]*>/gi, "");
-        innerHtml = innerHtml.replace(/<strong>/gi,"<b>").replace(/<\/strong>/gi,"</b>");
-        currentSection.blocks.push(innerHtml);
+  function loadHeadingStyleLevels(stylesXmlText){
+    var levels = {}; // styleId -> level (1,2,3...) or 0 for Title
+    if(!stylesXmlText) return levels;
+    var doc = new DOMParser().parseFromString(stylesXmlText, "application/xml");
+    wEls(doc, "style").forEach(function(styleEl){
+      var id = styleEl.getAttributeNS(WNS,"styleId") || styleEl.getAttribute("w:styleId");
+      var nameEl = wEls(styleEl, "name")[0];
+      var name = nameEl ? (wAttrVal(nameEl)||"") : "";
+      var m = name.match(/^heading\s*([1-9])$/i);
+      if(m) levels[id] = +m[1];
+      else if(/^title$/i.test(name)) levels[id] = 1;
+    });
+    return levels;
+  }
+
+  function paragraphToRuns(pEl){
+    var runs = [];
+    wEls(pEl, "r").forEach(function(rEl){
+      if(rEl.parentNode.tagName && rEl.parentNode !== pEl && rEl.parentNode.namespaceURI===WNS && rEl.parentNode.localName!=="p"){
+        // skip runs that live inside nested structures we don't render (rare)
+      }
+      var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
+      var struck = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"strike")[0] || null) : false;
+      if(!struck && rPr){
+        var dstrike = rEl.getElementsByTagNameNS(WNS,"dstrike")[0];
+        if(dstrike) struck = isFlagOn(dstrike);
+      }
+      if(struck) return; // never use struck-through text
+      var bold = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"b")[0] || null) : false;
+      var text = "";
+      Array.prototype.forEach.call(rEl.childNodes, function(child){
+        if(child.namespaceURI===WNS && child.localName==="t") text += child.textContent;
+        else if(child.namespaceURI===WNS && child.localName==="tab") text += " ";
+        else if(child.namespaceURI===WNS && (child.localName==="br"||child.localName==="cr")) text += " ";
+      });
+      if(text) runs.push({ text:text, bold:bold });
+    });
+    return runs;
+  }
+
+  function runsToHtml(runs){
+    return runs.map(function(r){ return r.bold ? "<b>"+escapeHtml(r.text)+"</b>" : escapeHtml(r.text); }).join("");
+  }
+  function runsToPlainText(runs){ return runs.map(function(r){ return r.text; }).join(""); }
+
+  function docxParagraphsToRawPages(paragraphs, fallbackTitle){
+    // paragraphs: [{ level:0|1|2|.. (0=Title/H1, 1=H2-ish sub, null=body), html, text }]
+    var pages = [], docHeading = null, curPage = null, curSection = null;
+    function newPage(h){ curPage = { heading:h, sections:[] }; pages.push(curPage); }
+    function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+
+    paragraphs.forEach(function(p){
+      if(!p.text.trim()) return;
+      if(p.level === 1){
+        if(!docHeading) docHeading = p.text.trim();
+        newPage(p.text.trim()); newSection(null);
+      } else if(p.level && p.level >= 2){
+        if(!curPage) newPage(docHeading || fallbackTitle);
+        newSection(p.text.trim());
+      } else {
+        if(!curPage) newPage(docHeading || fallbackTitle);
+        if(!curSection) newSection(null);
+        curSection.blocks.push(p.html);
       }
     });
-    if(pages.length === 0){
-      newPage(fallbackTitle); newSection(null);
-      currentSection.blocks.push(stripHtml(htmlString));
-    }
+    if(pages.length === 0){ newPage(fallbackTitle); newSection(null); }
+
     var flat = [];
-    pages.forEach(function(pg){ pg.sections.forEach(function(sec){ flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
-    var rechunked = [], curBlocks = 0, curPage = null, curHeading = null;
+    pages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curP = null, curH = null;
     flat.forEach(function(item){
-      if(!curPage || curHeading !== item.heading || curBlocks >= 6){
-        curPage = { heading:item.heading, sections:[] };
-        rechunked.push(curPage);
-        curHeading = item.heading; curBlocks = 0;
+      if(!curP || curH !== item.heading || curBlocks >= 6){
+        curP = { heading:item.heading, sections:[] }; rechunked.push(curP);
+        curH = item.heading; curBlocks = 0;
       }
-      curPage.sections.push({ sub:item.sub, blocks:item.blocks });
+      curP.sections.push({ sub:item.sub, blocks:item.blocks });
       curBlocks += item.blocks.length;
     });
-    return { rawPages: rechunked, heading: docHeading || fallbackTitle };
+    return { rawPages: rechunked.length?rechunked:pages, heading: docHeading || fallbackTitle };
   }
 
   function handleDocx(file){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
       reader.onload = function(e){
-        mammoth.convertToHtml({ arrayBuffer: e.target.result })
-          .then(function(result){
-            var parsed = htmlToRawPages(result.value, file.name.replace(/\.docx$/i,""));
-            resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
-          })
-          .catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + err.message); });
+        JSZip.loadAsync(e.target.result).then(function(zip){
+          var docXmlP = zip.file("word/document.xml") ? zip.file("word/document.xml").async("text") : Promise.reject("مش ملف Word سليم");
+          var stylesXmlP = zip.file("word/styles.xml") ? zip.file("word/styles.xml").async("text") : Promise.resolve(null);
+          return Promise.all([docXmlP, stylesXmlP]);
+        }).then(function(res){
+          var docXml = res[0], stylesXml = res[1];
+          var headingLevels = loadHeadingStyleLevels(stylesXml);
+          var doc = new DOMParser().parseFromString(docXml, "application/xml");
+          var bodyParas = wEls(doc, "p");
+          var paragraphs = bodyParas.map(function(pEl){
+            var pPr = pEl.getElementsByTagNameNS(WNS,"pPr")[0];
+            var styleEl = pPr ? pPr.getElementsByTagNameNS(WNS,"pStyle")[0] : null;
+            var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
+            var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
+            var runs = paragraphToRuns(pEl);
+            return { level: level, html: runsToHtml(runs), text: runsToPlainText(runs) };
+          });
+          var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
+          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
       };
       reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
       reader.readAsArrayBuffer(file);
@@ -995,8 +1241,12 @@
         var norm = l.text.trim().replace(/\s+/g," ");
         if(!norm) return false;
         if(freq[norm] >= repeatThreshold) return false;
-        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b/i.test(norm)) return false;
+        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b|youtube\.com|youtu\.be/i.test(norm)) return false;
         if(/\d{7,}/.test(norm) && norm.length < 40) return false;
+        if(/\*\*\*/.test(norm)) return false; // poetry/proverb line
+        // promotional / channel join text
+        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(norm)) return false;
+        if(norm.length > 80 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع/.test(norm)) return false;
         return true;
       });
     });
@@ -1065,7 +1315,35 @@
   function setUploadStatus(msg){ var el=$("uploadStatus"); el.style.display="block"; el.textContent=msg; }
   function uploadFailed(msg){ setUploadStatus("⚠️ " + msg); }
 
-  var pendingSharedBatch = []; // items uploaded this session with "official" checked
+  var pendingSharedBatch = []; // starts as a copy of the currently-deployed shared library, then gains/loses items this session
+  var pendingSeeded = false;
+  function seedPendingFromShared(){
+    if(pendingSeeded) return;
+    pendingSeeded = true;
+    pendingSharedBatch = SHARED_INDEX.map(function(it){
+      return { key:it.key, title:it.title, subtitle:it.subtitle, rawPages: SHARED_CONTENT[it.key] };
+    });
+  }
+  function upsertPendingShared(item){
+    var idx = pendingSharedBatch.findIndex(function(x){ return x.key===item.key; });
+    if(idx>=0) pendingSharedBatch[idx] = item; else pendingSharedBatch.push(item);
+  }
+  function renderPendingList(){
+    var wrap = $("pendingListWrap");
+    $("pendingCount").textContent = ar(pendingSharedBatch.length);
+    if(pendingSharedBatch.length===0){ wrap.innerHTML = '<div class="empty-note">القائمة فاضية</div>'; return; }
+    wrap.innerHTML = "";
+    pendingSharedBatch.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "review-item";
+      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button data-key="'+item.key+'">🗑️ شيل</button>';
+      row.querySelector("button").addEventListener("click", function(){
+        pendingSharedBatch = pendingSharedBatch.filter(function(x){ return x.key!==item.key; });
+        renderPendingList();
+      });
+      wrap.appendChild(row);
+    });
+  }
 
   function processFiles(files){
     var isOfficial = $("officialCheck").checked;
@@ -1091,7 +1369,7 @@
       var key = slugify(title);
       saveMalzamaContent(key, r.rawPages);
       if(isOfficial){
-        pendingSharedBatch.push({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
+        upsertPendingShared({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
       } else {
         var index = getLibraryIndex().filter(function(x){ return !x.shared; });
         if(!index.some(function(e){ return e.key===key; })){
@@ -1105,8 +1383,8 @@
     if(results.length===0) return;
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
-      $("pendingCount").textContent = ar(pendingSharedBatch.length);
-      showToast("اترفع "+results.length+" ملزمة رسمية — نزّل ملف المكتبة لما تخلّص");
+      renderPendingList();
+      showToast("اترفع "+results.length+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة");
       renderHome();
     } else {
       $("modalUpload").classList.remove("show");
@@ -1124,6 +1402,20 @@
     a.href = url; a.download = "library.json";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function resetApp(){
+    if(!confirm("متأكد؟ هيتمسح كل الملازم الشخصية وتقدمك المحفوظ فيها من الجهاز ده، ومينفعش يترجع.")) return;
+    try{
+      var toRemove = [];
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && k.indexOf("najm_") === 0) toRemove.push(k);
+      }
+      toRemove.forEach(function(k){ localStorage.removeItem(k); });
+    }catch(e){}
+    showToast("اترفع البرنامج — بيعيد التحميل...");
+    setTimeout(function(){ location.reload(); }, 600);
   }
 
   /* ---------- Wiring ---------- */
@@ -1147,23 +1439,67 @@
   $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
 
   $("btnAdd").addEventListener("click", function(){
+    seedPendingFromShared();
     $("exportBox").classList.toggle("hidden", pendingSharedBatch.length===0);
-    $("pendingCount").textContent = ar(pendingSharedBatch.length);
+    renderPendingList();
     $("modalUpload").classList.add("show");
   });
   $("pickFile").addEventListener("click", function(){ $("fileInput").click(); });
   $("fileInput").addEventListener("change", function(e){
     var files = e.target.files;
     if(!files || !files.length) return;
+    seedPendingFromShared();
     processFiles(files).then(function(res){ finishUploadBatch(res.results, res.isOfficial); });
     e.target.value = "";
   });
   $("downloadLibrary").addEventListener("click", downloadLibraryJson);
+  $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
+  $("btnResetApp").addEventListener("click", resetApp);
+
+  // Custom mode selection buttons
+  $("btnStartSelect").addEventListener("click", function(){
+    if(state.mode !== "custom") return;
+    state.selecting = true;
+    state.customSelected = loadCustomSelection(state.malzamaKey); // start from saved
+    $("btnStartSelect").classList.add("hidden");
+    $("btnSaveCustom").classList.remove("hidden");
+    $("btnClearCustom").classList.remove("hidden");
+    var count = Object.keys(state.customSelected).length;
+    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "اضغط على الفقرات لتحديدها";
+    showToast("وضع التحديد — اضغط على الفقرة عشان تخفيها");
+    renderPage();
+  });
+  $("btnSaveCustom").addEventListener("click", function(){
+    if(state.mode !== "custom") return;
+    saveCustomSelection(state.malzamaKey, state.customSelected);
+    state.selecting = false;
+    // rebuild model with the new selection and reset progress for this mode
+    state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
+    state.seed = Math.floor(Math.random()*1e9)+1;
+    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected);
+    saveProgress();
+    $("btnStartSelect").classList.remove("hidden");
+    $("btnSaveCustom").classList.add("hidden");
+    $("btnClearCustom").classList.add("hidden");
+    var count = Object.keys(state.customSelected).length;
+    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
+    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
+    renderPage();
+  });
+  $("btnClearCustom").addEventListener("click", function(){
+    if(!confirm("تمسح كل التحديد الحالي؟")) return;
+    state.customSelected = {};
+    saveCustomSelection(state.malzamaKey, {});
+    var count = 0;
+    $("customSelectCount").textContent = "اضغط على الفقرات لتحديدها";
+    document.querySelectorAll(".selectable.selected").forEach(function(el){ el.classList.remove("selected"); });
+    showToast("تم مسح التحديد");
+  });
 
   loadTheme();
   renderHome();
   switchView("home");
-  fetchSharedLibrary().then(function(){ renderHome(); });
+  fetchSharedLibrary().then(function(){ seedPendingFromShared(); renderHome(); });
 })();
 </script>
 </body>
