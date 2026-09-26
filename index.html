@@ -18,7 +18,6 @@
     box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box;}
-  html{scroll-padding-top:env(safe-area-inset-top,0px);}
   html,body{height:100%;}
   body{margin:0;font-family:'Cairo','Tajawal',sans-serif;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent;}
   :root:not([data-theme="light"]){--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
@@ -33,7 +32,7 @@
   .brand .star{font-size:20px;filter:drop-shadow(0 0 6px rgba(240,201,72,.7));}
   .brand h1{font-size:14px;margin:0;font-weight:800;line-height:1.3;}
   .brand h1 small{display:block;font-weight:400;font-size:10px;opacity:.75;}
-  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;position:relative;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;}
   .icon-btn:active{background:rgba(255,255,255,.2);}
   .topbar-actions{display:flex;gap:7px;}
 
@@ -42,7 +41,7 @@
   .home-hero h2{font-size:20px;margin:14px 0 4px;font-weight:800;}
   .home-hero p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7;}
   .contact-strip{display:flex;gap:8px;padding:14px 18px 4px;}
-  .contact-strip a,.contact-strip button{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .contact-strip a{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;gap:5px;}
   .cs-wa{background:#25D366;color:#fff;}
   .cs-call{background:var(--navy-900);color:#fff;}
   .cs-tg{background:#229ED9;color:#fff;}
@@ -57,9 +56,7 @@
   .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
-  .malzama-del:active{color:var(--danger);}
   .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
-  .upload-hint b{color:var(--ink);}
 
   .unit-topinfo{padding:14px 18px 2px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   .unit-title{font-size:17px;font-weight:800;margin:0 0 2px;}
@@ -83,9 +80,6 @@
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-500),var(--gold-400));border-radius:999px;transition:width .35s ease;}
 
   .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
-  :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
-  :root:not([data-theme="light"]) #customGuide,
-  :root:not([data-theme="light"]) #headingsGuide{color:var(--gold-400);}
 
   .doc-wrap{padding:8px 18px 16px;flex:1;}
   .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
@@ -96,23 +90,41 @@
   .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
   .doc-block b{font-weight:800;}
 
-  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
+  /* Blank + X button grouping */
+  .blank-group{display:inline;position:relative;}
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
   .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
   .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
   :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
   :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
-  .doc-subheading .blank{font-weight:800;}
 
-  .pin-btn{border:none;background:rgba(10,27,46,.06);width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:11px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:0 0 auto;vertical-align:super;margin-inline-start:3px;}
-  .pin-btn:active{transform:scale(.92);}
-  .pin-btn.x{color:#c94b4b;background:rgba(201,75,75,.12);}
-  :root:not([data-theme="light"]) .pin-btn{background:rgba(255,255,255,.08);}
-  :root:not([data-theme="light"]) .pin-btn.x{color:#ff8a8a;background:rgba(201,75,75,.2);}
+  /* Small X mark attached to a blank — made smaller so it doesn't look part of text */
+  .blank-x{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:16px;height:16px;border-radius:50%;border:none;
+    background:rgba(201,75,75,.25);color:#c94b4b;
+    font-size:9px;font-weight:800;line-height:1;cursor:pointer;
+    padding:0;margin:0 1px;vertical-align:super;
+    flex:0 0 auto;
+  }
+  .blank-x:hover{background:rgba(201,75,75,.5);color:#fff;}
+  :root:not([data-theme="light"]) .blank-x{background:rgba(201,75,75,.35);color:#ff8a8a;}
 
-  .title-pickable{cursor:pointer;transition:background .15s, outline .15s;border-radius:6px;}
-  .title-pickable:hover{background:rgba(224,182,47,.10);outline:1px dashed rgba(224,182,47,.5);}
-  :root:not([data-theme="light"]) .title-pickable:hover{background:rgba(224,182,47,.14);}
+  /* Title pickable in headings mode */
+  .title-pickable{cursor:pointer;transition:background .15s, outline .15s;border-radius:6px;position:relative;}
+  .title-pickable:hover{background:rgba(224,182,47,.10);outline:1px dashed rgba(224,182,47,.6);}
+  .title-pickable::after{
+    content:"⊕";position:absolute;left:6px;top:50%;transform:translateY(-50%);
+    color:rgba(224,182,47,.7);font-size:14px;font-weight:800;opacity:0;transition:opacity .15s;
+  }
+  .title-pickable:hover::after{opacity:.9;}
 
+  /* Sentence-manual mode toolbar */
+  #sentencesToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
+  #sentencesToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) #sentencesToolbar .btn-ghost{background:rgba(255,255,255,.08);}
+
+  /* Selectable words for sentence-manual mode */
   .selectable-word{
     cursor:pointer;border-radius:4px;padding:1px 2px;
     transition:background .12s ease;display:inline;
@@ -121,13 +133,13 @@
   }
   .selectable-word:hover{background:rgba(224,182,47,.18);}
   .selectable-word.selected{background:rgba(224,182,47,.5);outline:1.5px solid var(--gold-500);}
-  .selecting-mode .doc-block,
-  .selecting-mode .doc-subheading{user-select:none;-webkit-user-select:none;}
+  .selecting-mode{user-select:none;-webkit-user-select:none;}
   .selecting-mode .doc-block{line-height:2.4;}
+
+  /* Custom toolbar */
   #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
   #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
   :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
-  :root:not([data-theme="light"]) #btnRestartUnit{background:rgba(255,255,255,.1);color:var(--ink);}
 
   .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
   .block-rate.show{display:flex;}
@@ -157,12 +169,11 @@
   .done-stat.warn .n{color:var(--warn);}
   .done-stat .l{font-size:10.5px;color:var(--muted);margin-top:2px;}
   .done-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
-  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-size:12.5px;font-weight:700;cursor:pointer;}
   .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
   .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
-  :root:not([data-theme="light"]) .btn-ghost{background:rgba(255,255,255,.08);}
 
-  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .modal-overlay.show{display:flex;}
   .modal{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto;}
   .modal h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;justify-content:space-between;}
@@ -196,7 +207,7 @@
       </div>
       <div class="topbar-actions">
         <button class="icon-btn" id="btnTheme" title="الوضع الفاتح/الداكن">🌓</button>
-        <button class="icon-btn" id="btnInfo" title="تعليمات الاستخدام">؟</button>
+        <button class="icon-btn" id="btnInfo" title="تعليمات">؟</button>
         <button class="icon-btn" id="btnSettings" title="الإعدادات">⚙️</button>
         <button class="icon-btn hidden" id="btnHome" title="الرئيسية">🏠</button>
       </div>
@@ -212,41 +223,52 @@
     <div class="contact-strip">
       <a class="cs-wa" href="https://wa.me/97477107247" target="_blank">💬 واتساب</a>
       <a class="cs-call" href="tel:+97477107247">📞 اتصال</a>
-      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 قناة التليجرام</a>
+      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 تليجرام</a>
     </div>
-    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة جديدة">+</button></div>
+    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة">+</button></div>
     <div class="malzama-list" id="malzamaList"></div>
-    <div class="upload-hint">تقدر ترفع ملزمة أي مادة (مش بس الأحياء) — <b>Word</b> أو <b>PDF</b>.</div>
+    <div class="upload-hint">تقدر ترفع ملزمة أي مادة — <b>Word</b> أو <b>PDF</b>.</div>
   </div>
 
   <div id="viewUnit" class="hidden" style="display:flex;flex-direction:column;flex:1;">
     <div class="unit-topinfo">
       <div>
         <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
-        <p class="unit-sub" id="unitSub">العضلات والحركة</p>
+        <p class="unit-sub" id="unitSub"></p>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
-        <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
+        <button class="review-pill" id="btnRestartUnit" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
+        <button class="review-pill" id="btnOpenReview">📋 مراجعة (<span id="reviewCount">٠</span>)</button>
       </div>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">مفتاح ظاهر + إخفاء الجمل</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">مفتاح ظاهر + جمل</span></button>
       <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
       <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">إخفاء تلقائي + إضافة يدوية</span></button>
     </div>
-    <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة — ومفتاح الجملة يظل ظاهر</div>
+
+    <!-- Sentences toolbar: same as custom, for manual sentence hiding -->
+    <div id="sentencesToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button id="btnStartSelectSent" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;">✏️ إضافة جمل للإخفاء</button>
+      <button id="btnSaveSent" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ الإضافات</button>
+      <button id="btnClearSent" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح الإضافات</button>
+      <span id="sentSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
+    </div>
+    <div id="sentencesGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
+      اختر الجمل أو الكلمات التي تريد إخفاءها (بما فيها جمل التطبيق ألغها بـ ✕)<br>
+      اضغط كلمة · مرّر على عدة كلمات · ضغطتين للجملة كاملة
+    </div>
+
     <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
-      <div style="margin-bottom:2px;">① حدّد ما يلزم إخفاؤه (اضغط كلمة · مرّر على عدة كلمات)</div>
-      <div style="margin-bottom:2px;">② احفظ التخصيص</div>
-      <div>③ اختبر نفسك — اكشف جزء بجزء</div>
+      ① حدّد ما يلزم إخفاؤه (اضغط كلمة · مرّر على عدة كلمات) ② احفظ ③ اختبر
     </div>
     <div id="headingsGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(34,158,217,.12);border:1px solid rgba(34,158,217,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:#1b7eb0;">
-      🏷️ التطبيق أخفى العناوين تلقائياً + تقدر تضيف عناوين نسيها بالضغط عليها. ✕ لإلغاء إخفاء غلط. الإخفاء ثابت ومحفوظ.
+      🏷️ التطبيق أخفى العناوين تلقائياً — <b>اضغط على أي عنوان نسي إخفاءه</b> لإخفائه بنفسك — <b>✕</b> لإلغاء إخفاء خاطئ
     </div>
+
     <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">① ابدأ التحديد</button>
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;">① ابدأ التحديد</button>
       <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ التخصيص</button>
       <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
       <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
@@ -256,7 +278,7 @@
       <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
     </div>
-    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر أو تقول الإجابة بصوت عالٍ الأول، وبعدين اكشفها</div>
+    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر قبل ما تكشف</div>
     <div class="doc-wrap" id="docWrap"></div>
 
     <div class="bottombar">
@@ -268,8 +290,7 @@
 
   <div id="viewDone" class="hidden done-screen">
     <div class="emoji">🎉</div>
-    <h2>أحسنت! خلّصت المحاولة دي</h2>
-    <p>كده تكون راجعت كل حاجة في الملزمة دي بالمود اللي اخترته.</p>
+    <h2>أحسنت! خلّصت المحاولة</h2>
     <div class="done-stats">
       <div class="done-stat ok"><div class="n" id="statKnow">0</div><div class="l">عرفتها</div></div>
       <div class="done-stat warn"><div class="n" id="statReview">0</div><div class="l">محتاج مراجعة</div></div>
@@ -284,60 +305,45 @@
 
 <div class="modal-overlay" id="modalInfo">
   <div class="modal">
-    <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
+    <h3>كيف تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li><b>مود الجمل:</b> التطبيق يخفي جمل عشوائية، لكن يظل <b>مفتاح الجملة ظاهراً</b> (أول كلمة/كلمتين) ليتمكن الطالب من الإكمال. لا يخفي جملتين متتاليتين.</li>
-      <li><b>مود التخصيص:</b> اضغط «ابدأ التحديد» ثم ① اضغط كلمة أو مرّر على عدة كلمات ② احفظ ③ اختبر.</li>
-      <li><b>مود العناوين:</b> التطبيق يخفي العناوين تلقائياً. يمكنك إضافة عناوين نسيها التطبيق بالضغط عليها. ✕ لإلغاء إخفاء غلط. الإخفاء ثابت.</li>
-      <li>الملزمة بتتقرا زي ما هي، مع الحفاظ على تنسيق الملف الأصلي (سميك/حجم الخط).</li>
-      <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
+      <li><b>مود الجمل:</b> التطبيق يخفي جمل كاملة (مع بقاء مفتاح الجملة ظاهراً). تقدر تضيف جمل بالإخفاء اليدوي بزر «إضافة جمل للإخفاء».</li>
+      <li><b>مود التخصيص:</b> حدّد ما تريد إخفاءه بالسحب والإفلات.</li>
+      <li><b>مود العناوين:</b> التطبيق يخفي العناوين تلقائياً + تقدر تضيف عناوين نسيها بالضغط عليها.</li>
+      <li><b>✕</b> على أي جزء مخفي يلغي إخفاءه (ثابت للأبد).</li>
     </ol>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalContact">
-  <div class="modal">
-    <h3>راسلنا <span class="close-x" data-close="modalContact">✕</span></h3>
-    <p>لأي استفسار أو اقتراح، تواصل مباشرة مع أ. عزت شعبان.</p>
-    <div class="contact-row">
-      <a class="wa" href="https://wa.me/97477107247" target="_blank">واتساب</a>
-      <a class="tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">تليجرام</a>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalUpload">
-  <div class="modal">
-    <h3>ارفع ملزمة جديدة <span class="close-x" data-close="modalUpload">✕</span></h3>
-    <p>اختار ملف أو أكتر (Word أو PDF) من جهازك.</p>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
-      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (هتتضاف لملف المكتبة المشتركة)
-    </label>
-    <div class="file-choice">
-      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز</button>
-    </div>
-    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
-    <p id="uploadStatus" style="display:none;"></p>
-    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
-      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية — <span id="pendingCount">٠</span> ملزمة.</p>
-      <div id="pendingListWrap"></div>
-      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
-    </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalReview">
   <div class="modal">
     <h3>محتاج مراجعة <span class="close-x" data-close="modalReview">✕</span></h3>
-    <p style="color:var(--muted);font-size:12.5px;">القائمة دي مجمّعة من كل المودات.</p>
     <div id="reviewListWrap"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal">
+    <h3>ارفع ملزمة <span class="close-x" data-close="modalUpload">✕</span></h3>
+    <p>اختار ملف أو أكتر (Word أو PDF).</p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
+      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (للمكتبة المشتركة)
+    </label>
+    <div class="file-choice"><button id="pickFile">📄 اختيار ملف/ملفات</button></div>
+    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
+    <p id="uploadStatus" style="display:none;"></p>
+    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
+      <p style="font-size:12.5px;color:var(--muted);">المكتبة الرسمية — <span id="pendingCount">٠</span> ملزمة.</p>
+      <div id="pendingListWrap"></div>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل مكتبة (library.json)</button></div>
+    </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalSettings">
   <div class="modal">
     <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
-    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها.</p>
+    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية والتقدم.</p>
     <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج</button></div>
   </div>
 </div>
@@ -355,17 +361,16 @@
 
   var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
   var MODE_HINTS = {
-    sentences: "✂️ جمل مفرّقة مموّهة — المفتاح (أول كلمة) يظل ظاهراً — لا جملتين متتاليتين",
-    custom: "✏️ اضغط «ابدأ التحديد» ثم ① حدّد الكلمات ② احفظ ③ اختبر",
-    headings: "🏷️ التطبيق أخفى العناوين — اضغط على أي عنوان نسي لإخفائه — ✕ لإلغاء غلط"
+    sentences: "✂️ جمل مفرّقة — المفتاح (أول كلمة) يظل ظاهراً — لا جملتين متتاليتين",
+    custom: "✏️ ① حدّد ② احفظ ③ اختبر",
+    headings: "🏷️ التطبيق يخفي العناوين — أضف عناوين نسيها بالضغط عليها — ✕ لإلغاء غلط"
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
   function ar(n){ return String(n).split("").map(function(ch){ return /[0-9]/.test(ch)?ARABIC_DIGITS[+ch]:ch; }).join(""); }
   function stripHtml(html){ var d=document.createElement("div"); d.innerHTML=html; return (d.textContent||"").trim(); }
   function slugify(str){
-    return "m_" + String(str).trim().toLowerCase()
-      .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
+    return "m_" + String(str).trim().toLowerCase().replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
   function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -431,7 +436,7 @@
   }
   function saveMalzamaContent(key, rawPages){ try{ localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages)); }catch(e){} }
 
-  /* ---------- Review list ---------- */
+  /* ---------- Review ---------- */
   function reviewKey(malzamaKey){ return "najm_review_" + malzamaKey; }
   function loadReviewMap(malzamaKey){
     try{ var raw = localStorage.getItem(reviewKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
@@ -453,7 +458,6 @@
   }
 
   /* ---------- Text helpers ---------- */
-  var LEAD_RE = /^(\s*<b>([^<]{1,50}?):?<\/b>\s*)/;
   var VERSE_RE = /\*\*\*/;
   var LIST_MARKER_RE = /^(أولا|أولًا|اولا|ثانيًا|ثانيا|ثالثا|ثالثًا|رابعا|رابعًا|خامسا|خامسًا|سادسا|سادسًا|سابعا|سابعًا|ثامنا|ثامنًا|تاسعا|تاسعًا|عاشرا|عاشرًا)([.:：\s]|$)/i;
   var BARE_ENUM_RE = /^([أ-ي]|[a-zA-Z]|[0-9٠-٩]{1,3}|ال|الل|القط|لاحظ|\?|؟|💡)\s*[.)\:：]?\s*$/;
@@ -478,56 +482,73 @@
     if(/\*\*\*/.test(t)) return true;
     if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(t)) return true;
     if(/https?:\/\/|t\.me\/|youtube\.com|youtu\.be|wixsite/i.test(t) && t.length > 40) return true;
-    if(t.length > 100 && /تليجرام|يوتيوب|واتساب/.test(t) && /رابط|انضم|تابع|قناة/.test(t)) return true;
     return false;
   }
 
-  function isSubHeadingBlock(html, plain){
-    var t = (plain || "").trim();
-    if(!t || t.length > 80) return false;
-    if(isPromoOrVerse(t)) return false;
-    if(isTrivialFragment(t)) return false;
-    if(LIST_MARKER_RE.test(t)) return false;
-    if(BARE_ENUM_RE.test(t)) return false;
-    if(NOT_TITLE_RE.test(t)) return false;
-    if(/^(لاحظ|الل|القط)\b/i.test(t)) return false;
-    if(/^[:：.?؟!\-–—•●▪]+$/.test(t)) return false;
-    if(!/[\u0600-\u06FFa-zA-Z]{2,}/.test(t)) return false;
+  // Check if a block/part looks like a heading (never hide in sentences mode)
+  function looksLikeHeading(html, plain){
+    var t = String(plain||"").trim();
+    if(!t) return false;
+    if(t.length > 80) return false;
+    if(isTrivialFragment(t)) return true;
+    if(LIST_MARKER_RE.test(t)) return true;
+    if(BARE_ENUM_RE.test(t)) return true;
+    if(NOT_TITLE_RE.test(t)) return true;
+    if(/^[:：.?؟!\-–—•●▪]+$/.test(t)) return true;
+    if(!/[\u0600-\u06FFa-zA-Z]{2,}/.test(t)) return true;
 
-    var h = (html || "").trim();
+    var h = String(html||"").trim();
     var words = t.split(/\s+/).filter(Boolean);
 
+    // ends with colon → likely title label (الوظيفة: / التركيب:)
     if(t.length <= 60 && /[:：]$/.test(t) && words.length <= 8) return true;
+    // fully bold short line
     if(/^<b>[\s\S]+<\/b>\s*$/i.test(h) && t.length >= 3) return true;
     var boldLen = 0;
     h.replace(/<b>([^<]*)<\/b>/gi, function(_, x){ boldLen += (x||"").length; });
     if(t.length <= 70 && boldLen >= Math.max(3, t.length * 0.55)) return true;
+    // short standalone title-like line (no sentence punctuation)
     if(t.length <= 50 && words.length <= 7 && !/[.!?؟]/.test(t)) return true;
     return false;
   }
 
-  /* ---------- User exclusions & forced hides ---------- */
+  /* ---------- Exclude / Manual hide sets ---------- */
   function excludeKey(malzamaKey){ return "najm_exclude_" + malzamaKey; }
-  function forceHideKey(malzamaKey){ return "najm_forcehide_" + malzamaKey; }
-  function normExcludeText(t){ return String(t||"").replace(/\s+/g," ").trim().slice(0,300); }
+  function normKey(t){ return String(t||"").replace(/\s+/g," ").trim().slice(0,300); }
   function loadExcludeSet(malzamaKey){
     try{ var raw=localStorage.getItem(excludeKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
     return {};
   }
   function saveExcludeSet(malzamaKey, set){ try{ localStorage.setItem(excludeKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
-  function loadForceHideSet(malzamaKey){
-    try{ var raw=localStorage.getItem(forceHideKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+
+  // Manual hides (user-added) per mode
+  function manualKey(malzamaKey, mode){ return "najm_manual_" + malzamaKey + "_" + mode; }
+  function loadManualSet(malzamaKey, mode){
+    try{ var raw = localStorage.getItem(manualKey(malzamaKey, mode)); if(raw) return JSON.parse(raw); }catch(e){}
     return {};
   }
-  function saveForceHideSet(malzamaKey, set){ try{ localStorage.setItem(forceHideKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
+  function saveManualSet(malzamaKey, mode, set){
+    try{ localStorage.setItem(manualKey(malzamaKey, mode), JSON.stringify(set)); }catch(e){}
+  }
 
-  // Expand a phrase to include its bilingual pair (Arabic + Latin)
+  // Custom selections for custom + sentences-manual
+  function customSelKey(malzamaKey, mode){ return "najm_custom_" + malzamaKey + "_" + mode; }
+  function loadCustomSelection(malzamaKey, mode){
+    mode = mode || "custom";
+    try{ var raw = localStorage.getItem(customSelKey(malzamaKey, mode)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveCustomSelection(malzamaKey, mode, sel){
+    try{ localStorage.setItem(customSelKey(malzamaKey, mode), JSON.stringify(sel)); }catch(e){}
+  }
+
+  /* ---------- Bilingual phrase expansion ---------- */
+  // e.g. "الدم" → "الدم blood" if the file has "الدم blood" together
   function expandPhraseBilingual(fullText, phrase){
     if(!fullText || !phrase) return phrase;
     var idx = fullText.indexOf(phrase);
     if(idx < 0) return phrase;
     var start = idx, end = idx + phrase.length;
-    // Extend forward to include Latin / parenthetical translation
     while(end < fullText.length){
       var ch = fullText[end];
       if(ch === " "){
@@ -537,7 +558,6 @@
       }
       break;
     }
-    // Extend backward to include preceding Latin if phrase is Latin
     if(/^[A-Za-z]/.test(phrase)){
       var before = fullText.slice(0, start).trimEnd();
       var m2 = before.match(/([\u0600-\u06FF]+[\u0600-\u06FF\s]*?)\s*$/);
@@ -546,90 +566,42 @@
     return fullText.slice(start, end).trim();
   }
 
-  /* ---------- Manual hide set for headings mode ---------- */
-  function manualHideKey(malzamaKey){ return "najm_manualhide_" + malzamaKey + "_headings"; }
-  function loadManualHideSet(malzamaKey){
-    try{ var raw = localStorage.getItem(manualHideKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveManualHideSet(malzamaKey, set){ try{ localStorage.setItem(manualHideKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
-
-  /* ---------- Sentence key extraction (visible reminder part) ---------- */
-  // Returns { key: HTML string to show, hide: HTML string to hide }
-  // The key is ALWAYS shown so the student can complete the sentence.
-  function buildSentenceWithKey(sentenceHtml, sentencePlain){
-    // 1) Bold label ending with colon at the start: <b>التركيب:</b> rest
-    var m = sentenceHtml.match(/^(\s*<b>[^<]{1,60}?[:：]?\s*<\/b>\s*)/);
-    if(m){
-      return { key: m[1], hide: sentenceHtml.slice(m[0].length) };
-    }
-    // 2) Plain colon label: "التركيب:" or "مثال:"
-    var m2 = sentencePlain.match(/^([\u0600-\u06FFA-Za-z0-9\s]{1,40}?[:：])\s+(.+)$/);
-    if(m2){
-      var keyText = m2[1];
-      var hideText = m2[2];
-      // Find the key span inside the HTML to preserve formatting
-      var keyIdxInHtml = sentenceHtml.indexOf(keyText);
-      if(keyIdxInHtml >= 0){
-        return {
-          key: sentenceHtml.slice(0, keyIdxInHtml + keyText.length) + " ",
-          hide: sentenceHtml.slice(keyIdxInHtml + keyText.length).replace(/^\s+/, "")
-        };
-      }
-      return { key: escapeHtml(keyText) + " ", hide: escapeHtml(hideText) };
-    }
-    // 3) KEY_STARTERS: مثال، مثل، وهي، هو، هي...
-    var starterM = sentencePlain.match(/^(مثال|مثل|كـ|أي|منها|مثلًا|مثلا|وهي|وهو|وهم|هن|هي|هو|وذلك|أي أن|بمعنى|على سبيل المثال)\b/);
-    if(starterM){
-      var st = starterM[0];
-      var stIdx = sentenceHtml.indexOf(st);
-      if(stIdx >= 0){
-        return {
-          key: sentenceHtml.slice(0, stIdx + st.length) + " ",
-          hide: sentenceHtml.slice(stIdx + st.length).replace(/^\s+/, "")
-        };
-      }
-      return { key: escapeHtml(st) + " ", hide: escapeHtml(sentencePlain.slice(st.length).trim()) };
-    }
-    // 4) Fallback: keep the FIRST WORD (or first 2 words) visible as a key
-    var words = sentencePlain.split(/\s+/).filter(Boolean);
-    if(words.length >= 3){
-      var keyWordCount = words.length >= 6 ? 2 : 1;
-      var keyPlain = words.slice(0, keyWordCount).join(" ");
-      var hidePlain = words.slice(keyWordCount).join(" ");
-      // Try to split HTML at the same point
-      var htmlWords = sentenceHtml.split(/(\s+)/);
-      var consumed = 0, htmlKeyEnd = 0;
-      for(var hi = 0; hi < htmlWords.length && consumed < keyWordCount; hi++){
-        if(!/^\s+$/.test(htmlWords[hi]) && htmlWords[hi].length > 0){
-          consumed++;
-          if(consumed === keyWordCount){ htmlKeyEnd = hi + 1; break; }
+  // Merge bilingual word indices into a single unit
+  // Given a word array, return merged ranges where Arabic word is paired with Latin next
+  function mergeBilingualIndices(words){
+    var groups = []; // [{start, end}] inclusive
+    var i = 0;
+    while(i < words.length){
+      var cur = words[i];
+      var next = words[i+1];
+      var group = { start:i, end:i };
+      // Arabic + English next
+      if(/[\u0600-\u06FF]/.test(cur) && !/[A-Za-z]/.test(cur) && next && /^\(?[A-Za-z][A-Za-z0-9\-)]*$/.test(next) && next.length <= 40){
+        group.end = i+1;
+        // Also absorb trailing ")" if next starts with "(" but not closed
+        if(next.indexOf("(") >= 0 && next.indexOf(")") < 0 && words[i+2] && /\)$/.test(words[i+2])){
+          group.end = i+2;
         }
+      } else if(/^[A-Za-z]/.test(cur) && next && /[\u0600-\u06FF]/.test(next) && cur.length <= 40){
+        group.end = i+1;
       }
-      if(htmlKeyEnd > 0 && htmlKeyEnd < htmlWords.length){
-        return {
-          key: htmlWords.slice(0, htmlKeyEnd).join("") + " ",
-          hide: htmlWords.slice(htmlKeyEnd).join("").replace(/^\s+/, "")
-        };
-      }
-      return { key: escapeHtml(keyPlain) + " ", hide: escapeHtml(hidePlain) };
+      groups.push(group);
+      i = group.end + 1;
     }
-    // 5) Short sentence — keep first word, hide rest
-    if(words.length === 2){
-      return { key: escapeHtml(words[0]) + " ", hide: escapeHtml(words[1]) };
-    }
-    // 6) Single word — hide nothing (no key possible)
-    return null;
+    return groups;
   }
 
-  /* ---------- Model builder ---------- */
+  /* ---------- Build model ---------- */
   function buildModel(rawPages, mode, seed, customSelected, excludeSet){
     customSelected = customSelected || {};
     var rnd = seededRandom(seed || 1);
     var globalId = 0, allIds = [];
     var unitByBlockKey = {};
     var excludeSetLocal = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
-    var manualHide = (state && state.malzamaKey) ? loadManualHideSet(state.malzamaKey) : {};
+    var manualSet = (state && state.malzamaKey) ? loadManualSet(state.malzamaKey, mode) : {};
+    var customSelForMode = customSelected; // custom or sentences manual
+
+    function isExcluded(text){ return !!excludeSetLocal[normKey(text)]; }
 
     rawPages.forEach(function(page, pi){
       page.sections.forEach(function(sec, si){
@@ -644,21 +616,18 @@
             return;
           }
 
+          var isHeadingBlock = looksLikeHeading(html, plain);
+
           if(mode === "headings"){
-            // 1) Auto-hide subheadings/short bold titles (like before)
-            // 2) Also apply user's manual additions (manualHide[blockKey])
-            // 3) All parts already hidden can be un-hidden via ✕ (handled by exclude set)
-            var subHide = isSubHeadingBlock(html, plain) && plain.length > 2;
-            var userWantsHide = !!manualHide[blockKey];
-            var userExcluded = !!excludeSetLocal[normExcludeText(plain)];
+            // 1) Auto-hide headings (real ones)
+            // 2) Apply manual additions (manualSet[blockKey])
+            // 3) Pickable always available for non-hidden blocks
+            var autoHide = isHeadingBlock && plain.length > 2;
+            var userWantsHide = !!manualSet[blockKey];
+            var userExcluded = isExcluded(plain);
+            var shouldHide = (autoHide || userWantsHide) && !userExcluded;
 
-            // Auto-hide a leading bold label like <b>التركيب:</b> at start of a block
-            var labelM = html.match(/^(\s*<b>([^<]{1,50}?):?<\/b>\s*)/);
-            var labelText = labelM ? labelM[2] : null;
-
-            var shouldHideWhole = (subHide || userWantsHide) && !userExcluded;
-
-            if(shouldHideWhole && plain.length <= 200){
+            if(shouldHide && plain.length <= 250){
               globalId++; allIds.push(globalId);
               unitByBlockKey[blockKey] = {
                 renderHtml: '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(plain)+'">'+html+'</span>',
@@ -666,19 +635,8 @@
                 originalHtml: html,
                 plainText: plain
               };
-            } else if(labelText && !userExcluded && !isTrivialFragment(labelText)){
-              // Hide just the leading label
-              globalId++; allIds.push(globalId);
-              var labelEsc = attrEsc(labelText + (/:$/.test(labelText) ? "" : ":"));
-              var rest = html.slice(labelM[0].length);
-              unitByBlockKey[blockKey] = {
-                renderHtml: '<b><span class="blank" data-id="'+globalId+'" data-hide-text="'+labelEsc+'">'+escapeHtml(labelText)+'</span></b> ' + rest,
-                blankIds: [globalId],
-                originalHtml: html,
-                plainText: plain
-              };
             } else {
-              // Nothing hidden automatically — but pickable for user additions
+              // Pickable for user additions
               unitByBlockKey[blockKey] = {
                 renderHtml: html,
                 blankIds: [],
@@ -688,36 +646,94 @@
                 hideText: plain
               };
             }
-          } else if(mode === "custom"){
-            var wordsC = splitIntoWords(plain);
-            var idsC = [];
+          } else if(mode === "custom" || mode === "sentences"){
+            // Both use word-selection in the toolbar
+            // But sentences mode ALSO auto-hides sentences using the algorithm
+            var wordMeta = extractWordMeta(html);
+            var wordsC = wordMeta.map(function(w){ return w.text; });
+            if(wordsC.length !== splitIntoWords(plain).length){
+              wordsC = splitIntoWords(plain);
+              wordMeta = wordsC.map(function(w){ return { text:w, bold:false, size:null }; });
+            }
+
+            // Build list of hide ranges
             var ranges = [];
-            Object.keys(customSelected).forEach(function(k){
+
+            // From customSelected (used by both custom and sentences-manual)
+            Object.keys(customSelForMode).forEach(function(k){
               if(k.indexOf(blockKey + "|w|") === 0){
                 var parts = k.split("|");
                 var a = +parts[2], b = +parts[3];
-                if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
+                if(!isNaN(a) && !isNaN(b)){
+                  // Expand bilingual
+                  var biGroups = mergeBilingualIndices(wordsC);
+                  var lo = Math.min(a,b), hi = Math.max(a,b);
+                  // Include any bilingual pair that overlaps
+                  biGroups.forEach(function(g){
+                    if(!(g.end < lo || g.start > hi)){
+                      lo = Math.min(lo, g.start);
+                      hi = Math.max(hi, g.end);
+                    }
+                  });
+                  ranges.push([lo, hi]);
+                }
               }
             });
+
+            // In sentences mode, also auto-hide sentences
+            if(mode === "sentences"){
+              var sents = splitSentences(plain).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
+              // NEVER auto-hide if this block looks like a heading
+              if(!isHeadingBlock && sents.length > 0){
+                // Build a word-index range for each sentence
+                var sentRanges = [];
+                var wordsPlain = splitIntoWords(plain);
+                var searchFrom = 0;
+                sents.forEach(function(s){
+                  var sw = splitIntoWords(s);
+                  if(sw.length === 0){ sentRanges.push(null); return; }
+                  var idx = -1;
+                  for(var wi = searchFrom; wi <= wordsPlain.length - sw.length; wi++){
+                    var ok = true;
+                    for(var k = 0; k < sw.length; k++){
+                      if(wordsPlain[wi+k] !== sw[k]){ ok = false; break; }
+                    }
+                    if(ok){ idx = wi; break; }
+                  }
+                  if(idx < 0) sentRanges.push(null);
+                  else { sentRanges.push({ start:idx, end:idx+sw.length-1, len:sw.length }); searchFrom = idx + sw.length; }
+                });
+                // Skip sentences too short (1-2 words) — do not hide lone words
+                var hideSet = pickSentenceHides(sents, 0.55, rnd);
+                Object.keys(hideSet).forEach(function(ix){
+                  if(sentRanges[ix]){
+                    var sr = sentRanges[ix];
+                    if(sr.len < 3) return; // skip sentences shorter than 3 words
+                    if(isExcluded(sents[ix])) return;
+                    ranges.push([sr.start, sr.end]);
+                  }
+                });
+              }
+            }
+
+            // Merge and apply
             ranges.sort(function(x,y){ return x[0]-y[0]; });
             var merged = [];
             ranges.forEach(function(r){
               if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
               else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
             });
+
             if(wordsC.length === 0 || merged.length === 0){
               unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
             } else {
-              var wordMeta = extractWordMeta(html);
-              if(wordMeta.length !== wordsC.length){
-                wordMeta = wordsC.map(function(w){ return { text:w, bold:false, size:null }; });
-              }
               var htmlParts = [];
               var wi = 0;
               merged.forEach(function(r){
                 while(wi < r[0] && wi < wordMeta.length){ htmlParts.push(wrapWord(wordMeta[wi])); wi++; }
                 if(wi <= r[1] && wi < wordMeta.length){
-                  globalId++; idsC.push(globalId); allIds.push(globalId);
+                  globalId++; var myId = globalId;
+                  allIds.push(myId);
                   var hidden = [];
                   var boldAll = true, sizeAll = wordMeta[wi].size;
                   while(wi <= r[1] && wi < wordMeta.length){
@@ -729,59 +745,18 @@
                   var styleAttr = sizeAll ? ' style="font-size:'+sizeAll+'px;"' : "";
                   var hiddenHtml = escapeHtml(hidden.join(" "));
                   if(boldAll) hiddenHtml = "<b>"+hiddenHtml+"</b>";
-                  htmlParts.push('<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(hidden.join(" "))+'"'+styleAttr+'>'+hiddenHtml+'</span>');
+                  htmlParts.push('<span class="blank" data-id="'+myId+'" data-hide-text="'+attrEsc(hidden.join(" "))+'"'+styleAttr+'>'+hiddenHtml+'</span>');
                 }
               });
               while(wi < wordMeta.length){ htmlParts.push(wrapWord(wordMeta[wi])); wi++; }
-              unitByBlockKey[blockKey] = { renderHtml: htmlParts.join(" "), blankIds: idsC, originalHtml: html, plainText: plain };
-            }
-          } else if(mode === "sentences"){
-            // KEY IMPROVEMENT: Always keep a sentence "key" visible.
-            // The sentence HTML is split into (key, hide) — the key is ALWAYS shown.
-            // Only the "hide" part gets blurred, so the student can complete the sentence.
-            var sents = splitSentences(plain).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
-            if(sents.length === 0){
-              unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
-            } else {
-              // First, split the block's HTML into per-sentence HTML slices by matching plain sentences
-              var sentHtmls = splitHtmlBySentences(html, sents);
-              // Pick which sentences to hide (no two adjacent)
-              var hSet = pickSentenceHides(sents, 0.55, rnd);
-              // Honor exclusions (a phrase the user explicitly un-hid)
-              Object.keys(hSet).forEach(function(ix){
-                if(excludeSetLocal[normExcludeText(sents[ix])]) delete hSet[ix];
+              unitByBlockKey[blockKey] = { renderHtml: htmlParts.join(" "), blankIds: unitByBlockKey[blockKey] ? unitByBlockKey[blockKey].blankIds : [], originalHtml: html, plainText: plain };
+              // collect blank ids
+              var ids = [];
+              htmlParts.forEach(function(h){
+                var m = /data-id="(\d+)"/.exec(h);
+                if(m) ids.push(+m[1]);
               });
-              // Also build a list of force-hide phrases from user (forceHide)
-              var forceSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
-              var ids2 = [];
-              var anyHidden = Object.keys(hSet).length > 0;
-              if(!anyHidden){
-                unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
-              } else {
-                var finalHtml = "";
-                for(var si2 = 0; si2 < sents.length; si2++){
-                  var sHtml = sentHtmls[si2] != null ? sentHtmls[si2] : escapeHtml(sents[si2]);
-                  var sPlain = sents[si2];
-                  if(hSet[si2]){
-                    // Build the key + hide split
-                    var split = buildSentenceWithKey(sHtml, sPlain);
-                    if(split && split.hide && split.hide.length > 3){
-                      globalId++; ids2.push(globalId); allIds.push(globalId);
-                      finalHtml += split.key +
-                        '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(sPlain)+'">' +
-                        split.hide + '</span>';
-                    } else {
-                      // Fallback: can't split, hide whole sentence
-                      globalId++; ids2.push(globalId); allIds.push(globalId);
-                      finalHtml += '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(sPlain)+'">'+sHtml+'</span>';
-                    }
-                  } else {
-                    finalHtml += sHtml;
-                  }
-                  finalHtml += " ";
-                }
-                unitByBlockKey[blockKey] = { renderHtml: finalHtml.trim(), blankIds: ids2, originalHtml: html, plainText: plain };
-              }
+              unitByBlockKey[blockKey].blankIds = ids;
             }
           } else {
             unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
@@ -813,104 +788,6 @@
     }).filter(function(p){ return p.sections.length > 0; });
 
     return { pages: pages, allIds: allIds };
-  }
-
-  // Split a block's HTML into per-sentence HTML chunks, keeping the original formatting.
-  // Strategy: use the plain sentences as anchors, walk the HTML to find each sentence's slice.
-  function splitHtmlBySentences(html, sentences){
-    var out = [];
-    if(sentences.length <= 1){
-      out.push(html);
-      return out;
-    }
-    // Build a plain version of the HTML with markers where formatting starts/ends.
-    // Simpler approach: use the plain text and the HTML's text nodes to consume sentences.
-    var tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    // Concatenate a list of {textNode, node} in document order
-    var nodes = [];
-    function walk(n){
-      if(n.nodeType === 3){
-        if(n.textContent) nodes.push(n);
-      } else if(n.nodeType === 1){
-        Array.prototype.forEach.call(n.childNodes, walk);
-      }
-    }
-    walk(tmp);
-
-    // Concatenate to get full plain text with node boundaries
-    var plain = "", boundaries = []; // {start, end, node}
-    nodes.forEach(function(n){
-      var t = n.textContent;
-      boundaries.push({ start: plain.length, end: plain.length + t.length, node: n });
-      plain += t;
-    });
-
-    // For each sentence, find its span in "plain" then slice the HTML
-    // Since plain is the concatenated textContent, sentence positions can be found by sequential search.
-    var searchFrom = 0;
-    var sentenceRanges = [];
-    sentences.forEach(function(s){
-      var idx = plain.indexOf(s, searchFrom);
-      if(idx < 0) idx = plain.indexOf(s); // fallback
-      if(idx < 0){ sentenceRanges.push(null); return; }
-      sentenceRanges.push({ start: idx, end: idx + s.length });
-      searchFrom = idx + s.length;
-    });
-
-    // Now build per-sentence HTML: reuse the original HTML tree, but this is complex.
-    // Simpler: since we mostly care about preserving <b> and font-size on specific spans,
-    // and most sentences are inside <b> or plain, we can reconstruct per-sentence HTML
-    // by walking the boundaries and re-emitting the tags for each node.
-    // We'll serialize on the fly: for each node's slice, wrap with the parent's formatting.
-    function nodePath(n){
-      // Return ancestor chain from node up to tmp (exclusive)
-      var path = [];
-      var cur = n.parentNode;
-      while(cur && cur !== tmp){
-        path.unshift(cur);
-        cur = cur.parentNode;
-      }
-      return path;
-    }
-    function openTagFor(el){
-      var tag = el.tagName.toLowerCase();
-      if(tag === "b" || tag === "strong") return "<b>";
-      if(tag === "i" || tag === "em") return "<i>";
-      var style = "";
-      var sz = el.getAttribute && el.getAttribute("data-sz");
-      if(sz) style = "font-size:"+sz+"px;";
-      else if(el.style && el.style.fontSize) style = "font-size:"+el.style.fontSize+";";
-      if(tag === "span" && style) return '<span style="'+style+'"'+(sz?' data-sz="'+sz+'"':'')+'>';
-      return "";
-    }
-    function closeTagFor(el){
-      var tag = el.tagName.toLowerCase();
-      if(tag === "b" || tag === "strong") return "</b>";
-      if(tag === "i" || tag === "em") return "</i>";
-      var sz = el.getAttribute && el.getAttribute("data-sz");
-      if(tag === "span" && (sz || (el.style && el.style.fontSize))) return "</span>";
-      return "";
-    }
-
-    // For each sentence range, walk boundaries and emit the HTML slice
-    sentenceRanges.forEach(function(range){
-      if(!range){ out.push(""); return; }
-      var slice = "";
-      boundaries.forEach(function(b){
-        var s = Math.max(b.start, range.start);
-        var e = Math.min(b.end, range.end);
-        if(s >= e) return;
-        var text = b.node.textContent.slice(s - b.start, e - b.start);
-        if(!text) return;
-        var path = nodePath(b.node);
-        var opening = path.map(openTagFor).join("");
-        var closing = path.map(closeTagFor).reverse().join("");
-        slice += opening + escapeHtml(text) + closing;
-      });
-      out.push(slice);
-    });
-    return out;
   }
 
   function extractWordMeta(html){
@@ -949,50 +826,45 @@
   }
 
   function pickSentenceHides(sentences, ratio, rnd){
-    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){ return !isTrivialFragment(sentences[i]); });
+    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){
+      var s = sentences[i];
+      if(isTrivialFragment(s)) return false;
+      // Never auto-hide sentences shorter than 3 words (avoid lone-word hides)
+      if(splitIntoWords(s).length < 3) return false;
+      return true;
+    });
     if(candidates.length === 0) return {};
     var order = shuffleWith(candidates, rnd);
     var target = Math.max(1, Math.min(candidates.length - (candidates.length>1?1:0), Math.round(candidates.length*ratio)));
     var hideSet = {};
     order.forEach(function(i){
       if(Object.keys(hideSet).length >= target) return;
-      if(hideSet[i-1] || hideSet[i+1]) return; // never hide two adjacent sentences
+      if(hideSet[i-1] || hideSet[i+1]) return; // never two adjacent
       hideSet[i] = true;
     });
     return hideSet;
   }
 
   /* ---------- State ---------- */
-  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"sentences", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
+  var state = {
+    malzamaKey:null, malzamaTitle:"", malzamaSub:"",
+    mode:"sentences", page:0, revealedIds:{}, blockRatings:{},
+    freeMode:false, seed:null, stuckTaps:0,
+    selecting:false, customSelected:{}
+  };
   var MODEL = null, RAW_PAGES = null;
 
-  function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
-  function customKey(malzamaKey){ return "najm_custom_" + malzamaKey; }
-  function loadCustomSelection(malzamaKey){
-    try{ var raw = localStorage.getItem(customKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveCustomSelection(malzamaKey, sel){
-    try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
-  }
+  function progressKey(malzamaKey, mode){ return "najm_prog3_" + malzamaKey + "_" + mode; }
 
   function excludeFromHide(text, fullText){
     if(!text) return;
     var expanded = fullText ? expandPhraseBilingual(fullText, text) : text;
     var set = loadExcludeSet(state.malzamaKey);
-    set[normExcludeText(expanded)] = true;
-    set[normExcludeText(text)] = true;
+    set[normKey(expanded)] = true;
+    set[normKey(text)] = true;
     saveExcludeSet(state.malzamaKey, set);
-    // ALSO remove from manual-hide set if in headings mode
-    if(state.mode === "headings"){
-      var ms = loadManualHideSet(state.malzamaKey);
-      Object.keys(ms).forEach(function(k){
-        if(normExcludeText(ms[k]) === normExcludeText(text) || ms[k].indexOf(text) >= 0) delete ms[k];
-      });
-      saveManualHideSet(state.malzamaKey, ms);
-    }
     loadProgress(false);
-    showToast("تم إلغاء إخفاء: " + expanded.slice(0, 40));
+    showToast("تم إلغاء الإخفاء ✕");
     renderPage();
   }
 
@@ -1003,7 +875,9 @@
       var raw = localStorage.getItem(pk);
       if(raw && !reshuffle){
         var d = JSON.parse(raw);
-        state.revealedIds = d.revealedIds || {}; state.blockRatings = d.blockRatings || {}; state.page = d.page || 0;
+        state.revealedIds = d.revealedIds || {};
+        state.blockRatings = d.blockRatings || {};
+        state.page = d.page || 0;
         seed = d.seed;
       }
     }catch(e){}
@@ -1011,16 +885,22 @@
       seed = 1;
       if(reshuffle){ state.revealedIds={}; state.blockRatings={}; state.page=0; }
     } else if(!seed){
-      seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0;
+      seed = Math.floor(Math.random()*1e9)+1;
+      state.revealedIds={}; state.blockRatings={}; state.page=0;
     }
     state.seed = seed;
-    state.customSelected = loadCustomSelection(state.malzamaKey);
+    state.customSelected = loadCustomSelection(state.malzamaKey, state.mode === "custom" ? "custom" : "sentences");
     MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, loadExcludeSet(state.malzamaKey));
     saveProgress();
   }
   function saveProgress(){
-    try{ localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({ revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed })); }catch(e){}
+    try{
+      localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({
+        revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed
+      }));
+    }catch(e){}
   }
+
   function loadTheme(){ try{ var t = localStorage.getItem("najm_theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} }
   function toggleTheme(){
     var cur = document.documentElement.getAttribute("data-theme");
@@ -1048,7 +928,7 @@
     var revealed = {}, seed = null;
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
-    var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
+    var customSel = loadCustomSelection(malzamaKey, mode === "custom" ? "custom" : "sentences");
     var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey));
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
@@ -1068,8 +948,8 @@
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
       var delBtn = entry.shared
-        ? '<button class="malzama-del" disabled style="opacity:.35;cursor:default;">📌</button>'
-        : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+        ? '<button class="malzama-del" disabled style="opacity:.35;">📌</button>'
+        : '<button class="malzama-del" data-key="'+entry.key+'">🗑️</button>';
       card.innerHTML =
         '<div class="malzama-main" data-key="'+entry.key+'">' +
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
@@ -1092,7 +972,7 @@
 
   function openUnit(key, title, subtitle){
     var raw = getMalzamaContent(key);
-    if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة"); return; }
+    if(!raw){ showToast("مقدرش ألاقي محتوى"); return; }
     state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
     RAW_PAGES = raw;
     $("unitTitle").textContent = title;
@@ -1109,13 +989,20 @@
     $("hintBanner").textContent = MODE_HINTS[mode] || "";
     var isCustom = mode === "custom";
     var isHeadings = mode === "headings";
+    var isSentences = mode === "sentences";
     $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
+    $("sentencesToolbar").classList.toggle("hidden", !isSentences);
+    $("sentencesGuide").classList.toggle("hidden", !isSentences);
     $("customGuide").classList.toggle("hidden", !isCustom);
     $("headingsGuide").classList.toggle("hidden", !isHeadings);
     $("customToolbar").classList.toggle("hidden", !isCustom);
-    $("btnStartSelect").classList.remove("hidden");
-    $("btnSaveCustom").classList.add("hidden");
-    $("btnClearCustom").classList.add("hidden");
+    // reset toolbar buttons
+    ["btnStartSelectSent","btnStartSelect"].forEach(function(id){
+      $(id).classList.remove("hidden");
+    });
+    ["btnSaveSent","btnSaveCustom"].forEach(function(id){ $(id).classList.add("hidden"); });
+    ["btnClearSent","btnClearCustom"].forEach(function(id){ $(id).classList.add("hidden"); });
+    $("sentSelectCount").textContent = "";
     $("customSelectCount").textContent = "";
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
@@ -1202,7 +1089,7 @@
     bd.dataset.wordCount = wordList.length;
   }
 
-  /* ---------- Word selection: click / drag / double-tap ---------- */
+  /* ---------- Word selection ---------- */
   var _selDrag = {
     active:false, moved:false, blockKey:null,
     anchorIdx:-1, curIdx:-1,
@@ -1210,12 +1097,11 @@
     pointerId:null, captured:false
   };
 
-  function bindWordSelection(wrap){
+  function bindWordSelection(wrap, countElId){
     function updateCount(){
       var count = Object.keys(state.customSelected).length;
-      $("customSelectCount").textContent = count
-        ? ar(count) + " جزء محدد"
-        : "اضغط كلمة · مرّر على عدة كلمات · ضغطتين للجملة";
+      var el = $(countElId);
+      if(el) el.textContent = count ? ar(count) + " جزء محدد" : "اضغط كلمة · مرّر · ضغطتين للجملة";
     }
     function isIdxSelected(blockKey, idx){
       var keys = Object.keys(state.customSelected);
@@ -1254,8 +1140,25 @@
       });
       updateCount();
     }
-    function applyRange(blockKey, a, b){
+    function expandWithBilingual(blockKey, a, b){
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
+      if(!blockEl) return [a, b];
+      var wordEls = blockEl.querySelectorAll(".selectable-word");
+      var words = [];
+      for(var i=0;i<wordEls.length;i++) words.push(wordEls[i].textContent);
+      var groups = mergeBilingualIndices(words);
       var lo = Math.min(a,b), hi = Math.max(a,b);
+      groups.forEach(function(g){
+        if(!(g.end < lo || g.start > hi)){
+          lo = Math.min(lo, g.start);
+          hi = Math.max(hi, g.end);
+        }
+      });
+      return [lo, hi];
+    }
+    function applyRange(blockKey, a, b){
+      var exp = expandWithBilingual(blockKey, a, b);
+      var lo = exp[0], hi = exp[1];
       clearOverlapping(blockKey, lo, hi);
       state.customSelected[blockKey + "|w|" + lo + "|" + hi] = true;
       repaintBlock(blockKey);
@@ -1340,7 +1243,6 @@
       var blockKey = w.dataset.blockKey;
       var idx = +w.dataset.wordIdx;
       var now = Date.now();
-
       if(_selDrag.lastTapKey === blockKey && _selDrag.lastTapIdx === idx && (now - _selDrag.lastTap) < 450){
         var blockEl = w.parentElement;
         var range = sentenceRangeForWord(blockEl, idx);
@@ -1357,7 +1259,6 @@
       _selDrag.lastTap = now;
       _selDrag.lastTapKey = blockKey;
       _selDrag.lastTapIdx = idx;
-
       _selDrag.active = true;
       _selDrag.moved = false;
       _selDrag.blockKey = blockKey;
@@ -1392,18 +1293,16 @@
       }
       endDrag();
     }
-
     wrap.addEventListener("pointerdown", onStart);
     wrap.addEventListener("pointermove", onMove);
     wrap.addEventListener("pointerup", onEnd);
     wrap.addEventListener("pointercancel", onEnd);
     wrap.addEventListener("touchstart", function(e){
-      if(_selDrag.active){ if(e.cancelable) e.preventDefault(); }
+      if(_selDrag.active && e.cancelable) e.preventDefault();
     }, {passive:false});
     wrap.addEventListener("touchmove", function(e){
-      if(_selDrag.active){ if(e.cancelable) e.preventDefault(); }
+      if(_selDrag.active && e.cancelable) e.preventDefault();
     }, {passive:false});
-
     updateCount();
   }
 
@@ -1414,8 +1313,12 @@
     var page = MODEL.pages[state.page];
     if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
 
-    if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر على عدة كلمات · ضغطتين للجملة · ثم احفظ.</div>';
+    var isCustom = state.mode === "custom";
+    var isSentences = state.mode === "sentences";
+    var isHeadings = state.mode === "headings";
+
+    if(isCustom && !state.selecting && MODEL.allIds.length === 0){
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ثم احفظ.</div>';
       updateNavButtons();
       return;
     }
@@ -1424,8 +1327,8 @@
     docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
     docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
 
-    var useClean = state.selecting && state.mode === "custom";
-    var isHeadings = state.mode === "headings";
+    // Show selectable (word spans) when: custom AND selecting, OR sentences AND selecting
+    var useClean = state.selecting && (isCustom || isSentences);
 
     page.sections.forEach(function(sec){
       if(sec.sub){
@@ -1444,16 +1347,16 @@
           bd.innerHTML = block.html;
         }
 
-        // In headings mode, mark pickable blocks (not currently hidden)
-        if(isHeadings && !state.selecting && block.pickable && !block.manuallyHidden){
+        // Headings mode: mark pickable blocks (never hidden ones)
+        if(isHeadings && !state.selecting && block.pickable && !block.blankIds.length){
           bd.classList.add("title-pickable");
           bd.title = "اضغط لإخفاء هذا الجزء";
           bd.addEventListener("click", function(ev){
-            if(ev.target.closest(".pin-btn, .blank, .rate-btn")) return;
+            if(ev.target.closest(".blank-x, .blank, .rate-btn")) return;
             ev.preventDefault();
-            var set = loadManualHideSet(state.malzamaKey);
+            var set = loadManualSet(state.malzamaKey, "headings");
             set[block.key] = block.hideText || block.plainText;
-            saveManualHideSet(state.malzamaKey, set);
+            saveManualSet(state.malzamaKey, "headings", set);
             showToast("تم الإخفاء — اضغط ✕ لإلغائه");
             loadProgress(false);
             renderPage();
@@ -1478,31 +1381,34 @@
     wrap.appendChild(docCard);
 
     if(useClean){
-      bindWordSelection(wrap);
+      bindWordSelection(wrap, isCustom ? "customSelectCount" : "sentSelectCount");
     } else {
-      // Attach ✕ to every blank
+      // Attach ✕ to blanks — position AFTER the blank with very small separation
       wrap.querySelectorAll(".blank").forEach(function(span){
         var id = +span.dataset.id;
         var revealed = !!state.revealedIds[id];
         var unlocked = isUnlocked(id);
         span.classList.toggle("revealed", revealed);
         span.classList.toggle("locked", !revealed && !unlocked);
-        if(!span.dataset.pinAttached){
-          span.dataset.pinAttached = "1";
+        if(!span.dataset.xAttached){
+          span.dataset.xAttached = "1";
           var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
           var blockEl = span.closest(".doc-block");
           var fullText = blockEl ? (blockEl.dataset.fullPlain || blockEl.textContent) : hideText;
 
           var xBtn = document.createElement("button");
           xBtn.type = "button";
-          xBtn.className = "pin-btn x";
-          xBtn.title = "إلغاء الإخفاء الغلط";
+          xBtn.className = "blank-x";
+          xBtn.title = "إلغاء الإخفاء";
           xBtn.textContent = "✕";
           xBtn.addEventListener("click", function(ev){
             ev.preventDefault(); ev.stopPropagation();
             excludeFromHide(hideText, fullText);
           });
-          if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
+          // Insert right after the blank (parent-safe)
+          if(span.parentNode){
+            span.parentNode.insertBefore(xBtn, span.nextSibling);
+          }
         }
       });
 
@@ -1516,7 +1422,8 @@
       });
 
       wrap.querySelectorAll(".blank").forEach(function(span){
-        span.addEventListener("click", function(){
+        span.addEventListener("click", function(ev){
+          if(ev.target.classList.contains("blank-x")) return;
           var id = +span.dataset.id;
           if(state.revealedIds[id]) return;
           if(!isUnlocked(id)){
@@ -1563,7 +1470,7 @@
     state.revealedIds[blockId] = true;
     saveProgress();
     renderPage();
-    showToast("تخطينا الجزء ده — كمّل عادي");
+    showToast("تخطينا الجزء ده — كمّل");
   }
   function nextUnrevealedOnPage(){
     var page = MODEL.pages[state.page];
@@ -1590,7 +1497,7 @@
       if(onPage){ state.stuckTaps = 0; revealBlank(onPage); return; }
       state.stuckTaps = (state.stuckTaps||0) + 1;
       if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
-      else showToast("مفيش جزء ظاهر هنا — اضغط تاني أو غيّر الصفحة (" + ar(state.stuckTaps) + "/٣)");
+      else showToast("مفيش جزء ظاهر هنا — اضغط تاني (" + ar(state.stuckTaps) + "/٣)");
     };
   }
   function finishUnit(){
@@ -1603,13 +1510,13 @@
     switchView("done");
   }
 
-  /* ---------- Review list modal ---------- */
+  /* ---------- Review modal ---------- */
   function renderReviewModal(){
     var map = loadReviewMap(state.malzamaKey);
     var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
     var wrap = $("reviewListWrap");
     if(keys.length === 0){
-      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة دلوقتي 🎉</div>';
+      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة 🎉</div>';
       return;
     }
     wrap.innerHTML = "";
@@ -1628,7 +1535,7 @@
     });
   }
 
-  /* ---------- Upload: Word (.docx) ---------- */
+  /* ---------- Upload DOCX ---------- */
   var WNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
   function wEls(node, tag){ return Array.prototype.slice.call(node.getElementsByTagNameNS(WNS, tag)); }
   function wAttrVal(el){
@@ -1642,7 +1549,6 @@
     var v = wAttrVal(el);
     return v === null || v === "" || v === "1" || v === "true" || v === "on";
   }
-
   function extractRunProps(rEl){
     var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
     var bold = false, italic = false, size = null;
@@ -1657,7 +1563,6 @@
     }
     return { bold:bold, italic:italic, size:size };
   }
-
   function paragraphToRuns(pEl){
     var runs = [];
     wEls(pEl, "r").forEach(function(rEl){
@@ -1679,7 +1584,6 @@
     });
     return runs;
   }
-
   function runsToHtml(runs){
     return runs.map(function(r){
       var s = escapeHtml(r.text);
@@ -1778,14 +1682,14 @@
           });
           var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
-        }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الوورد: " + (err&&err.message?err.message:err)); });
       };
-      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف"); };
       reader.readAsArrayBuffer(file);
     });
   }
 
-  /* ---------- Upload: PDF ---------- */
+  /* ---------- Upload PDF ---------- */
   function handlePdf(file){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
@@ -1806,9 +1710,9 @@
           var cleaned = filterNoiseLines(pageLinesList);
           var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.pdf$/i,""), heading: parsed.heading });
-        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
+        }).catch(function(err){ reject("مقدرش أقرا الـ PDF: " + err.message); });
       };
-      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف"); };
       reader.readAsArrayBuffer(file);
     });
   }
@@ -1851,7 +1755,7 @@
         if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b|youtube\.com|youtu\.be/i.test(norm)) return false;
         if(/\d{7,}/.test(norm) && norm.length < 40) return false;
         if(/\*\*\*/.test(norm)) return false;
-        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline|UCTnIvc38rMXJctKDfude4vA/i.test(norm)) return false;
+        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(norm)) return false;
         if(norm.length > 60 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع|تحميل/.test(norm)) return false;
         return true;
       });
@@ -1879,12 +1783,6 @@
       if(l.bold) s = "<b>"+s+"</b>";
       s = '<span style="font-size:'+sizePx+'px;" data-sz="'+sizePx+'">'+s+'</span>';
       return s;
-    }
-    function pushParagraph(text){
-      if(!text.trim()) return;
-      if(!curPage) newPage(fallbackTitle);
-      if(!curSection) newSection(null);
-      curSection.blocks.push({ html: escapeHtml(text.trim()) });
     }
 
     pageLinesList.forEach(function(lines, pageIdx){
@@ -1955,7 +1853,7 @@
     pendingSharedBatch.forEach(function(item){
       var row = document.createElement("div");
       row.className = "review-item";
-      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button data-key="'+item.key+'">🗑️ شيل</button>';
+      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button>🗑️ شيل</button>';
       row.querySelector("button").addEventListener("click", function(){
         pendingSharedBatch = pendingSharedBatch.filter(function(x){ return x.key!==item.key; });
         renderPendingList();
@@ -1973,9 +1871,9 @@
         setUploadStatus("بيتقرا: " + file.name + "...");
         var task = /\.docx$/i.test(file.name) ? handleDocx(file)
                   : /\.pdf$/i.test(file.name) ? handlePdf(file)
-                  : Promise.reject("الصيغة دي مش مدعومة: " + file.name);
+                  : Promise.reject("صيغة مش مدعومة: " + file.name);
         return task.then(function(r){ results.push(r); })
-          .catch(function(err){ showToast(typeof err==="string"?err:"حصل خطأ في: "+file.name); });
+          .catch(function(err){ showToast(typeof err==="string"?err:"خطأ في: "+file.name); });
       });
     });
     return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
@@ -2008,7 +1906,7 @@
     } else {
       $("modalUpload").classList.remove("show");
       renderHome();
-      showToast('اتضافت "'+lastTitle+'" للملازم');
+      showToast('اتضافت "'+lastTitle+'"');
       openUnit(lastKey, lastTitle, lastSub);
     }
   }
@@ -2024,7 +1922,7 @@
   }
 
   function resetApp(){
-    if(!confirm("متأكد؟ هيتمسح كل الملازم الشخصية وتقدمك المحفوظ.")) return;
+    if(!confirm("متأكد؟ هيتمسح كل الملازم والتقدم.")) return;
     try{
       var toRemove = [];
       for(var i=0;i<localStorage.length;i++){
@@ -2033,7 +1931,7 @@
       }
       toRemove.forEach(function(k){ localStorage.removeItem(k); });
     }catch(e){}
-    showToast("اترفع البرنامج — بيعيد التحميل...");
+    showToast("اترفع — بيعيد التحميل...");
     setTimeout(function(){ location.reload(); }, 600);
   }
 
@@ -2050,11 +1948,7 @@
 
   $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
   $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
-  $("btnRestart").addEventListener("click", function(){
-    switchView("unit");
-    setMode(state.mode, true, true);
-    showToast("محاولة جديدة");
-  });
+  $("btnRestart").addEventListener("click", function(){ switchView("unit"); setMode(state.mode, true, true); showToast("محاولة جديدة"); });
   $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
 
   $("btnAdd").addEventListener("click", function(){
@@ -2075,21 +1969,19 @@
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
 
+  // Custom mode buttons
   $("btnStartSelect").addEventListener("click", function(){
     if(state.mode !== "custom") return;
     state.selecting = true;
-    state.customSelected = loadCustomSelection(state.malzamaKey);
+    state.customSelected = loadCustomSelection(state.malzamaKey, "custom");
     $("btnStartSelect").classList.add("hidden");
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
-    var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "اضغط كلمة · مرّر على عدة كلمات · ضغطتين للجملة";
-    showToast("اضغط كلمة · مرّر على عدة كلمات · ضغطتين للجملة");
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
     if(state.mode !== "custom") return;
-    saveCustomSelection(state.malzamaKey, state.customSelected);
+    saveCustomSelection(state.malzamaKey, "custom", state.customSelected);
     state.selecting = false;
     state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
     state.seed = Math.floor(Math.random()*1e9)+1;
@@ -2098,35 +1990,63 @@
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
-    var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
-    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
+    showToast("تم الحفظ — اختبر نفسك");
     renderPage();
   });
   $("btnClearCustom").addEventListener("click", function(){
-    if(!confirm("تمسح كل التحديد الحالي؟")) return;
+    if(!confirm("تمسح كل التحديد؟")) return;
     state.customSelected = {};
-    saveCustomSelection(state.malzamaKey, {});
-    $("customSelectCount").textContent = "مرّر على الكلمات أو اضغط مرتين للجملة";
+    saveCustomSelection(state.malzamaKey, "custom", {});
     document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
-    showToast("تم مسح التحديد");
+    showToast("تم المسح");
+  });
+
+  // Sentences mode buttons (for manual sentence addition)
+  $("btnStartSelectSent").addEventListener("click", function(){
+    if(state.mode !== "sentences") return;
+    state.selecting = true;
+    state.customSelected = loadCustomSelection(state.malzamaKey, "sentences");
+    $("btnStartSelectSent").classList.add("hidden");
+    $("btnSaveSent").classList.remove("hidden");
+    $("btnClearSent").classList.remove("hidden");
+    renderPage();
+  });
+  $("btnSaveSent").addEventListener("click", function(){
+    if(state.mode !== "sentences") return;
+    saveCustomSelection(state.malzamaKey, "sentences", state.customSelected);
+    state.selecting = false;
+    // rebuild MODEL to include new manual hides
+    MODEL = buildModel(RAW_PAGES, "sentences", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
+    saveProgress();
+    $("btnStartSelectSent").classList.remove("hidden");
+    $("btnSaveSent").classList.add("hidden");
+    $("btnClearSent").classList.add("hidden");
+    showToast("تم الحفظ");
+    renderPage();
+  });
+  $("btnClearSent").addEventListener("click", function(){
+    if(!confirm("تمسح كل التحديد اليدوي في الجمل؟")) return;
+    state.customSelected = {};
+    saveCustomSelection(state.malzamaKey, "sentences", {});
+    document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
+    showToast("تم المسح");
   });
 
   $("btnRestartUnit").addEventListener("click", function(){
     if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
     if(state.mode === "headings"){
-      if(!confirm("إعادة من جديد؟ هيمسح كل الإخفاءات اليدوية والعناوين اللي خفيتها.")) return;
-      saveManualHideSet(state.malzamaKey, {});
+      if(!confirm("إعادة من جديد؟ هيمسح الإخفاءات اليدوية.")) return;
+      saveManualSet(state.malzamaKey, "headings", {});
       saveExcludeSet(state.malzamaKey, {});
       state.revealedIds={}; state.blockRatings={}; state.page=0;
       loadProgress(false);
       renderPage();
-      showToast("تم المسح — العناوين التلقائية رجعت");
+      showToast("تم المسح");
       return;
     }
-    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم" + (state.mode !== "custom" ? " ويتخفي أجزاء عشوائية جديدة" : "") + ".")) return;
+    if(!confirm("إعادة من جديد؟")) return;
     setMode(state.mode, true, true);
-    showToast(state.mode === "custom" ? "تم الإعادة من الأول" : "محاولة جديدة — أجزاء مختلفة اتخفت");
+    showToast("محاولة جديدة");
   });
 
   loadTheme();
