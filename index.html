@@ -95,12 +95,13 @@
   .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
   .doc-block b{font-weight:800;}
 
-  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);}
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
   .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
   .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
   :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
   :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
   .doc-subheading .blank{font-weight:800;}
+  .doc-block b .blank, .doc-block .blank b{font-weight:800;}
 
   /* Custom selection mode */
   .selectable{cursor:pointer;border-radius:5px;padding:1px 3px;transition:background .15s ease;display:inline;}
@@ -213,7 +214,7 @@
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:rgba(10,27,46,.08);color:var(--ink);">🔀 إعادة</button>
+        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
         <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
       </div>
     </div>
@@ -224,11 +225,11 @@
       <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
-    <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">✏️ ابدأ التحديد (جملة بجملة)</button>
-      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;background:rgba(46,158,91,.15);color:var(--ok);">💾 حفظ التخصيص</button>
-      <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح التحديد</button>
-      <span id="customSelectCount" style="font-size:12px;color:var(--muted);align-self:center;"></span>
+    <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">✏️ ابدأ التحديد — اضغط على الجمل</button>
+      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">💾 حفظ التخصيص</button>
+      <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
+      <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
     </div>
 
     <div class="progress-wrap">
@@ -350,8 +351,23 @@
       .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
   function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  // Split into meaningful units. Treat . ! ؟ ? and also : and Arabic comma ، as separators
+  // so labels like "الوظيفة:" stay separate from the definition that follows.
   function splitSentences(text){
-    var parts = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    if(!text || !text.trim()) return [];
+    // First split on strong endings
+    var rough = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    var parts = [];
+    rough.forEach(function(chunk){
+      // Further split on colon or Arabic comma when they separate a short label from the rest
+      // e.g. "الوظيفة: تتكون من خلايا..." → ["الوظيفة:", "تتكون من خلايا..."]
+      var sub = chunk.split(/(?<=[:：])\s+|(?<=[،,;؛])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+      if(sub.length > 1){
+        sub.forEach(function(s){ if(s) parts.push(s); });
+      } else {
+        parts.push(chunk);
+      }
+    });
     return parts.length ? parts : (text.trim()?[text.trim()]:[]);
   }
   function shuffleWith(arr, rnd){
@@ -455,9 +471,9 @@
   function isTrivialFragment(s){
     var t = s.trim();
     if(t.length < 2) return true;
-    // bare enumeration letters: أ  ب  ج  د ... or أ) ب- etc.
-    if(/^[\u0621-\u064A]\s*[-.):]?\s*$/.test(t)) return true;
-    if(/^\(?[0-9]+\)?[-.:]?\s*$/.test(t)) return true; // bare number/list marker
+    // bare enumeration letters: أ  ب  ج  د ... or أ) ب- etc. (but NOT labels like "الوظيفة:")
+    if(/^[\u0621-\u064A]\s*[-.)]?\s*$/.test(t)) return true;
+    if(/^\(?[0-9]+\)?[-.]?\s*$/.test(t)) return true; // bare number/list marker
     // short list markers like "1-" or "أ-"
     if(/^[\u0621-\u064A0-9]{1,2}\s*[-–—.]\s*$/.test(t)) return true;
     return false;
@@ -466,6 +482,9 @@
   // Try to split a sentence into (key part that stays visible) + (rest that can be hidden)
   function splitKeyAndRest(sentence){
     var t = sentence.trim();
+    // Label ending with colon: "الوظيفة:" or "مثال:"
+    var colonM = t.match(/^(.{1,40}[:：])\s+(.+)$/);
+    if(colonM && colonM[2].length > 6) return { key: colonM[1], rest: colonM[2] };
     var m = t.match(KEY_STARTERS);
     if(m){
       var key = m[0];
