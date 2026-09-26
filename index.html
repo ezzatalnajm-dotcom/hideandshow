@@ -113,6 +113,9 @@
   :root:not([data-theme="light"]) .pin-btn.pen{color:var(--gold-400);}
   .blank-wrap{display:inline;position:relative;}
   .blank-wrap .pin-btn.x{width:20px;height:20px;font-size:10px;margin-inline-start:2px;vertical-align:super;}
+  .title-pickable{outline:1px dashed transparent;border-radius:6px;transition:outline .15s, background .15s;}
+  .title-pickable:hover{outline-color:rgba(224,182,47,.55);background:rgba(224,182,47,.08);}
+  :root:not([data-theme="light"]) .title-pickable:hover{background:rgba(224,182,47,.12);}
 
   /* Custom selection mode */
   .selectable-word{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s ease;display:inline; -webkit-user-select:none; user-select:none;}
@@ -357,7 +360,7 @@
   var MODE_HINTS = {
     sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين",
     custom: "✏️ ١) حدّد ما يلزم إخفاؤه  ٢) احفظ التخصيص  ٣) اختبر نفسك",
-    headings: "🏷️ يخفي العناوين الفرعية حسب تنسيق الملف (Bold/عناوين Word). لو التنسيق مش واضح قد يخطئ — الأفضل مود الجمل أو التخصيص."
+    headings: "🏷️ يخفي العناوين الفرعية. اضغط على عنوان ظاهر لإخفائه. ✕ على المخفي لإلغاء الإخفاء الغلط."
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -1386,14 +1389,10 @@
         var unlocked = isUnlocked(id);
         span.classList.toggle("revealed", revealed);
         span.classList.toggle("locked", !revealed && !unlocked);
-        // ✕ and ✏️ only on parts the app actually hid (blanks)
+        // ✕ only on parts the app actually hid (blanks)
         if(!span.dataset.pinAttached){
           span.dataset.pinAttached = "1";
           var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
-          var blockEl = span.closest(".doc-block, .doc-subheading");
-          var contextText = blockEl ? (blockEl.textContent || "").replace(/[✕✏️]/g,"").trim().slice(0, 280) : "";
-          var actions = document.createElement("span");
-          actions.className = "pin-actions";
           var xBtn = document.createElement("button");
           xBtn.type = "button";
           xBtn.className = "pin-btn x";
@@ -1403,20 +1402,26 @@
             ev.preventDefault(); ev.stopPropagation();
             if(hideText) excludeFromHide(hideText);
           });
-          var penBtn = document.createElement("button");
-          penBtn.type = "button";
-          penBtn.className = "pin-btn pen";
-          penBtn.title = "تعديل التظليل (ناقص أو زايد)";
-          penBtn.textContent = "✏️";
-          penBtn.addEventListener("click", function(ev){
-            ev.preventDefault(); ev.stopPropagation();
-            openHideEditor(hideText, contextText);
-          });
-          actions.appendChild(xBtn);
-          actions.appendChild(penBtn);
-          if(span.parentNode) span.parentNode.insertBefore(actions, span.nextSibling);
+          if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
         }
       });
+      // Headings mode: user can tap a visible sub-title to force-hide it
+      if(state.mode === "headings"){
+        wrap.querySelectorAll(".doc-subheading, .doc-block").forEach(function(el){
+          // skip if already has a blank (already hidden)
+          if(el.querySelector(".blank")) return;
+          var txt = (el.textContent || "").replace(/[✕]/g,"").trim();
+          if(!txt || txt.length < 2 || txt.length > 90) return;
+          if(isTrivialFragment(txt) || LIST_MARKER_RE.test(txt) || BARE_ENUM_RE.test(txt) || NOT_TITLE_RE.test(txt)) return;
+          el.style.cursor = "pointer";
+          el.title = "اضغط لإخفاء هذا العنوان الفرعي";
+          el.classList.add("title-pickable");
+          el.addEventListener("click", function(ev){
+            if(ev.target.closest(".pin-btn, .blank, .rate-btn, .mic-mini")) return;
+            forceHideText(txt);
+          });
+        });
+      }
       wrap.querySelectorAll(".block-rate").forEach(function(row){
         var key = row.dataset.blockKey;
         var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
