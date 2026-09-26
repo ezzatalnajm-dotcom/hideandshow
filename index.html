@@ -85,7 +85,6 @@
 
   .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
   :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
-  :root:not([data-theme="light"]) #customGuide{color:var(--gold-400);}
 
   .doc-wrap{padding:8px 18px 16px;flex:1;}
   .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
@@ -96,37 +95,12 @@
   .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
   .doc-block b{font-weight:800;}
 
-  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);}
   .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
   .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
   :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
   :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
   .doc-subheading .blank{font-weight:800;}
-  .doc-block b .blank, .doc-block .blank b{font-weight:800;}
-  .pin-actions{display:inline-flex;gap:4px;margin-inline-start:6px;vertical-align:middle;}
-  .pin-btn{border:none;background:rgba(10,27,46,.06);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:0 0 auto;}
-  .pin-btn:active{transform:scale(.92);}
-  .pin-btn.x{color:#c94b4b;background:rgba(201,75,75,.12);}
-  .pin-btn.pen{color:var(--navy-900);background:rgba(224,182,47,.18);}
-  :root:not([data-theme="light"]) .pin-btn{background:rgba(255,255,255,.08);}
-  :root:not([data-theme="light"]) .pin-btn.x{color:#ff8a8a;background:rgba(201,75,75,.2);}
-  :root:not([data-theme="light"]) .pin-btn.pen{color:var(--gold-400);}
-  .blank-wrap{display:inline;position:relative;}
-  .blank-wrap .pin-btn.x{width:20px;height:20px;font-size:10px;margin-inline-start:2px;vertical-align:super;}
-  .title-pickable{outline:1px dashed transparent;border-radius:6px;transition:outline .15s, background .15s;}
-  .title-pickable:hover{outline-color:rgba(224,182,47,.55);background:rgba(224,182,47,.08);}
-  :root:not([data-theme="light"]) .title-pickable:hover{background:rgba(224,182,47,.12);}
-
-  /* Custom selection mode */
-  .selectable-word{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s ease;display:inline; -webkit-user-select:none; user-select:none;}
-  .selectable-word:hover{background:rgba(224,182,47,.15);}
-  .selectable-word.selected{background:rgba(224,182,47,.42); outline:1.5px solid var(--gold-500);}
-  .selecting-mode .doc-block, .selecting-mode .doc-subheading{user-select:none; -webkit-user-select:none;}
-  .selecting-mode .doc-block{line-height:2.4;}
-  #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
-  #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
-  :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
-  :root:not([data-theme="light"]) #btnRestartUnit{background:rgba(255,255,255,.1);color:var(--ink);}
 
   .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
   .block-rate.show{display:flex;}
@@ -227,29 +201,14 @@
         <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
-        <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
-      </div>
+      <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">يعتمد على تنسيق الملف</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
     </div>
-    <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
-    <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
-      <div style="margin-bottom:2px;">① حدّد ما يلزم إخفاؤه (اضغط أو مرّر على الكلمات)</div>
-      <div style="margin-bottom:2px;">② احفظ التخصيص</div>
-      <div>③ اختبر نفسك — اكشف جزء بجزء</div>
-    </div>
-    <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">① ابدأ التحديد</button>
-      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ التخصيص</button>
-      <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
-      <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
-    </div>
+    <div class="shuffle-note">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
 
     <div class="progress-wrap">
       <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
@@ -285,15 +244,13 @@
   <div class="modal">
     <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li>اختار مود المراجعة بالترتيب: <b>الجمل</b> → <b>تخصيص</b> → <b>العناوين</b>.</li>
-      <li>مود التخصيص على ٣ خطوات: ① حدّد ما يلزم إخفاؤه ② احفظ التخصيص ③ اختبر نفسك.</li>
-      <li>مود العناوين يعتمد على تنسيق الملف (خط سميك / عناوين Word) وقد يخطئ — الأفضل الجمل أو التخصيص.</li>
+      <li>اختار مود المراجعة: العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
       <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
-      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف — وفيها مفتاح تذكير ظاهر.</li>
+      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف.</li>
       <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
       <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
-      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق.</li>
-      <li>مود العناوين والجمل بيختاروا أجزاء مختلفة عشوائيًا في كل محاولة جديدة.</li>
+      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق، من كل المودات مع بعض.</li>
+      <li>كل مود بيختار أجزاء مختلفة عشوائيًا في كل محاولة جديدة — مش نفس الأماكن كل مرة.</li>
     </ol>
   </div>
 </div>
@@ -356,11 +313,10 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
   }
 
-  var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
+  var MODE_LABELS = { headings:"العناوين والفقرات", sentences:"الجمل" };
   var MODE_HINTS = {
-    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين",
-    custom: "✏️ ١) حدّد ما يلزم إخفاؤه  ٢) احفظ التخصيص  ٣) اختبر نفسك",
-    headings: "🏷️ يخفي العناوين الفرعية. اضغط على عنوان ظاهر لإخفائه. ✕ على المخفي لإلغاء الإخفاء الغلط."
+    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا. الفقرة اللي من غير عنوان، هتتخفي منها جمل بس مش كلها",
+    sentences: "✂️ جمل مفرّقة من كل الملزمة مموّهة عشوائيًا — بيتغيّر مكانها كل محاولة جديدة"
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -371,31 +327,8 @@
       .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
   function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  // Split text into words on whitespace only — never break an Arabic word in the middle
-  function splitIntoWords(text){
-    if(!text || !text.trim()) return [];
-    // Normalize tatweel and zero-width chars so they don't create fake splits
-    var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
-    return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
-  }
-
-  // Split into meaningful units. Treat . ! ؟ ? and also : and Arabic comma ، as separators
-  // so labels like "الوظيفة:" stay separate from the definition that follows.
   function splitSentences(text){
-    if(!text || !text.trim()) return [];
-    // First split on strong endings
-    var rough = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
-    var parts = [];
-    rough.forEach(function(chunk){
-      // Further split on colon or Arabic comma when they separate a short label from the rest
-      // e.g. "الوظيفة: تتكون من خلايا..." → ["الوظيفة:", "تتكون من خلايا..."]
-      var sub = chunk.split(/(?<=[:：])\s+|(?<=[،,;؛])\s+/).map(function(s){return s.trim();}).filter(Boolean);
-      if(sub.length > 1){
-        sub.forEach(function(s){ if(s) parts.push(s); });
-      } else {
-        parts.push(chunk);
-      }
-    });
+    var parts = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
     return parts.length ? parts : (text.trim()?[text.trim()]:[]);
   }
   function shuffleWith(arr, rnd){
@@ -491,145 +424,17 @@
      Random selection is stored per (malzama, mode) "attempt" and
      only reshuffled when the student starts a fresh attempt.
   ------------------------------------------------- */
-  // Bold lead-in label: <b>الوظيفة:</b> or <b>التركيب</b> at start of block
-  var LEAD_RE = /^(\s*<b>([^<]{1,50}?):?<\/b>\s*)/;
+  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
   var VERSE_RE = /\*\*\*/; // poetry/proverb separator seen in his ملازم
-
-  // List markers / ordinals that must NEVER be treated as sub-headings
-  var LIST_MARKER_RE = /^(أولا|أولًا|اولا|ثانيًا|ثانيا|ثالثا|ثالثًا|رابعا|رابعًا|خامسا|خامسًا|سادسا|سادسًا|سابعا|سابعًا|ثامنا|ثامنًا|تاسعا|تاسعًا|عاشرا|عاشرًا)([.:：\s]|$)/i;
-  var BARE_ENUM_RE = /^([أ-ي]|[a-zA-Z]|[0-9٠-٩]{1,3}|ال|الل|القط|لاحظ|\?|؟|💡)\s*[.)\:：]?\s*$/;
-  // Words that look like short labels but are NOT sub-headings
-  var NOT_TITLE_RE = /^(الل|القط|لاحظ|ملاحظة|تنبيه|مهم|مثال|مثل|انظر|انظري)[:：]?\s*$/i;
-
-  // Detect sub-heading / side-title blocks (ملازم often lack Word styles / bold in PDF)
-  function isSubHeadingBlock(html, plain){
-    var t = (plain || "").trim();
-    if(!t || t.length > 80) return false;
-    if(typeof isPromoOrVerse === "function" && isPromoOrVerse(t)) return false;
-    if(isTrivialFragment(t)) return false;
-    if(LIST_MARKER_RE.test(t)) return false;
-    if(BARE_ENUM_RE.test(t)) return false;
-    if(NOT_TITLE_RE.test(t)) return false;
-    if(/^(لاحظ|الل|القط)\b/i.test(t)) return false;
-    if(/^[:：.?؟!\-–—•●▪]+$/.test(t)) return false;
-    if(!/[\u0600-\u06FFa-zA-Z]{2,}/.test(t)) return false;
-
-    var h = (html || "").trim();
-    var words = t.split(/\s+/).filter(Boolean);
-
-    // 1) ends with colon → title label (الوظيفة: / التركيب:)
-    if(t.length <= 60 && /[:：]$/.test(t) && words.length <= 8) return true;
-
-    // 2) fully or mostly bold short line
-    if(/^<b>[\s\S]+<\/b>\s*$/i.test(h) && t.length >= 3) return true;
-    var boldLen = 0;
-    h.replace(/<b>([^<]*)<\/b>/gi, function(_, x){ boldLen += (x||"").length; });
-    if(t.length <= 70 && boldLen >= Math.max(3, t.length * 0.55)) return true;
-
-    // 3) short standalone title-like line (no sentence punctuation) — works for PDF plain text
-    // e.g. "التركيب" / "أنواع الأنسجة العضلية" / "الأهمية"
-    if(t.length <= 50 && words.length <= 7 && !/[.!?؟]/.test(t)) return true;
-
-    return false;
-  }
-  // Common key/reminder starters that should stay visible when possible
-  var KEY_STARTERS = /^(مثال|مثل|كـ|كـ |أي|منها|مثلًا|مثلا|مثلًا:|مثال:|مثل:|وهي|وهو|وهم|هن|هي|هو|وذلك|أي أن|بمعنى|مثلًا|على سبيل المثال)/i;
-
   function isTrivialFragment(s){
     var t = s.trim();
     if(t.length < 2) return true;
-    // bare enumeration letters: أ  ب  ج  د ... or أ) ب- etc.
-    if(/^[\u0621-\u064A]\s*[-.)]?\s*$/.test(t)) return true;
-    if(/^\(?[0-9٠-٩]+\)?[-.]?\s*$/.test(t)) return true;
-    if(/^[\u0621-\u064A0-9٠-٩]{1,2}\s*[-–—.]?\s*$/.test(t)) return true;
-    // ordinals: أولا ثانيا ...
-    if(LIST_MARKER_RE.test(t)) return true;
-    if(NOT_TITLE_RE.test(t)) return true;
-    // bare colon / punctuation / emoji markers
-    if(/^[:：.?؟!\-–—•●▪💡]+$/.test(t)) return true;
-    if(BARE_ENUM_RE.test(t)) return true;
+    if(/^[\u0621-\u064A]\s*[-.):]?\s*$/.test(t)) return true; // a bare enumeration letter: أ  ب  ج
+    if(/^\(?[0-9]+\)?[-.:]?\s*$/.test(t)) return true; // a bare number/list marker
     return false;
   }
-
-  /* ---- User exclusions (red X): never hide these texts again ---- */
-  function excludeKey(malzamaKey){ return "najm_exclude_" + malzamaKey; }
-  function forceHideKey(malzamaKey){ return "najm_forcehide_" + malzamaKey; }
-  function normExcludeText(t){ return String(t||"").replace(/\s+/g," ").trim().slice(0,200); }
-  function loadExcludeSet(malzamaKey){
-    try{ var raw=localStorage.getItem(excludeKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveExcludeSet(malzamaKey, set){ try{ localStorage.setItem(excludeKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
-  function loadForceHideSet(malzamaKey){
-    try{ var raw=localStorage.getItem(forceHideKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveForceHideSet(malzamaKey, set){ try{ localStorage.setItem(forceHideKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
-  function isExcludedText(malzamaKey, text){
-    var set = loadExcludeSet(malzamaKey);
-    return !!set[normExcludeText(text)];
-  }
-  function addExcludeText(malzamaKey, text){
-    var set = loadExcludeSet(malzamaKey);
-    set[normExcludeText(text)] = true;
-    saveExcludeSet(malzamaKey, set);
-  }
-
-  // Merge Arabic word + adjacent English translation into one hide unit
-  // e.g. "الدم blood" or "خطوط z (z line)"
-  function mergeBilingualUnits(parts){
-    var out = [];
-    for(var i=0;i<parts.length;i++){
-      var cur = parts[i];
-      var next = parts[i+1];
-      if(next){
-        var hasAr = /[\u0600-\u06FF]/.test(cur);
-        var hasEn = /[a-zA-Z]/.test(cur);
-        var nextEn = /[a-zA-Z]/.test(next);
-        var nextAr = /[\u0600-\u06FF]/.test(next);
-        // Arabic then English (or short latin token / parenthetical)
-        if(hasAr && !hasEn && nextEn && next.length <= 40){
-          out.push(cur + " " + next);
-          i++;
-          continue;
-        }
-        // English then Arabic
-        if(hasEn && !nextEn && nextAr && cur.length <= 40){
-          out.push(cur + " " + next);
-          i++;
-          continue;
-        }
-      }
-      out.push(cur);
-    }
-    return out;
-  }
-
-  // Try to split a sentence into (key part that stays visible) + (rest that can be hidden)
-  function splitKeyAndRest(sentence){
-    var t = sentence.trim();
-    // Label ending with colon: "الوظيفة:" or "مثال:"
-    var colonM = t.match(/^(.{1,40}[:：])\s+(.+)$/);
-    if(colonM && colonM[2].length > 6) return { key: colonM[1], rest: colonM[2] };
-    var m = t.match(KEY_STARTERS);
-    if(m){
-      var key = m[0];
-      var rest = t.slice(key.length).trim();
-      if(rest.length > 8) return { key: key, rest: rest };
-    }
-    // fallback: keep first 1-2 words as key if sentence is long enough
-    var words = t.split(/\s+/);
-    if(words.length >= 5){
-      var key2 = words.slice(0, 2).join(" ");
-      var rest2 = words.slice(2).join(" ");
-      if(rest2.length > 10) return { key: key2, rest: rest2 };
-    }
-    return null;
-  }
-
   // Pick a hidden subset of sentence indices: no two adjacent, never
   // all of them, never none of them (when 2+ real candidates exist).
-  // Prefer sentences that have a good key/reminder split.
   function pickSentenceHides(sentences, ratio, rnd){
     var candidates = sentences.map(function(s,i){return i;}).filter(function(i){ return !isTrivialFragment(sentences[i]); });
     if(candidates.length === 0) return {};
@@ -656,229 +461,75 @@
     return flat;
   }
 
-  function buildModel(rawPages, mode, seed, customSelected, excludeSet){
-    customSelected = customSelected || {};
-    excludeSet = excludeSet || {};
+  function buildModel(rawPages, mode, seed){
     var rnd = seededRandom(seed || 1);
     var globalId = 0, allIds = [];
     var unitByBlockKey = {};
     var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
-    var excludeSet = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
-    var forceHideSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
-    function excluded(text){
-      return !!excludeSet[normExcludeText(text)];
-    }
-    function forced(text){
-      var n = normExcludeText(text);
-      if(!n) return false;
-      if(forceHideSet[n]) return true;
-      // sentence contains a user-corrected phrase (min 4 chars)
-      var keys = Object.keys(forceHideSet);
-      for(var i=0;i<keys.length;i++){
-        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0) return true;
-      }
-      return false;
-    }
-    function forcedPhraseIn(text){
-      var n = normExcludeText(text);
-      var keys = Object.keys(forceHideSet);
-      var best = null;
-      for(var i=0;i<keys.length;i++){
-        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0){
-          if(!best || keys[i].length > best.length) best = keys[i];
-        }
-      }
-      return best;
-    }
 
     rawPages.forEach(function(page, pi){
       page.sections.forEach(function(sec, si){
         var secKeyPrefix = pi+"_"+si+"_";
         var blocksInfo = sec.blocks.map(function(html, bi){
           var m = html.match(LEAD_RE);
-          var label = m ? m[2] : null;
-          var restHtml = m ? html.slice(m[0].length) : html;
-          // Plain-text lead label without <b>: "الوظيفة: ...."
-          if(!label){
-            var plainLead = stripHtml(html);
-            var pm = plainLead.match(/^([\u0600-\u06FFA-Za-z0-9\s]{1,40}?[:：])\s+(.{9,})$/);
-            if(pm){
-              var cand = pm[1].replace(/[:：]\s*$/, "").trim();
-              if(cand && !isTrivialFragment(cand) && !LIST_MARKER_RE.test(cand) && !NOT_TITLE_RE.test(cand)){
-                label = cand;
-                restHtml = escapeHtml(pm[2]);
-              }
-            }
-          }
-          return { key: secKeyPrefix+bi, html: html, label: label, restHtml: restHtml };
+          return { key: secKeyPrefix+bi, html: html, label: m?m[2]:null, restHtml: m?html.slice(m[0].length):html };
         });
 
-        // Headings-only mode: hide real section sub-titles only (not list markers / الل / لاحظ).
-        // Keep page.heading (unit/lesson title) visible — never hidden.
         if(mode === "headings" && sec.sub){
-          var subT = String(sec.sub).trim();
-          var subIsMarker = isTrivialFragment(subT) || LIST_MARKER_RE.test(subT) || BARE_ENUM_RE.test(subT) || NOT_TITLE_RE.test(subT);
-          if(!subIsMarker && !excluded(subT) && subT.length >= 3){
+          var hideSectionHeading = rnd() < 0.5;
+          if(hideSectionHeading){
             globalId++; var shid = globalId; allIds.push(shid);
             sectionHeadingBlankByKey[pi+"_"+si] = shid;
+            // whole section stays fully visible this round so the
+            // heading is still guessable from context
+            blocksInfo.forEach(function(bi2){ unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; });
+            return; // section done
           }
         }
 
-        var lastInlineHid = null;
+        var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
         blocksInfo.forEach(function(bi2){
-          if(mode === "custom"){
-            // Custom: hide word ranges the user selected.
-            // Keys look like: "blockKey|w|startIdx|endIdx" (inclusive word indices)
-            // Also support legacy sentence keys "blockKey|si" by ignoring them if no match.
-            if(isPromoOrVerse(stripHtml(bi2.html))){
-              unitByBlockKey[bi2.key] = { renderHtml: "", blankIds: [] };
-            } else {
-              var wordsC = splitIntoWords(stripHtml(bi2.html));
-              var idsC = [];
-              // Collect selected ranges for this block
-              var ranges = [];
-              Object.keys(customSelected).forEach(function(k){
-                if(k.indexOf(bi2.key + "|w|") === 0){
-                  var parts = k.split("|");
-                  var a = +parts[2], b = +parts[3];
-                  if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
-                }
-              });
-              // expand each range to keep Arabic + English translation together, then merge
-              ranges = ranges.map(function(r){ return expandBilingualRange(wordsC, r[0], r[1]); });
-              ranges.sort(function(x,y){ return x[0]-y[0]; });
-              var merged = [];
-              ranges.forEach(function(r){
-                if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
-                else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
-              });
-              if(wordsC.length === 0 || merged.length === 0){
-                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+          if(mode === "headings"){
+            if(bi2.label){
+              var hideHeading;
+              if(lastInlineHid === null) hideHeading = rnd() < 0.5;
+              else hideHeading = !lastInlineHid;
+              lastInlineHid = hideHeading;
+              if(hideHeading){
+                globalId++; var idL=globalId; allIds.push(idL);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
               } else {
-                var htmlParts = [];
-                var wi = 0;
-                merged.forEach(function(r){
-                  while(wi < r[0] && wi < wordsC.length){ htmlParts.push(escapeHtml(wordsC[wi])); wi++; }
-                  if(wi <= r[1] && wi < wordsC.length){
-                    globalId++; idsC.push(globalId); allIds.push(globalId);
-                    var hidden = [];
-                    while(wi <= r[1] && wi < wordsC.length){ hidden.push(wordsC[wi]); wi++; }
-                    htmlParts.push('<span class="blank" data-id="'+globalId+'">'+escapeHtml(hidden.join(" "))+'</span>');
-                  }
-                });
-                while(wi < wordsC.length){ htmlParts.push(escapeHtml(wordsC[wi])); wi++; }
-                var outHtml = htmlParts.join(" ");
-                // Re-apply bold on leading label if original had <b>label:</b>
-                if(bi2.label){
-                  var labelEsc = escapeHtml(bi2.label);
-                  var reLabel = new RegExp("^("+labelEsc.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*:?)");
-                  outHtml = outHtml.replace(reLabel, "<b>$1</b>");
-                }
-                unitByBlockKey[bi2.key] = { renderHtml: outHtml, blankIds: idsC };
+                globalId++; var idD=globalId; allIds.push(idD);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+bi2.label+':</b> <span class="blank" data-id="'+idD+'">'+stripHtml(bi2.restHtml)+'</span>', blankIds:[idD] };
               }
-            }
-          } else if(mode === "headings"){
-            // Fixed: hide side titles / short title-lines. Never page.heading.
-            var plainH = stripHtml(bi2.html);
-            var idsH = [];
-            function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-            function blankSpan(txt){
-              globalId++; idsH.push(globalId); allIds.push(globalId);
-              return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(txt)+'">'+escapeHtml(txt)+'</span>';
-            }
-            function isMarkerTxt(t){
-              t = (t||"").trim();
-              return !t || isTrivialFragment(t) || LIST_MARKER_RE.test(t) || BARE_ENUM_RE.test(t) || NOT_TITLE_RE.test(t) || /^(لاحظ|الل|القط)\b/.test(t);
-            }
-            if(excluded(plainH)){
-              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-            } else if(forced(plainH) && plainH.length <= 120){
-              unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
             } else {
-              // Split block into lines (PDF often puts each title on its own line)
-              var lines = plainH.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
-              if(lines.length <= 1){
-                // try sentence-like split for "عنوان. شرح..."
-                lines = plainH.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
-                if(lines.length <= 1) lines = [plainH];
-              }
-              // Apply forced phrases inside the block
-              var fp = forcedPhraseIn(plainH);
-              if(fp && !excluded(fp) && plainH.indexOf(fp) >= 0){
-                var bi = plainH.indexOf(fp);
-                var htmlF = escapeHtml(plainH.slice(0,bi)) + blankSpan(fp) + escapeHtml(plainH.slice(bi+fp.length));
-                unitByBlockKey[bi2.key] = { renderHtml: htmlF, blankIds: idsH };
-              } else if(lines.length >= 2){
-                var htmlLines = lines.map(function(line){
-                  if(excluded(line) || isMarkerTxt(line)) return escapeHtml(line);
-                  if(forced(line) || isSubHeadingBlock("", line)) return blankSpan(line);
-                  // leading label in line
-                  var lm = line.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
-                  if(lm && !isMarkerTxt(lm[1])){
-                    return blankSpan(lm[1]) + " " + escapeHtml(lm[2]);
-                  }
-                  return escapeHtml(line);
-                });
-                unitByBlockKey[bi2.key] = { renderHtml: htmlLines.join("<br>"), blankIds: idsH };
-              } else if(bi2.label && !isMarkerTxt(bi2.label) && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
-                var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
-                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(labelShow)+'</b> '+bi2.restHtml, blankIds: idsH };
-              } else if(isSubHeadingBlock(bi2.html, plainH)){
-                unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
+              lastInlineHid = null;
+              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+              if(sentences.length <= 1){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; // too short to safely blank — stays visible
               } else {
-                // last try: leading plain label
-                var pm2 = plainH.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
-                if(pm2 && !isMarkerTxt(pm2[1])){
-                  unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(pm2[1])+'</b> '+escapeHtml(pm2[2]), blankIds: idsH };
-                } else {
-                  unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-                }
+                var hideSet = pickSentenceHides(sentences, 0.5, rnd);
+                var ids = [];
+                var html2 = sentences.map(function(s,i){
+                  if(hideSet[i]){ globalId++; ids.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+                  return s;
+                }).join(" ");
+                unitByBlockKey[bi2.key] = { renderHtml: html2, blankIds: ids };
               }
             }
-          } else if(mode === "sentences"){ // 'sentences' mode
-            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
-            sents = mergeBilingualUnits(sents);
+          } else { // 'sentences' mode
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
             if(sents.length === 0){
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             } else {
-              var hSet = pickSentenceHides(sents, 0.45, rnd);
-              // force-hide user-pinned sentences/phrases; respect exclusions
-              sents.forEach(function(s, ix){ if(forced(s)) hSet[ix] = true; });
-              Object.keys(hSet).forEach(function(ix){ if(excluded(sents[ix])) delete hSet[ix]; });
+              var hSet = pickSentenceHides(sents, 0.5, rnd);
               var ids2 = [];
-              var anyForcedPhrase = sents.some(function(s){ var fp=forcedPhraseIn(s); return fp && !excluded(fp); });
-              var anyHidden = Object.keys(hSet).length > 0 || anyForcedPhrase;
-              if(!anyHidden){
-                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-              } else {
-                var html3 = sents.map(function(s,i){
-                  if(hSet[i]){
-                    globalId++; ids2.push(globalId); allIds.push(globalId);
-                    var phrase = forcedPhraseIn(s);
-                    if(phrase && s.indexOf(phrase) >= 0 && phrase.length < s.length){
-                      var before = s.slice(0, s.indexOf(phrase));
-                      var after = s.slice(s.indexOf(phrase) + phrase.length);
-                      return escapeHtml(before) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(phrase)+'">'+escapeHtml(phrase)+'</span>' + escapeHtml(after);
-                    }
-                    var kr2 = splitKeyAndRest(s);
-                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(kr2.rest)+'</span>';
-                    return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(s)+'</span>';
-                  }
-                  // not randomly hidden — but user may have forced a phrase inside
-                  var fp = forcedPhraseIn(s);
-                  if(fp && !excluded(fp)){
-                    globalId++; ids2.push(globalId); allIds.push(globalId);
-                    var bi = s.indexOf(fp);
-                    return escapeHtml(s.slice(0,bi)) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(fp)+'">'+escapeHtml(fp)+'</span>' + escapeHtml(s.slice(bi+fp.length));
-                  }
-                  return escapeHtml(s);
-                }).join(" ");
-                anyHidden = ids2.length > 0;
-                unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+escapeHtml(bi2.label)+':</b> ':'') + html3, blankIds: ids2 };
-              }
+              var html3 = sents.map(function(s,i){
+                if(hSet[i]){ globalId++; ids2.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+                return s;
+              }).join(" ");
+              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + html3, blankIds: ids2 };
             }
-          } else {
-            unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
           }
         });
       });
@@ -889,119 +540,22 @@
         var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
         var blocks = sec.blocks.map(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
-          var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [] };
-          // Skip poetry / promo blocks entirely in every mode
-          if(isPromoOrVerse(stripHtml(html))){
-            return null;
-          }
-          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html };
-        }).filter(Boolean);
-        return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, subBlankId: subBlankId, blocks: blocks };
-      }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
+          var unit = unitByBlockKey[key];
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html) };
+        });
+        return { sub: sec.sub, subBlankId: subBlankId, blocks: blocks };
+      });
       return { heading: page.heading, sections: sections };
-    }).filter(function(p){ return p.sections.length > 0; });
+    });
 
     return { pages: pages, allIds: allIds };
   }
 
-  function isPromoOrVerse(text){
-    if(!text) return false;
-    var t = text.trim();
-    if(/\*\*\*/.test(t)) return true;
-    if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(t)) return true;
-    if(/https?:\/\/|t\.me\/|youtube\.com|youtu\.be|wixsite/i.test(t) && t.length > 40) return true;
-    if(t.length > 100 && /تليجرام|يوتيوب|واتساب/.test(t) && /رابط|انضم|تابع|قناة/.test(t)) return true;
-    return false;
-  }
-
   /* ---------- State ---------- */
-  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"sentences", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0 };
   var MODEL = null, RAW_PAGES = null;
 
   function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
-  function customKey(malzamaKey){ return "najm_custom_" + malzamaKey; }
-  function loadCustomSelection(malzamaKey){
-    try{ var raw = localStorage.getItem(customKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {}; // { blockKey: true, ... }
-  }
-  function saveCustomSelection(malzamaKey, sel){
-    try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
-  }
-  // Expand a word-index range so Arabic word + its English translation stay together
-  function expandBilingualRange(words, lo, hi){
-    var a = lo, b = hi;
-    while(b + 1 < words.length){
-      var n = words[b+1];
-      if(/^\([\w\s\-\/%+]+\)$/.test(n) || /^[A-Za-z][A-Za-z0-9\-\s]{1,30}$/.test(n)){ b++; continue; }
-      break;
-    }
-    while(a > 0){
-      var cur = words[a];
-      if(/^\([\w\s\-\/%+]+\)$/.test(cur) || (/^[A-Za-z]/.test(cur) && /[\u0600-\u06FF]/.test(words[a-1]||""))){ a--; continue; }
-      break;
-    }
-    return [a, b];
-  }
-
-  function excludeFromHide(text){
-    if(!text) return;
-    addExcludeText(state.malzamaKey, text);
-    loadProgress(false);
-    showToast("تم إلغاء إخفاء الجزء ده ✕");
-    renderPage();
-  }
-  function forceHideText(text){
-    if(!text) return;
-    text = String(text).replace(/\s+/g," ").trim();
-    if(text.length < 2) return;
-    var set = loadForceHideSet(state.malzamaKey);
-    set[normExcludeText(text)] = true;
-    var ex = loadExcludeSet(state.malzamaKey);
-    delete ex[normExcludeText(text)];
-    saveExcludeSet(state.malzamaKey, ex);
-    saveForceHideSet(state.malzamaKey, set);
-    loadProgress(false);
-    showToast("تم إخفاء: " + text.slice(0, 40) + (text.length>40?"…":""));
-    renderPage();
-  }
-  // Pen: edit wrong hide (too short / too long) — replace old hide with corrected phrase
-  function openHideEditor(oldText, contextText){
-    var existing = $("hideEditModal");
-    if(existing) existing.remove();
-    var modal = document.createElement("div");
-    modal.id = "hideEditModal";
-    modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;";
-    var box = document.createElement("div");
-    box.style.cssText = "background:var(--card,#fff);color:var(--ink,#111);border-radius:16px;padding:16px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);";
-    box.innerHTML =
-      '<div style="font-weight:800;font-size:15px;margin-bottom:8px;">✏️ تعديل الإخفاء</div>'+
-      '<div style="font-size:12px;color:var(--muted,#666);margin-bottom:8px;line-height:1.6;">عدّل النص اللي المفروض يتخفي (وسّع لو ناقص زي «اللي» → «الليف العضلي»، أو قصّر لو زايد).</div>'+
-      (contextText ? '<div style="font-size:11.5px;background:rgba(0,0,0,.04);padding:8px;border-radius:8px;margin-bottom:8px;line-height:1.7;max-height:90px;overflow:auto;">'+escapeHtml(contextText)+'</div>' : '')+
-      '<textarea id="hideEditInput" rows="3" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:10px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>'+
-      '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">'+
-        '<button type="button" id="hideEditSave" style="flex:1;border:none;border-radius:999px;padding:10px;font-weight:800;background:linear-gradient(150deg,var(--gold-400,#e0b62f),var(--gold-600,#c49a1a));color:#0a1b2e;cursor:pointer;">حفظ التعديل</button>'+
-        '<button type="button" id="hideEditCancel" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;background:rgba(0,0,0,.06);cursor:pointer;">إلغاء</button>'+
-      '</div>';
-    modal.appendChild(box);
-    document.body.appendChild(modal);
-    var input = box.querySelector("#hideEditInput");
-    input.value = oldText || "";
-    input.focus();
-    input.select();
-    box.querySelector("#hideEditCancel").onclick = function(){ modal.remove(); };
-    modal.addEventListener("click", function(e){ if(e.target === modal) modal.remove(); });
-    box.querySelector("#hideEditSave").onclick = function(){
-      var neu = (input.value || "").trim();
-      if(!neu){ showToast("اكتب النص المطلوب إخفاؤه"); return; }
-      // exclude the wrong (old) hide, force the corrected phrase
-      if(oldText && normExcludeText(oldText) !== normExcludeText(neu)){
-        addExcludeText(state.malzamaKey, oldText);
-      }
-      forceHideText(neu);
-      modal.remove();
-    };
-  }
-
   function loadProgress(reshuffle){
     var pk = progressKey(state.malzamaKey, state.mode);
     var seed = null;
@@ -1013,17 +567,9 @@
         seed = d.seed;
       }
     }catch(e){}
-    // Headings mode is always fixed — stable seed
-    if(state.mode === "headings"){
-      seed = 1;
-      if(reshuffle){ state.revealedIds={}; state.blockRatings={}; state.page=0; }
-    } else if(!seed){
-      seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0;
-    }
+    if(!seed){ seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0; }
     state.seed = seed;
-    state.customSelected = loadCustomSelection(state.malzamaKey);
-    state.excludeSet = loadExcludeSet(state.malzamaKey);
-    MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, state.excludeSet);
+    MODEL = buildModel(RAW_PAGES, state.mode, seed);
     saveProgress();
   }
   function saveProgress(){
@@ -1056,8 +602,7 @@
     var revealed = {}, seed = null;
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
-    var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
-    var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey));
+    var model = buildModel(raw, mode, seed);
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
   }
@@ -1071,7 +616,7 @@
       return;
     }
     index.forEach(function(entry, i){
-      var comp = completionFor(entry.key, "sentences");
+      var comp = completionFor(entry.key, "headings");
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
@@ -1107,22 +652,14 @@
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    setMode(state.mode || "sentences", true);
+    setMode(state.mode || "headings", true);
   }
 
   function setMode(mode, skipToast, reshuffle){
-    state.mode = mode; state.freeMode = false; state.selecting = false;
+    state.mode = mode; state.freeMode = false;
     loadProgress(reshuffle);
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
-    $("hintBanner").textContent = MODE_HINTS[mode] || "";
-    var isCustom = mode === "custom";
-    $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
-    $("customGuide").classList.toggle("hidden", !isCustom);
-    $("customToolbar").classList.toggle("hidden", !isCustom);
-    $("btnStartSelect").classList.remove("hidden");
-    $("btnSaveCustom").classList.add("hidden");
-    $("btnClearCustom").classList.add("hidden");
-    $("customSelectCount").textContent = "";
+    $("hintBanner").textContent = MODE_HINTS[mode];
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -1145,267 +682,30 @@
     $("pageText").textContent = "صفحة " + ar(state.page+1) + " من " + ar(MODEL.pages.length);
   }
 
-  // Parse original HTML into word spans, preserving <b>
-  function renderSelectableBlock(bd, block){
-    var src = block.originalHtml || block.html || escapeHtml(block.plainText || "");
-    // Convert HTML to a flat list of {text, bold} runs then to words
-    var tmp = document.createElement("div");
-    tmp.innerHTML = src;
-    var runs = [];
-    function walk(node, bold){
-      if(node.nodeType === 3){
-        var t = node.textContent;
-        if(t) runs.push({ text: t, bold: !!bold });
-      } else if(node.nodeType === 1){
-        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
-        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
-      }
-    }
-    walk(tmp, false);
-    // Build words with bold flag
-    var wordList = [];
-    runs.forEach(function(run){
-      var parts = run.text.split(/(\s+)/);
-      parts.forEach(function(p){
-        if(!p) return;
-        if(/^\s+$/.test(p)){
-          // whitespace — attach to previous or skip
-        } else {
-          wordList.push({ text: p, bold: run.bold });
-        }
-      });
-    });
-    if(wordList.length === 0){
-      bd.textContent = block.plainText || "";
-      return;
-    }
-    // Determine which word indices are already selected (from stored ranges)
-    var selectedIdx = {};
-    Object.keys(state.customSelected).forEach(function(k){
-      if(k.indexOf(block.key + "|w|") === 0){
-        var parts = k.split("|");
-        var a = +parts[2], b = +parts[3];
-        if(!isNaN(a) && !isNaN(b)){
-          for(var i=Math.min(a,b); i<=Math.max(a,b); i++) selectedIdx[i] = true;
-        }
-      }
-    });
-    wordList.forEach(function(w, idx){
-      var span = document.createElement("span");
-      span.className = "selectable-word";
-      span.dataset.blockKey = block.key;
-      span.dataset.wordIdx = idx;
-      span.textContent = w.text;
-      if(w.bold){ span.style.fontWeight = "800"; }
-      if(selectedIdx[idx]) span.classList.add("selected");
-      bd.appendChild(span);
-      bd.appendChild(document.createTextNode(" "));
-    });
-    bd.dataset.wordCount = wordList.length;
-  }
-
-  var _selDrag = { active:false, moved:false, blockKey:null, startIdx:-1, endIdx:-1, lastTap:0, lastTapIdx:-1, lastTapKey:null };
-
-  function bindWordSelection(wrap){
-    function updateCount(){
-      var count = Object.keys(state.customSelected).length;
-      $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "اضغط كلمة · مرّر لجزء · ضغطتين للجملة · اضغط تاني للإلغاء";
-    }
-    function isIdxSelected(blockKey, idx){
-      var keys = Object.keys(state.customSelected);
-      for(var i=0;i<keys.length;i++){
-        var k = keys[i];
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) return true;
-        }
-      }
-      return false;
-    }
-    function clearOverlapping(blockKey, lo, hi){
-      Object.keys(state.customSelected).forEach(function(k){
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          if(y >= lo && x <= hi) delete state.customSelected[k];
-        }
-      });
-    }
-    function repaintBlock(blockKey){
-      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
-      if(!blockEl) return;
-      var selectedIdx = {};
-      Object.keys(state.customSelected).forEach(function(k){
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          for(var i=Math.min(x,y);i<=Math.max(x,y);i++) selectedIdx[i]=true;
-        }
-      });
-      blockEl.querySelectorAll(".selectable-word").forEach(function(sp){
-        sp.classList.toggle("selected", !!selectedIdx[+sp.dataset.wordIdx]);
-      });
-      updateCount();
-    }
-    function setRange(blockKey, a, b){
-      var lo = Math.min(a,b), hi = Math.max(a,b);
-      clearOverlapping(blockKey, lo, hi);
-      state.customSelected[blockKey + "|w|" + lo + "|" + hi] = true;
-      repaintBlock(blockKey);
-    }
-    function removeRangeCovering(blockKey, idx){
-      Object.keys(state.customSelected).forEach(function(k){
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) delete state.customSelected[k];
-        }
-      });
-      repaintBlock(blockKey);
-    }
-    // Find sentence word-range containing idx (split by . ! ؟ : ،)
-    function sentenceRangeForWord(blockEl, idx){
-      var words = blockEl.querySelectorAll(".selectable-word");
-      var n = words.length;
-      if(n === 0) return [idx, idx];
-      var start = idx, end = idx;
-      // expand left until strong punctuation at end of previous word
-      while(start > 0){
-        var prev = words[start-1].textContent || "";
-        if(/[.!؟?:：،,;؛]$/.test(prev.trim())) break;
-        start--;
-      }
-      // expand right until this word ends with strong punctuation
-      while(end < n-1){
-        var cur = words[end].textContent || "";
-        if(/[.!؟?:：،,;؛]$/.test(cur.trim())) break;
-        end++;
-      }
-      return [start, end];
-    }
-    function wordFromEvent(e){
-      var t = e.target;
-      if(t && t.classList && t.classList.contains("selectable-word")) return t;
-      var pt = null;
-      if(e.touches && e.touches[0]) pt = e.touches[0];
-      else if(e.changedTouches && e.changedTouches[0]) pt = e.changedTouches[0];
-      if(pt){
-        var el = document.elementFromPoint(pt.clientX, pt.clientY);
-        if(el && el.classList && el.classList.contains("selectable-word")) return el;
-      }
-      return null;
-    }
-    function onStart(e){
-      var w = wordFromEvent(e);
-      if(!w) return;
-      var blockKey = w.dataset.blockKey;
-      var idx = +w.dataset.wordIdx;
-      var now = Date.now();
-      // Double-tap same word → toggle whole sentence containing it
-      if(_selDrag.lastTapKey === blockKey && _selDrag.lastTapIdx === idx && (now - _selDrag.lastTap) < 400){
-        var range = sentenceRangeForWord(w.parentElement, idx);
-        var allOn = true;
-        for(var i=range[0];i<=range[1];i++){ if(!isIdxSelected(blockKey, i)){ allOn=false; break; } }
-        if(allOn) removeRangeCovering(blockKey, idx);
-        else setRange(blockKey, range[0], range[1]);
-        _selDrag.lastTap = 0;
-        _selDrag.lastTapKey = null;
-        _selDrag.lastTapIdx = -1;
-        _selDrag.active = false;
-        e.preventDefault();
-        return;
-      }
-      _selDrag.lastTap = now;
-      _selDrag.lastTapKey = blockKey;
-      _selDrag.lastTapIdx = idx;
-      _selDrag.active = true;
-      _selDrag.moved = false;
-      _selDrag.blockKey = blockKey;
-      _selDrag.startIdx = idx;
-      _selDrag.endIdx = idx;
-      e.preventDefault();
-    }
-    function onMove(e){
-      if(!_selDrag.active) return;
-      var w = wordFromEvent(e);
-      if(!w || w.dataset.blockKey !== _selDrag.blockKey) return;
-      var idx = +w.dataset.wordIdx;
-      if(idx === _selDrag.endIdx) return;
-      _selDrag.moved = true;
-      _selDrag.endIdx = idx;
-      // live preview of drag range
-      setRange(_selDrag.blockKey, _selDrag.startIdx, _selDrag.endIdx);
-      e.preventDefault();
-    }
-    function onEnd(e){
-      if(!_selDrag.active) return;
-      var blockKey = _selDrag.blockKey;
-      var a = _selDrag.startIdx, b = _selDrag.endIdx;
-      if(!_selDrag.moved){
-        // Single tap: toggle this word (or the range covering it)
-        if(isIdxSelected(blockKey, a)) removeRangeCovering(blockKey, a);
-        else setRange(blockKey, a, a);
-      }
-      // if moved, range already applied in onMove
-      _selDrag.active = false;
-      _selDrag.moved = false;
-    }
-    wrap.addEventListener("mousedown", onStart);
-    wrap.addEventListener("mousemove", onMove);
-    wrap.addEventListener("mouseup", onEnd);
-    wrap.addEventListener("mouseleave", onEnd);
-    wrap.addEventListener("touchstart", onStart, {passive:false});
-    wrap.addEventListener("touchmove", onMove, {passive:false});
-    wrap.addEventListener("touchend", onEnd);
-    updateCount();
-  }
-
   function renderPage(){
     renderProgress();
     var wrap = $("docWrap");
     wrap.innerHTML = "";
     var page = MODEL.pages[state.page];
-    if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
-
-    // If custom mode and nothing selected yet (and not currently selecting)
-    if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ضغطتين للجملة · اضغط تاني للإلغاء · ثم احفظ.</div>';
-      updateNavButtons();
-      return;
-    }
-
     var docCard = document.createElement("div");
-    docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
+    docCard.className = "doc-card";
     docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
-
-    // When selecting in custom mode, show original clean text (no blanks)
-    var useClean = state.selecting && state.mode === "custom";
 
     page.sections.forEach(function(sec){
       if(sec.sub){
         var sh = document.createElement("div");
         sh.className = "doc-subheading";
-        if(useClean){
-          sh.textContent = sec.sub;
-        } else {
-          sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'" data-hide-text="'+String(sec.sub).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'">'+sec.sub+'</span>' : sec.sub;
-        }
+        sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
         docCard.appendChild(sh);
       }
       sec.blocks.forEach(function(block){
         var bd = document.createElement("div");
         bd.className = "doc-block";
         bd.dataset.blockKey = block.key;
-        if(useClean){
-          // Word-level selection with bold preserved from original HTML
-          renderSelectableBlock(bd, block);
-        } else {
-          bd.innerHTML = block.html;
-        }
+        bd.innerHTML = block.html;
         docCard.appendChild(bd);
 
-        if(!useClean && block.blankIds.length > 0){
+        if(block.blankIds.length > 0){
           var rateRow = document.createElement("div");
           rateRow.className = "block-rate";
           rateRow.dataset.blockKey = block.key;
@@ -1425,88 +725,47 @@
     });
     wrap.appendChild(docCard);
 
-    if(useClean){
-      bindWordSelection(wrap);
-    } else {
-      wrap.querySelectorAll(".blank").forEach(function(span){
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      var id = +span.dataset.id;
+      var revealed = !!state.revealedIds[id];
+      var unlocked = isUnlocked(id);
+      span.classList.toggle("revealed", revealed);
+      span.classList.toggle("locked", !revealed && !unlocked);
+    });
+    wrap.querySelectorAll(".block-rate").forEach(function(row){
+      var key = row.dataset.blockKey;
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+      var blanksInBlock = blockEl.querySelectorAll(".blank");
+      var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
+      row.classList.toggle("show", allRevealed);
+    });
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      span.addEventListener("click", function(){
         var id = +span.dataset.id;
-        var revealed = !!state.revealedIds[id];
-        var unlocked = isUnlocked(id);
-        span.classList.toggle("revealed", revealed);
-        span.classList.toggle("locked", !revealed && !unlocked);
-        // ✕ only on parts the app actually hid (blanks)
-        if(!span.dataset.pinAttached){
-          span.dataset.pinAttached = "1";
-          var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
-          var xBtn = document.createElement("button");
-          xBtn.type = "button";
-          xBtn.className = "pin-btn x";
-          xBtn.title = "إلغاء الإخفاء الغلط";
-          xBtn.textContent = "✕";
-          xBtn.addEventListener("click", function(ev){
-            ev.preventDefault(); ev.stopPropagation();
-            if(hideText) excludeFromHide(hideText);
-          });
-          if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
+        if(state.revealedIds[id]) return;
+        if(!isUnlocked(id)){
+          state.stuckTaps = (state.stuckTaps||0) + 1;
+          if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
+          else showToast("خلّص الجزء اللي قبل ده الأول");
+          return;
         }
+        state.stuckTaps = 0;
+        revealBlank(id);
       });
-      // Headings mode: tap a visible side-title to force-hide it
-      if(state.mode === "headings"){
-        wrap.querySelectorAll(".doc-subheading, .doc-block").forEach(function(el){
-          if(el.querySelector(".blank")) return;
-          var txt = (el.textContent || "").replace(/[✕]/g,"").replace(/\s+/g," ").trim();
-          if(!txt || txt.length < 2) return;
-          // Prefer first short line if block is long
-          var firstLine = txt.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/)[0].trim();
-          var target = (firstLine.length >= 2 && firstLine.length <= 70) ? firstLine : txt;
-          if(target.length > 100) return;
-          if(isTrivialFragment(target) || LIST_MARKER_RE.test(target) || BARE_ENUM_RE.test(target) || NOT_TITLE_RE.test(target)) return;
-          el.style.cursor = "pointer";
-          el.title = "اضغط لإخفاء العنوان: " + target.slice(0, 40);
-          el.classList.add("title-pickable");
-          el.addEventListener("click", function(ev){
-            if(ev.target.closest(".pin-btn, .blank, .rate-btn, .mic-mini")) return;
-            ev.preventDefault();
-            forceHideText(target);
-          });
-        });
-      }
-      wrap.querySelectorAll(".block-rate").forEach(function(row){
-        var key = row.dataset.blockKey;
+    });
+    wrap.querySelectorAll(".rate-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var key = btn.dataset.key;
+        state.blockRatings[key] = btn.dataset.rate;
+        saveProgress();
         var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
-        if(!blockEl) return;
-        var blanksInBlock = blockEl.querySelectorAll(".blank");
-        var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
-        row.classList.toggle("show", allRevealed);
+        setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
+        renderPage();
       });
-      wrap.querySelectorAll(".blank").forEach(function(span){
-        span.addEventListener("click", function(){
-          var id = +span.dataset.id;
-          if(state.revealedIds[id]) return;
-          if(!isUnlocked(id)){
-            state.stuckTaps = (state.stuckTaps||0) + 1;
-            if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
-            else showToast("خلّص الجزء اللي قبل ده الأول");
-            return;
-          }
-          state.stuckTaps = 0;
-          revealBlank(id);
-        });
-      });
-      wrap.querySelectorAll(".rate-btn").forEach(function(btn){
-        btn.addEventListener("click", function(){
-          var key = btn.dataset.key;
-          state.blockRatings[key] = btn.dataset.rate;
-          saveProgress();
-          var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
-          setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
-          renderPage();
-        });
-      });
-      wrap.querySelectorAll(".mic-mini").forEach(function(btn){
-        btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
-      });
-    }
+    });
+    wrap.querySelectorAll(".mic-mini").forEach(function(btn){
+      btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+    });
 
     updateNavButtons();
   }
@@ -1564,43 +823,11 @@
     return null;
   }
   function updateNavButtons(){
-    $("btnPrevPage").disabled = state.page===0 || state.selecting;
-    $("btnNextPage").disabled = state.page===MODEL.pages.length-1 || state.selecting;
+    $("btnPrevPage").disabled = state.page===0;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1;
     var next = nextUnrevealedOnPage();
-    // Also look globally if nothing on current page (student may not see it)
-    if(!next) next = firstUnrevealedGlobal();
-    $("btnReveal").disabled = !next || state.selecting;
-    $("btnReveal").onclick = function(){
-      if(state.selecting) return;
-      var onPage = nextUnrevealedOnPage();
-      if(onPage){
-        state.stuckTaps = 0;
-        revealBlank(onPage);
-        return;
-      }
-      // Nothing visible on this page — count as stuck press
-      state.stuckTaps = (state.stuckTaps||0) + 1;
-      if(state.stuckTaps >= 3){
-        state.stuckTaps = 0;
-        handleStuckSkip();
-      } else {
-        var globalNext = firstUnrevealedGlobal();
-        if(globalNext){
-          // try to jump to the page that contains it
-          for(var pi=0; pi<MODEL.pages.length; pi++){
-            var p = MODEL.pages[pi];
-            for(var s=0;s<p.sections.length;s++){
-              var sec = p.sections[s];
-              if(sec.subBlankId === globalNext){ state.page = pi; saveProgress(); renderPage(); showToast("انتقلنا للصفحة اللي فيها الجزء المخفي"); return; }
-              for(var b=0;b<sec.blocks.length;b++){
-                if(sec.blocks[b].blankIds.indexOf(globalNext) >= 0){ state.page = pi; saveProgress(); renderPage(); showToast("انتقلنا للصفحة اللي فيها الجزء المخفي"); return; }
-              }
-            }
-          }
-        }
-        showToast("مفيش جزء ظاهر هنا — اضغط تاني أو غيّر الصفحة (" + ar(state.stuckTaps) + "/٣)");
-      }
-    };
+    $("btnReveal").disabled = !next;
+    $("btnReveal").onclick = function(){ if(next) revealBlank(next); };
   }
   function finishUnit(){
     var know=0, review=0;
@@ -1724,7 +951,6 @@
 
     paragraphs.forEach(function(p){
       if(!p.text.trim()) return;
-      if(isPromoOrVerse(p.text)) return; // drop poetry & promo entirely
       if(p.level === 1){
         if(!docHeading) docHeading = p.text.trim();
         newPage(p.text.trim()); newSection(null);
@@ -1772,20 +998,7 @@
             var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
             var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
             var runs = paragraphToRuns(pEl);
-            var html = runsToHtml(runs);
-            var text = runsToPlainText(runs);
-            // Heuristic: short fully-bold paragraph → treat as sub-heading (level 2)
-            // Skip list markers: أولا، أ.، 1، : etc.
-            if(!level && text.trim().length > 0 && text.trim().length <= 80){
-              var tTrim = text.trim();
-              var isMarker = isTrivialFragment(tTrim) || LIST_MARKER_RE.test(tTrim) || BARE_ENUM_RE.test(tTrim);
-              if(!isMarker){
-                var allBold = runs.length > 0 && runs.every(function(r){ return r.bold || !r.text.trim(); });
-                var hasBold = runs.some(function(r){ return r.bold && r.text.trim(); });
-                if(allBold && hasBold && /[\u0600-\u06FFa-zA-Z]{3,}/.test(tTrim)) level = 2;
-              }
-            }
-            return { level: level, html: html, text: text };
+            return { level: level, html: runsToHtml(runs), text: runsToPlainText(runs) };
           });
           var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
@@ -1866,13 +1079,9 @@
         var norm = l.text.trim().replace(/\s+/g," ");
         if(!norm) return false;
         if(freq[norm] >= repeatThreshold) return false;
-        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b|youtube\.com|youtu\.be/i.test(norm)) return false;
+        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b/i.test(norm)) return false;
         if(/\d{7,}/.test(norm) && norm.length < 40) return false;
         if(/\*\*\*/.test(norm)) return false; // poetry/proverb line
-        // promotional / channel join text — drop completely
-        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline|UCTnIvc38rMXJctKDfude4vA/i.test(norm)) return false;
-        if(norm.length > 60 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع|تحميل/.test(norm)) return false;
-        if(/\*\*\*/.test(norm)) return false;
         return true;
       });
     });
@@ -2081,53 +1290,6 @@
   $("downloadLibrary").addEventListener("click", downloadLibraryJson);
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
-
-  // Custom mode selection buttons
-  $("btnStartSelect").addEventListener("click", function(){
-    if(state.mode !== "custom") return;
-    state.selecting = true;
-    state.customSelected = loadCustomSelection(state.malzamaKey); // start from saved
-    $("btnStartSelect").classList.add("hidden");
-    $("btnSaveCustom").classList.remove("hidden");
-    $("btnClearCustom").classList.remove("hidden");
-    var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر على الكلمات أو اضغط مرتين للجملة";
-    showToast("مرّر بإصبعك على الكلمات — أو اضغط مرتين للجملة كاملة");
-    renderPage();
-  });
-  $("btnSaveCustom").addEventListener("click", function(){
-    if(state.mode !== "custom") return;
-    saveCustomSelection(state.malzamaKey, state.customSelected);
-    state.selecting = false;
-    // rebuild model with the new selection and reset progress for this mode
-    state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
-    state.seed = Math.floor(Math.random()*1e9)+1;
-    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
-    saveProgress();
-    $("btnStartSelect").classList.remove("hidden");
-    $("btnSaveCustom").classList.add("hidden");
-    $("btnClearCustom").classList.add("hidden");
-    var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
-    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
-    renderPage();
-  });
-  $("btnClearCustom").addEventListener("click", function(){
-    if(!confirm("تمسح كل التحديد الحالي؟")) return;
-    state.customSelected = {};
-    saveCustomSelection(state.malzamaKey, {});
-    $("customSelectCount").textContent = "مرّر على الكلمات أو اضغط مرتين للجملة";
-    document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
-    showToast("تم مسح التحديد");
-  });
-
-  // Restart button (any mode): reset progress + new random hides for headings/sentences
-  $("btnRestartUnit").addEventListener("click", function(){
-    if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
-    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم" + (state.mode !== "custom" ? " ويتخفي أجزاء عشوائية جديدة" : "") + ".")) return;
-    setMode(state.mode, true, true); // reshuffle=true
-    showToast(state.mode === "custom" ? "تم الإعادة من الأول" : "محاولة جديدة — أجزاء مختلفة اتخفت");
-  });
 
   loadTheme();
   renderHome();
