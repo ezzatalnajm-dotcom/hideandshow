@@ -103,6 +103,16 @@
   :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
   .doc-subheading .blank{font-weight:800;}
   .doc-block b .blank, .doc-block .blank b{font-weight:800;}
+  .pin-actions{display:inline-flex;gap:4px;margin-inline-start:6px;vertical-align:middle;}
+  .pin-btn{border:none;background:rgba(10,27,46,.06);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:0 0 auto;}
+  .pin-btn:active{transform:scale(.92);}
+  .pin-btn.x{color:#c94b4b;background:rgba(201,75,75,.12);}
+  .pin-btn.pen{color:var(--navy-900);background:rgba(224,182,47,.18);}
+  :root:not([data-theme="light"]) .pin-btn{background:rgba(255,255,255,.08);}
+  :root:not([data-theme="light"]) .pin-btn.x{color:#ff8a8a;background:rgba(201,75,75,.2);}
+  :root:not([data-theme="light"]) .pin-btn.pen{color:var(--gold-400);}
+  .blank-wrap{display:inline;position:relative;}
+  .blank-wrap .pin-btn.x{width:20px;height:20px;font-size:10px;margin-inline-start:2px;vertical-align:super;}
 
   /* Custom selection mode */
   .selectable-word{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s ease;display:inline; -webkit-user-select:none; user-select:none;}
@@ -484,7 +494,9 @@
 
   // List markers / ordinals that must NEVER be treated as sub-headings
   var LIST_MARKER_RE = /^(أولا|أولًا|اولا|ثانيًا|ثانيا|ثالثا|ثالثًا|رابعا|رابعًا|خامسا|خامسًا|سادسا|سادسًا|سابعا|سابعًا|ثامنا|ثامنًا|تاسعا|تاسعًا|عاشرا|عاشرًا)([.:：\s]|$)/i;
-  var BARE_ENUM_RE = /^([أ-ي]|[a-zA-Z]|[0-9٠-٩]{1,3}|ال|\?|؟|💡)\s*[.)\:：]?\s*$/;
+  var BARE_ENUM_RE = /^([أ-ي]|[a-zA-Z]|[0-9٠-٩]{1,3}|ال|الل|القط|لاحظ|\?|؟|💡)\s*[.)\:：]?\s*$/;
+  // Words that look like short labels but are NOT sub-headings
+  var NOT_TITLE_RE = /^(الل|القط|لاحظ|ملاحظة|تنبيه|مهم|مثال|مثل|انظر|انظري)[:：]?\s*$/i;
 
   // Detect sub-heading blocks: short + bold / title-like (common in ملازم)
   // Excludes list markers: أولا، أ.، 1، : ، ؟: etc.
@@ -495,6 +507,9 @@
     if(isTrivialFragment(t)) return false;
     if(LIST_MARKER_RE.test(t)) return false;
     if(BARE_ENUM_RE.test(t)) return false;
+    if(NOT_TITLE_RE.test(t)) return false;
+    // starts with لاحظ / الل / القط as callout — not a title
+    if(/^(لاحظ|الل|القط)\b/i.test(t) && t.length <= 40) return false;
     // bare punctuation / colon only
     if(/^[:：.?؟!\-–—•●▪]+$/.test(t)) return false;
     // very short (1-2 words) that is only ordinal/number style
@@ -527,10 +542,65 @@
     if(/^[\u0621-\u064A0-9٠-٩]{1,2}\s*[-–—.]?\s*$/.test(t)) return true;
     // ordinals: أولا ثانيا ...
     if(LIST_MARKER_RE.test(t)) return true;
+    if(NOT_TITLE_RE.test(t)) return true;
     // bare colon / punctuation / emoji markers
     if(/^[:：.?؟!\-–—•●▪💡]+$/.test(t)) return true;
     if(BARE_ENUM_RE.test(t)) return true;
     return false;
+  }
+
+  /* ---- User exclusions (red X): never hide these texts again ---- */
+  function excludeKey(malzamaKey){ return "najm_exclude_" + malzamaKey; }
+  function forceHideKey(malzamaKey){ return "najm_forcehide_" + malzamaKey; }
+  function normExcludeText(t){ return String(t||"").replace(/\s+/g," ").trim().slice(0,200); }
+  function loadExcludeSet(malzamaKey){
+    try{ var raw=localStorage.getItem(excludeKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveExcludeSet(malzamaKey, set){ try{ localStorage.setItem(excludeKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
+  function loadForceHideSet(malzamaKey){
+    try{ var raw=localStorage.getItem(forceHideKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveForceHideSet(malzamaKey, set){ try{ localStorage.setItem(forceHideKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
+  function isExcludedText(malzamaKey, text){
+    var set = loadExcludeSet(malzamaKey);
+    return !!set[normExcludeText(text)];
+  }
+  function addExcludeText(malzamaKey, text){
+    var set = loadExcludeSet(malzamaKey);
+    set[normExcludeText(text)] = true;
+    saveExcludeSet(malzamaKey, set);
+  }
+
+  // Merge Arabic word + adjacent English translation into one hide unit
+  // e.g. "الدم blood" or "خطوط z (z line)"
+  function mergeBilingualUnits(parts){
+    var out = [];
+    for(var i=0;i<parts.length;i++){
+      var cur = parts[i];
+      var next = parts[i+1];
+      if(next){
+        var hasAr = /[\u0600-\u06FF]/.test(cur);
+        var hasEn = /[a-zA-Z]/.test(cur);
+        var nextEn = /[a-zA-Z]/.test(next);
+        var nextAr = /[\u0600-\u06FF]/.test(next);
+        // Arabic then English (or short latin token / parenthetical)
+        if(hasAr && !hasEn && nextEn && next.length <= 40){
+          out.push(cur + " " + next);
+          i++;
+          continue;
+        }
+        // English then Arabic
+        if(hasEn && !nextEn && nextAr && cur.length <= 40){
+          out.push(cur + " " + next);
+          i++;
+          continue;
+        }
+      }
+      out.push(cur);
+    }
+    return out;
   }
 
   // Try to split a sentence into (key part that stays visible) + (rest that can be hidden)
@@ -584,12 +654,17 @@
     return flat;
   }
 
-  function buildModel(rawPages, mode, seed, customSelected){
+  function buildModel(rawPages, mode, seed, customSelected, excludeSet){
     customSelected = customSelected || {};
+    excludeSet = excludeSet || {};
     var rnd = seededRandom(seed || 1);
     var globalId = 0, allIds = [];
     var unitByBlockKey = {};
     var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
+    var excludeSet = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
+    var forceHideSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
+    function excluded(text){ return !!excludeSet[normExcludeText(text)]; }
+    function forced(text){ return !!forceHideSet[normExcludeText(text)]; }
 
     rawPages.forEach(function(page, pi){
       page.sections.forEach(function(sec, si){
@@ -599,12 +674,12 @@
           return { key: secKeyPrefix+bi, html: html, label: m?m[2]:null, restHtml: m?html.slice(m[0].length):html };
         });
 
-        // Headings-only mode: hide real section sub-titles only (not list markers).
-        // Keep page.heading (unit/lesson title) visible — it's rendered outside sections.
+        // Headings-only mode: hide real section sub-titles only (not list markers / الل / لاحظ).
+        // Keep page.heading (unit/lesson title) visible — never hidden.
         if(mode === "headings" && sec.sub){
           var subT = String(sec.sub).trim();
-          var subIsMarker = isTrivialFragment(subT) || LIST_MARKER_RE.test(subT) || BARE_ENUM_RE.test(subT);
-          if(!subIsMarker && subT.length >= 3){
+          var subIsMarker = isTrivialFragment(subT) || LIST_MARKER_RE.test(subT) || BARE_ENUM_RE.test(subT) || NOT_TITLE_RE.test(subT);
+          if(!subIsMarker && !excluded(subT) && subT.length >= 3){
             globalId++; var shid = globalId; allIds.push(shid);
             sectionHeadingBlankByKey[pi+"_"+si] = shid;
           }
@@ -630,7 +705,8 @@
                   if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
                 }
               });
-              // merge overlapping ranges
+              // expand each range to keep Arabic + English translation together, then merge
+              ranges = ranges.map(function(r){ return expandBilingualRange(wordsC, r[0], r[1]); });
               ranges.sort(function(x,y){ return x[0]-y[0]; });
               var merged = [];
               ranges.forEach(function(r){
@@ -663,44 +739,54 @@
               }
             }
           } else if(mode === "headings"){
-            // Titles-only: hide real sub-headings only (not list markers أولا/أ./1/:)
+            // Fixed (no randomness): hide all side titles. Never unit/lesson page.heading.
             var plainH = stripHtml(bi2.html);
-            var labelIsMarker = bi2.label && (isTrivialFragment(bi2.label) || LIST_MARKER_RE.test(bi2.label.trim()) || BARE_ENUM_RE.test(bi2.label.trim()));
-            if(bi2.label && !labelIsMarker && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
-              // Hide only the bold label, keep the detail visible
-              globalId++; var idL=globalId; allIds.push(idL);
-              var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
-              unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+escapeHtml(labelShow)+'</span></b> '+bi2.restHtml, blankIds:[idL] };
+            var labelIsMarker = bi2.label && (isTrivialFragment(bi2.label) || LIST_MARKER_RE.test(bi2.label.trim()) || BARE_ENUM_RE.test(bi2.label.trim()) || NOT_TITLE_RE.test(bi2.label.trim()));
+            var forceThis = forced(plainH) || (bi2.label && forced(bi2.label));
+            if(excluded(plainH) || (bi2.label && excluded(bi2.label))){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else if(forceThis || (bi2.label && !labelIsMarker && bi2.restHtml && stripHtml(bi2.restHtml).length > 8)){
+              if(bi2.label && !labelIsMarker && bi2.restHtml && stripHtml(bi2.restHtml).length > 8 && !forceThis){
+                globalId++; var idL=globalId; allIds.push(idL);
+                var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
+                unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'" data-hide-text="'+escapeHtml(labelShow)+'">'+escapeHtml(labelShow)+'</span></b> '+bi2.restHtml, blankIds:[idL] };
+              } else if(!isTrivialFragment(plainH) && !LIST_MARKER_RE.test(plainH) && !BARE_ENUM_RE.test(plainH) && !NOT_TITLE_RE.test(plainH)){
+                globalId++; var idT=globalId; allIds.push(idT);
+                unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idT+'" data-hide-text="'+escapeHtml(plainH)+'">'+escapeHtml(plainH)+'</span>', blankIds:[idT] };
+              } else {
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              }
             } else if(!labelIsMarker && (bi2.label || isSubHeadingBlock(bi2.html, plainH))){
-              // Entire short bold title — but not list markers
-              if(isTrivialFragment(plainH) || LIST_MARKER_RE.test(plainH) || BARE_ENUM_RE.test(plainH)){
+              if(isTrivialFragment(plainH) || LIST_MARKER_RE.test(plainH) || BARE_ENUM_RE.test(plainH) || NOT_TITLE_RE.test(plainH)){
                 unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
               } else {
-                globalId++; var idT=globalId; allIds.push(idT);
-                unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idT+'">'+escapeHtml(plainH)+'</span>', blankIds:[idT] };
+                globalId++; var idT2=globalId; allIds.push(idT2);
+                unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idT2+'" data-hide-text="'+escapeHtml(plainH)+'">'+escapeHtml(plainH)+'</span>', blankIds:[idT2] };
               }
             } else {
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             }
           } else if(mode === "sentences"){ // 'sentences' mode
             var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
+            sents = mergeBilingualUnits(sents);
             if(sents.length === 0){
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             } else {
               var hSet = pickSentenceHides(sents, 0.45, rnd);
+              // force-hide user-pinned sentences; respect exclusions
+              sents.forEach(function(s, ix){ if(forced(s)) hSet[ix] = true; });
+              Object.keys(hSet).forEach(function(ix){ if(excluded(sents[ix])) delete hSet[ix]; });
               var ids2 = [];
-              var anyHidden = false;
-              Object.keys(hSet).forEach(function(){ anyHidden = true; });
+              var anyHidden = Object.keys(hSet).length > 0;
               if(!anyHidden){
-                // nothing hidden — keep original HTML (bold, size, structure)
                 unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
               } else {
                 var html3 = sents.map(function(s,i){
                   if(hSet[i]){
                     globalId++; ids2.push(globalId); allIds.push(globalId);
                     var kr2 = splitKeyAndRest(s);
-                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'">'+escapeHtml(kr2.rest)+'</span>';
-                    return '<span class="blank" data-id="'+globalId+'">'+escapeHtml(s)+'</span>';
+                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(kr2.rest)+'</span>';
+                    return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(s)+'</span>';
                   }
                   return escapeHtml(s);
                 }).join(" ");
@@ -757,6 +843,40 @@
   function saveCustomSelection(malzamaKey, sel){
     try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
   }
+  // Expand a word-index range so Arabic word + its English translation stay together
+  function expandBilingualRange(words, lo, hi){
+    var a = lo, b = hi;
+    while(b + 1 < words.length){
+      var n = words[b+1];
+      if(/^\([\w\s\-\/%+]+\)$/.test(n) || /^[A-Za-z][A-Za-z0-9\-\s]{1,30}$/.test(n)){ b++; continue; }
+      break;
+    }
+    while(a > 0){
+      var cur = words[a];
+      if(/^\([\w\s\-\/%+]+\)$/.test(cur) || (/^[A-Za-z]/.test(cur) && /[\u0600-\u06FF]/.test(words[a-1]||""))){ a--; continue; }
+      break;
+    }
+    return [a, b];
+  }
+
+  function excludeFromHide(text){
+    addExcludeText(state.malzamaKey, text);
+    // rebuild without reshuffling sentences seed if possible
+    loadProgress(false);
+    showToast("تم استبعاد الجزء من الإخفاء ✕");
+    renderPage();
+  }
+  function forceHideText(text){
+    var set = loadForceHideSet(state.malzamaKey);
+    set[normExcludeText(text)] = true;
+    var ex = loadExcludeSet(state.malzamaKey);
+    delete ex[normExcludeText(text)];
+    saveExcludeSet(state.malzamaKey, ex);
+    saveForceHideSet(state.malzamaKey, set);
+    loadProgress(false);
+    showToast("هيتحفي الجزء ده ✏️");
+    renderPage();
+  }
 
   function loadProgress(reshuffle){
     var pk = progressKey(state.malzamaKey, state.mode);
@@ -769,10 +889,17 @@
         seed = d.seed;
       }
     }catch(e){}
-    if(!seed){ seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0; }
+    // Headings mode is always fixed — stable seed
+    if(state.mode === "headings"){
+      seed = 1;
+      if(reshuffle){ state.revealedIds={}; state.blockRatings={}; state.page=0; }
+    } else if(!seed){
+      seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0;
+    }
     state.seed = seed;
     state.customSelected = loadCustomSelection(state.malzamaKey);
-    MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected);
+    state.excludeSet = loadExcludeSet(state.malzamaKey);
+    MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, state.excludeSet);
     saveProgress();
   }
   function saveProgress(){
@@ -806,7 +933,7 @@
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
     var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
-    var model = buildModel(raw, mode, seed, customSel);
+    var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey));
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
   }
@@ -1183,6 +1310,51 @@
         var unlocked = isUnlocked(id);
         span.classList.toggle("revealed", revealed);
         span.classList.toggle("locked", !revealed && !unlocked);
+        // Red X: exclude this hidden text from future hides
+        if(!span.dataset.pinAttached){
+          span.dataset.pinAttached = "1";
+          var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
+          var xBtn = document.createElement("button");
+          xBtn.type = "button";
+          xBtn.className = "pin-btn x";
+          xBtn.title = "استبعاد من الإخفاء";
+          xBtn.textContent = "✕";
+          xBtn.addEventListener("click", function(ev){
+            ev.preventDefault(); ev.stopPropagation();
+            if(hideText) excludeFromHide(hideText);
+          });
+          if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
+        }
+      });
+      // Pen on subheadings / blocks: force-hide or note
+      wrap.querySelectorAll(".doc-subheading, .doc-block").forEach(function(el){
+        if(el.dataset.penAttached) return;
+        el.dataset.penAttached = "1";
+        var txt = (el.textContent || "").trim().slice(0, 200);
+        if(!txt || txt.length < 2) return;
+        var actions = document.createElement("span");
+        actions.className = "pin-actions";
+        var pen = document.createElement("button");
+        pen.type = "button";
+        pen.className = "pin-btn pen";
+        pen.title = "إخفاء هذا الجزء / تعديل";
+        pen.textContent = "✏️";
+        pen.addEventListener("click", function(ev){
+          ev.preventDefault(); ev.stopPropagation();
+          forceHideText(txt);
+        });
+        var x2 = document.createElement("button");
+        x2.type = "button";
+        x2.className = "pin-btn x";
+        x2.title = "استبعاد من الإخفاء";
+        x2.textContent = "✕";
+        x2.addEventListener("click", function(ev){
+          ev.preventDefault(); ev.stopPropagation();
+          excludeFromHide(txt);
+        });
+        actions.appendChild(pen);
+        actions.appendChild(x2);
+        el.appendChild(actions);
       });
       wrap.querySelectorAll(".block-rate").forEach(function(row){
         var key = row.dataset.blockKey;
@@ -1815,7 +1987,7 @@
     // rebuild model with the new selection and reset progress for this mode
     state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
     state.seed = Math.floor(Math.random()*1e9)+1;
-    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected);
+    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
     saveProgress();
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
