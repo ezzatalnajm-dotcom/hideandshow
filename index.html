@@ -221,9 +221,9 @@
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين فقط</span><span class="mtime">إخفاء العناوين الفرعية</span></button>
       <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
       <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">يعتمد على تنسيق الملف</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
     <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
@@ -272,8 +272,9 @@
   <div class="modal">
     <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li>اختار مود المراجعة بالترتيب: <b>العناوين فقط</b> → <b>الجمل</b> → <b>تخصيص</b>.</li>
+      <li>اختار مود المراجعة بالترتيب: <b>الجمل</b> → <b>تخصيص</b> → <b>العناوين</b>.</li>
       <li>مود التخصيص على ٣ خطوات: ① حدّد ما يلزم إخفاؤه ② احفظ التخصيص ③ اختبر نفسك.</li>
+      <li>مود العناوين يعتمد على تنسيق الملف (خط سميك / عناوين Word) وقد يخطئ — الأفضل الجمل أو التخصيص.</li>
       <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
       <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف — وفيها مفتاح تذكير ظاهر.</li>
       <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
@@ -342,11 +343,11 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
   }
 
-  var MODE_LABELS = { custom:"تخصيص", headings:"العناوين فقط", sentences:"الجمل" };
+  var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
   var MODE_HINTS = {
+    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين",
     custom: "✏️ ١) حدّد ما يلزم إخفاؤه  ٢) احفظ التخصيص  ٣) اختبر نفسك",
-    headings: "🏷️ بيخفي العناوين الفرعية والسميكة (ثابت). عنوان الوحدة/الدرس في الأعلى يفضل ظاهر.",
-    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين"
+    headings: "🏷️ يخفي العناوين الفرعية حسب تنسيق الملف (Bold/عناوين Word). لو التنسيق مش واضح قد يخطئ — الأفضل مود الجمل أو التخصيص."
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -744,7 +745,7 @@
   }
 
   /* ---------- State ---------- */
-  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"sentences", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
   var MODEL = null, RAW_PAGES = null;
 
   function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
@@ -819,7 +820,7 @@
       return;
     }
     index.forEach(function(entry, i){
-      var comp = completionFor(entry.key, "headings");
+      var comp = completionFor(entry.key, "sentences");
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
@@ -855,7 +856,7 @@
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    setMode(state.mode || "headings", true);
+    setMode(state.mode || "sentences", true);
   }
 
   function setMode(mode, skipToast, reshuffle){
