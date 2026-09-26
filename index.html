@@ -220,11 +220,11 @@
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">اختر بنفسك (جملة بجملة)</span></button>
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">اختر بنفسك بالتمرير</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين فقط</span><span class="mtime">إخفاء العناوين الفرعية</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
     </div>
-    <div class="shuffle-note" id="shuffleNote">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
+    <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
     <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">✏️ ابدأ التحديد — مرّر على الكلمات</button>
       <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">💾 حفظ التخصيص</button>
@@ -266,8 +266,8 @@
   <div class="modal">
     <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li>اختار مود المراجعة: <b>تخصيص</b> (تخفي بنفسك)، أو العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
-      <li>في مود التخصيص: اضغط «ابدأ التحديد» ثم اضغط على الفقرات اللي عايز تخفيها، وبعدين «حفظ التخصيص».</li>
+      <li>اختار مود المراجعة: <b>تخصيص</b> (تخفي بنفسك)، أو <b>العناوين فقط</b> (ثابت)، أو <b>الجمل</b> (عشوائي).</li>
+      <li>في مود التخصيص: اضغط «ابدأ التحديد» ثم مرّر على الكلمات. ضغطتين = جملة كاملة. اضغط تاني للإلغاء.</li>
       <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
       <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف — وفيها مفتاح تذكير ظاهر.</li>
       <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
@@ -336,10 +336,10 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
   }
 
-  var MODE_LABELS = { custom:"تخصيص", headings:"العناوين والفقرات", sentences:"الجمل" };
+  var MODE_LABELS = { custom:"تخصيص", headings:"العناوين فقط", sentences:"الجمل" };
   var MODE_HINTS = {
-    custom: "✏️ اضغط «ابدأ التحديد» ثم اضغط على الجمل اللي عايز تخفيها (جملة بجملة). بعدين احفظ التخصيص.",
-    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا مع ترك مفتاح تذكير. مش هتخفي جملتين ورا بعض.",
+    custom: "✏️ اضغط «ابدأ التحديد» ثم مرّر على الكلمات. ضغطتين = الجملة كاملة. اضغط تاني على المحدد عشان تشيل التحديد.",
+    headings: "🏷️ بيخفي العناوين الفرعية فقط (ثابت). عنوان الوحدة وعنوان الدرس يفضلوا ظاهرين.",
     sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين"
   };
 
@@ -351,10 +351,12 @@
       .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
   function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  // Split text into words (Arabic / Latin), keeping punctuation attached to words lightly
+  // Split text into words on whitespace only — never break an Arabic word in the middle
   function splitIntoWords(text){
     if(!text || !text.trim()) return [];
-    return text.trim().split(/\s+/).filter(Boolean);
+    // Normalize tatweel and zero-width chars so they don't create fake splits
+    var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
+    return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
   }
 
   // Split into meaningful units. Treat . ! ؟ ? and also : and Arabic comma ، as separators
@@ -551,19 +553,14 @@
           return { key: secKeyPrefix+bi, html: html, label: m?m[2]:null, restHtml: m?html.slice(m[0].length):html };
         });
 
+        // Headings-only mode: always hide section sub-titles (fixed, not random).
+        // Keep page.heading (unit/lesson title) visible — it's rendered outside sections.
         if(mode === "headings" && sec.sub){
-          var hideSectionHeading = rnd() < 0.5;
-          if(hideSectionHeading){
-            globalId++; var shid = globalId; allIds.push(shid);
-            sectionHeadingBlankByKey[pi+"_"+si] = shid;
-            // whole section stays fully visible this round so the
-            // heading is still guessable from context
-            blocksInfo.forEach(function(bi2){ unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; });
-            return; // section done
-          }
+          globalId++; var shid = globalId; allIds.push(shid);
+          sectionHeadingBlankByKey[pi+"_"+si] = shid;
         }
 
-        var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
+        var lastInlineHid = null;
         blocksInfo.forEach(function(bi2){
           if(mode === "custom"){
             // Custom: hide word ranges the user selected.
@@ -616,37 +613,12 @@
               }
             }
           } else if(mode === "headings"){
+            // Titles-only: hide bold lead-in labels (like "الوظيفة:") as mini-titles; keep body text fully visible and preserve original HTML/bold
             if(bi2.label){
-              var hideHeading;
-              if(lastInlineHid === null) hideHeading = rnd() < 0.5;
-              else hideHeading = !lastInlineHid;
-              lastInlineHid = hideHeading;
-              if(hideHeading){
-                globalId++; var idL=globalId; allIds.push(idL);
-                unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
-              } else {
-                globalId++; var idD=globalId; allIds.push(idD);
-                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+bi2.label+':</b> <span class="blank" data-id="'+idD+'">'+stripHtml(bi2.restHtml)+'</span>', blankIds:[idD] };
-              }
+              globalId++; var idL=globalId; allIds.push(idL);
+              unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
             } else {
-              lastInlineHid = null;
-              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
-              if(sentences.length <= 1){
-                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; // too short to safely blank — stays visible
-              } else {
-                var hideSet = pickSentenceHides(sentences, 0.45, rnd);
-                var ids = [];
-                var html2 = sentences.map(function(s,i){
-                  if(hideSet[i]){
-                    globalId++; ids.push(globalId); allIds.push(globalId);
-                    var kr = splitKeyAndRest(s);
-                    if(kr) return kr.key + ' <span class="blank" data-id="'+globalId+'">'+kr.rest+'</span>';
-                    return '<span class="blank" data-id="'+globalId+'">'+s+'</span>';
-                  }
-                  return s;
-                }).join(" ");
-                unitByBlockKey[bi2.key] = { renderHtml: html2, blankIds: ids };
-              }
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             }
           } else if(mode === "sentences"){ // 'sentences' mode
             var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
@@ -655,16 +627,23 @@
             } else {
               var hSet = pickSentenceHides(sents, 0.45, rnd);
               var ids2 = [];
-              var html3 = sents.map(function(s,i){
-                if(hSet[i]){
-                  globalId++; ids2.push(globalId); allIds.push(globalId);
-                  var kr2 = splitKeyAndRest(s);
-                  if(kr2) return kr2.key + ' <span class="blank" data-id="'+globalId+'">'+kr2.rest+'</span>';
-                  return '<span class="blank" data-id="'+globalId+'">'+s+'</span>';
-                }
-                return s;
-              }).join(" ");
-              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + html3, blankIds: ids2 };
+              var anyHidden = false;
+              Object.keys(hSet).forEach(function(){ anyHidden = true; });
+              if(!anyHidden){
+                // nothing hidden — keep original HTML (bold, size, structure)
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              } else {
+                var html3 = sents.map(function(s,i){
+                  if(hSet[i]){
+                    globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var kr2 = splitKeyAndRest(s);
+                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'">'+escapeHtml(kr2.rest)+'</span>';
+                    return '<span class="blank" data-id="'+globalId+'">'+escapeHtml(s)+'</span>';
+                  }
+                  return escapeHtml(s);
+                }).join(" ");
+                unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+escapeHtml(bi2.label)+':</b> ':'') + html3, blankIds: ids2 };
+              }
             }
           } else {
             unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
@@ -824,7 +803,7 @@
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
     $("hintBanner").textContent = MODE_HINTS[mode] || "";
     var isCustom = mode === "custom";
-    $("shuffleNote").classList.toggle("hidden", isCustom);
+    $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
     $("customToolbar").classList.toggle("hidden", !isCustom);
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
@@ -911,65 +890,95 @@
     bd.dataset.wordCount = wordList.length;
   }
 
-  var _selDrag = { active:false, blockKey:null, startIdx:-1, endIdx:-1, lastTap:0, lastTapKey:null };
+  var _selDrag = { active:false, moved:false, blockKey:null, startIdx:-1, endIdx:-1, lastTap:0, lastTapIdx:-1, lastTapKey:null };
 
   function bindWordSelection(wrap){
     function updateCount(){
       var count = Object.keys(state.customSelected).length;
-      $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر بإصبعك على الكلمات أو اضغط مرتين للجملة";
+      $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "اضغط كلمة · مرّر لجزء · ضغطتين للجملة · اضغط تاني للإلغاء";
     }
-    function applyRange(blockKey, a, b, add){
-      var lo = Math.min(a,b), hi = Math.max(a,b);
-      var key = blockKey + "|w|" + lo + "|" + hi;
-      // Remove any overlapping ranges for this block first when adding
-      if(add){
-        Object.keys(state.customSelected).forEach(function(k){
-          if(k.indexOf(blockKey + "|w|") === 0){
-            var p = k.split("|");
-            var x = +p[2], y = +p[3];
-            if(y >= lo && x <= hi) delete state.customSelected[k];
-          }
-        });
-        state.customSelected[key] = true;
-      } else {
-        delete state.customSelected[key];
-        // also clear any range that overlaps
-        Object.keys(state.customSelected).forEach(function(k){
-          if(k.indexOf(blockKey + "|w|") === 0){
-            var p = k.split("|");
-            var x = +p[2], y = +p[3];
-            if(y >= lo && x <= hi) delete state.customSelected[k];
-          }
-        });
+    function isIdxSelected(blockKey, idx){
+      var keys = Object.keys(state.customSelected);
+      for(var i=0;i<keys.length;i++){
+        var k = keys[i];
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) return true;
+        }
       }
-      // Re-paint words in this block
+      return false;
+    }
+    function clearOverlapping(blockKey, lo, hi){
+      Object.keys(state.customSelected).forEach(function(k){
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          if(y >= lo && x <= hi) delete state.customSelected[k];
+        }
+      });
+    }
+    function repaintBlock(blockKey){
       var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
-      if(blockEl){
-        var selectedIdx = {};
-        Object.keys(state.customSelected).forEach(function(k){
-          if(k.indexOf(blockKey + "|w|") === 0){
-            var p = k.split("|");
-            var x = +p[2], y = +p[3];
-            for(var i=Math.min(x,y);i<=Math.max(x,y);i++) selectedIdx[i]=true;
-          }
-        });
-        blockEl.querySelectorAll(".selectable-word").forEach(function(sp){
-          sp.classList.toggle("selected", !!selectedIdx[+sp.dataset.wordIdx]);
-        });
-      }
+      if(!blockEl) return;
+      var selectedIdx = {};
+      Object.keys(state.customSelected).forEach(function(k){
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          for(var i=Math.min(x,y);i<=Math.max(x,y);i++) selectedIdx[i]=true;
+        }
+      });
+      blockEl.querySelectorAll(".selectable-word").forEach(function(sp){
+        sp.classList.toggle("selected", !!selectedIdx[+sp.dataset.wordIdx]);
+      });
       updateCount();
+    }
+    function setRange(blockKey, a, b){
+      var lo = Math.min(a,b), hi = Math.max(a,b);
+      clearOverlapping(blockKey, lo, hi);
+      state.customSelected[blockKey + "|w|" + lo + "|" + hi] = true;
+      repaintBlock(blockKey);
+    }
+    function removeRangeCovering(blockKey, idx){
+      Object.keys(state.customSelected).forEach(function(k){
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) delete state.customSelected[k];
+        }
+      });
+      repaintBlock(blockKey);
+    }
+    // Find sentence word-range containing idx (split by . ! ؟ : ،)
+    function sentenceRangeForWord(blockEl, idx){
+      var words = blockEl.querySelectorAll(".selectable-word");
+      var n = words.length;
+      if(n === 0) return [idx, idx];
+      var start = idx, end = idx;
+      // expand left until strong punctuation at end of previous word
+      while(start > 0){
+        var prev = words[start-1].textContent || "";
+        if(/[.!؟?:：،,;؛]$/.test(prev.trim())) break;
+        start--;
+      }
+      // expand right until this word ends with strong punctuation
+      while(end < n-1){
+        var cur = words[end].textContent || "";
+        if(/[.!؟?:：،,;؛]$/.test(cur.trim())) break;
+        end++;
+      }
+      return [start, end];
     }
     function wordFromEvent(e){
       var t = e.target;
       if(t && t.classList && t.classList.contains("selectable-word")) return t;
-      // touch
-      if(e.touches && e.touches[0]){
-        var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+      var pt = null;
+      if(e.touches && e.touches[0]) pt = e.touches[0];
+      else if(e.changedTouches && e.changedTouches[0]) pt = e.changedTouches[0];
+      if(pt){
+        var el = document.elementFromPoint(pt.clientX, pt.clientY);
         if(el && el.classList && el.classList.contains("selectable-word")) return el;
-      }
-      if(e.changedTouches && e.changedTouches[0]){
-        var el2 = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-        if(el2 && el2.classList && el2.classList.contains("selectable-word")) return el2;
       }
       return null;
     }
@@ -979,36 +988,28 @@
       var blockKey = w.dataset.blockKey;
       var idx = +w.dataset.wordIdx;
       var now = Date.now();
-      // Double-tap → select whole block (all words = whole paragraph/sentence group)
-      if(_selDrag.lastTapKey === blockKey && (now - _selDrag.lastTap) < 350){
-        var count = +(w.parentElement.dataset.wordCount || 0);
-        if(count > 0){
-          var allSelected = true;
-          for(var i=0;i<count;i++){
-            var found = false;
-            Object.keys(state.customSelected).forEach(function(k){
-              if(k.indexOf(blockKey+"|w|")===0){
-                var p=k.split("|"); var x=+p[2],y=+p[3];
-                if(i>=Math.min(x,y)&&i<=Math.max(x,y)) found=true;
-              }
-            });
-            if(!found) allSelected=false;
-          }
-          applyRange(blockKey, 0, count-1, !allSelected);
-        }
+      // Double-tap same word → toggle whole sentence containing it
+      if(_selDrag.lastTapKey === blockKey && _selDrag.lastTapIdx === idx && (now - _selDrag.lastTap) < 400){
+        var range = sentenceRangeForWord(w.parentElement, idx);
+        var allOn = true;
+        for(var i=range[0];i<=range[1];i++){ if(!isIdxSelected(blockKey, i)){ allOn=false; break; } }
+        if(allOn) removeRangeCovering(blockKey, idx);
+        else setRange(blockKey, range[0], range[1]);
         _selDrag.lastTap = 0;
         _selDrag.lastTapKey = null;
+        _selDrag.lastTapIdx = -1;
+        _selDrag.active = false;
         e.preventDefault();
         return;
       }
       _selDrag.lastTap = now;
       _selDrag.lastTapKey = blockKey;
+      _selDrag.lastTapIdx = idx;
       _selDrag.active = true;
+      _selDrag.moved = false;
       _selDrag.blockKey = blockKey;
       _selDrag.startIdx = idx;
       _selDrag.endIdx = idx;
-      // preview highlight
-      applyRange(blockKey, idx, idx, true);
       e.preventDefault();
     }
     function onMove(e){
@@ -1017,12 +1018,24 @@
       if(!w || w.dataset.blockKey !== _selDrag.blockKey) return;
       var idx = +w.dataset.wordIdx;
       if(idx === _selDrag.endIdx) return;
+      _selDrag.moved = true;
       _selDrag.endIdx = idx;
-      applyRange(_selDrag.blockKey, _selDrag.startIdx, _selDrag.endIdx, true);
+      // live preview of drag range
+      setRange(_selDrag.blockKey, _selDrag.startIdx, _selDrag.endIdx);
       e.preventDefault();
     }
-    function onEnd(){
+    function onEnd(e){
+      if(!_selDrag.active) return;
+      var blockKey = _selDrag.blockKey;
+      var a = _selDrag.startIdx, b = _selDrag.endIdx;
+      if(!_selDrag.moved){
+        // Single tap: toggle this word (or the range covering it)
+        if(isIdxSelected(blockKey, a)) removeRangeCovering(blockKey, a);
+        else setRange(blockKey, a, a);
+      }
+      // if moved, range already applied in onMove
       _selDrag.active = false;
+      _selDrag.moved = false;
     }
     wrap.addEventListener("mousedown", onStart);
     wrap.addEventListener("mousemove", onMove);
@@ -1043,7 +1056,7 @@
 
     // If custom mode and nothing selected yet (and not currently selecting)
     if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» فوق، مرّر بإصبعك على الكلمات اللي عايز تخفيها (أو اضغط مرتين للجملة كاملة)، وبعدين احفظ.</div>';
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ضغطتين للجملة · اضغط تاني للإلغاء · ثم احفظ.</div>';
       updateNavButtons();
       return;
     }
