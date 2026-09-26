@@ -345,7 +345,7 @@
   var MODE_LABELS = { custom:"تخصيص", headings:"العناوين فقط", sentences:"الجمل" };
   var MODE_HINTS = {
     custom: "✏️ ١) حدّد ما يلزم إخفاؤه  ٢) احفظ التخصيص  ٣) اختبر نفسك",
-    headings: "🏷️ بيخفي العناوين الفرعية فقط (ثابت). عنوان الوحدة وعنوان الدرس يفضلوا ظاهرين.",
+    headings: "🏷️ بيخفي العناوين الفرعية والسميكة (ثابت). عنوان الوحدة/الدرس في الأعلى يفضل ظاهر.",
     sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين"
   };
 
@@ -477,8 +477,27 @@
      Random selection is stored per (malzama, mode) "attempt" and
      only reshuffled when the student starts a fresh attempt.
   ------------------------------------------------- */
-  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
+  // Bold lead-in label: <b>الوظيفة:</b> or <b>التركيب</b> at start of block
+  var LEAD_RE = /^(\s*<b>([^<]{1,50}?):?<\/b>\s*)/;
   var VERSE_RE = /\*\*\*/; // poetry/proverb separator seen in his ملازم
+
+  // Detect sub-heading blocks: short + bold / title-like (common in ملازم)
+  function isSubHeadingBlock(html, plain){
+    var t = (plain || "").trim();
+    if(!t || t.length > 90) return false;
+    if(typeof isPromoOrVerse === "function" && isPromoOrVerse(t)) return false;
+    if(isTrivialFragment(t)) return false;
+    var h = (html || "").trim();
+    // whole block is a single bold run: <b>العنوان</b>
+    if(/^<b>[\s\S]+<\/b>\s*$/i.test(h)) return true;
+    // short title ending with colon
+    if(t.length <= 55 && /[:：]$/.test(t)) return true;
+    // mostly bold short line
+    var boldLen = 0;
+    h.replace(/<b>([^<]*)<\/b>/gi, function(_, x){ boldLen += (x||"").length; });
+    if(t.length <= 75 && boldLen >= Math.max(1, t.length * 0.6)) return true;
+    return false;
+  }
   // Common key/reminder starters that should stay visible when possible
   var KEY_STARTERS = /^(مثال|مثل|كـ|كـ |أي|منها|مثلًا|مثلا|مثلًا:|مثال:|مثل:|وهي|وهو|وهم|هن|هي|هو|وذلك|أي أن|بمعنى|مثلًا|على سبيل المثال)/i;
 
@@ -619,10 +638,18 @@
               }
             }
           } else if(mode === "headings"){
-            // Titles-only: hide bold lead-in labels (like "الوظيفة:") as mini-titles; keep body text fully visible and preserve original HTML/bold
-            if(bi2.label){
+            // Titles-only: hide sub-headings (sec.sub already handled above) + bold short titles + lead-in labels.
+            // Body paragraphs stay fully visible with original formatting.
+            var plainH = stripHtml(bi2.html);
+            if(bi2.label && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
+              // Hide only the bold label, keep the detail visible
               globalId++; var idL=globalId; allIds.push(idL);
-              unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
+              var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
+              unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+escapeHtml(labelShow)+'</span></b> '+bi2.restHtml, blankIds:[idL] };
+            } else if(bi2.label || isSubHeadingBlock(bi2.html, plainH)){
+              // Entire short bold title / label-only block → hide whole thing
+              globalId++; var idT=globalId; allIds.push(idT);
+              unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idT+'">'+escapeHtml(plainH)+'</span>', blankIds:[idT] };
             } else {
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             }
@@ -1429,7 +1456,15 @@
             var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
             var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
             var runs = paragraphToRuns(pEl);
-            return { level: level, html: runsToHtml(runs), text: runsToPlainText(runs) };
+            var html = runsToHtml(runs);
+            var text = runsToPlainText(runs);
+            // Heuristic: short fully-bold paragraph → treat as sub-heading (level 2)
+            if(!level && text.trim().length > 0 && text.trim().length <= 80){
+              var allBold = runs.length > 0 && runs.every(function(r){ return r.bold || !r.text.trim(); });
+              var hasBold = runs.some(function(r){ return r.bold && r.text.trim(); });
+              if(allBold && hasBold) level = 2;
+            }
+            return { level: level, html: html, text: text };
           });
           var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
