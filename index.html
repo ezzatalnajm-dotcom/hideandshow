@@ -104,11 +104,11 @@
   .doc-block b .blank, .doc-block .blank b{font-weight:800;}
 
   /* Custom selection mode */
-  .selectable{cursor:pointer;border-radius:5px;padding:1px 3px;transition:background .15s ease;display:inline;}
-  .selectable:hover{background:rgba(224,182,47,.18);}
-  .selectable.selected{background:rgba(224,182,47,.40);outline:2px solid var(--gold-500);}
-  .selecting-mode .doc-block, .selecting-mode .doc-subheading{user-select:none;}
-  .selecting-mode .doc-block{line-height:2.3;}
+  .selectable-word{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s ease;display:inline; -webkit-user-select:none; user-select:none;}
+  .selectable-word:hover{background:rgba(224,182,47,.15);}
+  .selectable-word.selected{background:rgba(224,182,47,.42); outline:1.5px solid var(--gold-500);}
+  .selecting-mode .doc-block, .selecting-mode .doc-subheading{user-select:none; -webkit-user-select:none;}
+  .selecting-mode .doc-block{line-height:2.4;}
   #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
   #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
   :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
@@ -226,7 +226,7 @@
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
     <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">✏️ ابدأ التحديد — اضغط على الجمل</button>
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">✏️ ابدأ التحديد — مرّر على الكلمات</button>
       <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">💾 حفظ التخصيص</button>
       <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
       <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
@@ -351,6 +351,12 @@
       .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
   function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  // Split text into words (Arabic / Latin), keeping punctuation attached to words lightly
+  function splitIntoWords(text){
+    if(!text || !text.trim()) return [];
+    return text.trim().split(/\s+/).filter(Boolean);
+  }
+
   // Split into meaningful units. Treat . ! ؟ ? and also : and Arabic comma ، as separators
   // so labels like "الوظيفة:" stay separate from the definition that follows.
   function splitSentences(text){
@@ -560,25 +566,54 @@
         var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
         blocksInfo.forEach(function(bi2){
           if(mode === "custom"){
-            // Custom: hide individual sentences the user selected (key = blockKey|sentIdx)
-            var plainFull = stripHtml(bi2.html);
-            var sentsC = splitSentences(plainFull).filter(function(s){ return !VERSE_RE.test(s) && !isTrivialFragment(s); });
-            if(sentsC.length === 0){
-              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            // Custom: hide word ranges the user selected.
+            // Keys look like: "blockKey|w|startIdx|endIdx" (inclusive word indices)
+            // Also support legacy sentence keys "blockKey|si" by ignoring them if no match.
+            if(isPromoOrVerse(stripHtml(bi2.html))){
+              unitByBlockKey[bi2.key] = { renderHtml: "", blankIds: [] };
             } else {
+              var wordsC = splitIntoWords(stripHtml(bi2.html));
               var idsC = [];
-              var htmlC = sentsC.map(function(s, si){
-                var selKey = bi2.key + "|" + si;
-                if(customSelected[selKey]){
-                  globalId++; idsC.push(globalId); allIds.push(globalId);
-                  var krC = splitKeyAndRest(s);
-                  if(krC) return krC.key + ' <span class="blank" data-id="'+globalId+'">'+krC.rest+'</span>';
-                  return '<span class="blank" data-id="'+globalId+'">'+s+'</span>';
+              // Collect selected ranges for this block
+              var ranges = [];
+              Object.keys(customSelected).forEach(function(k){
+                if(k.indexOf(bi2.key + "|w|") === 0){
+                  var parts = k.split("|");
+                  var a = +parts[2], b = +parts[3];
+                  if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
                 }
-                return s;
-              }).join(" ");
-              // keep original label if present
-              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + htmlC, blankIds: idsC };
+              });
+              // merge overlapping ranges
+              ranges.sort(function(x,y){ return x[0]-y[0]; });
+              var merged = [];
+              ranges.forEach(function(r){
+                if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
+                else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
+              });
+              if(wordsC.length === 0 || merged.length === 0){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              } else {
+                var htmlParts = [];
+                var wi = 0;
+                merged.forEach(function(r){
+                  while(wi < r[0] && wi < wordsC.length){ htmlParts.push(escapeHtml(wordsC[wi])); wi++; }
+                  if(wi <= r[1] && wi < wordsC.length){
+                    globalId++; idsC.push(globalId); allIds.push(globalId);
+                    var hidden = [];
+                    while(wi <= r[1] && wi < wordsC.length){ hidden.push(wordsC[wi]); wi++; }
+                    htmlParts.push('<span class="blank" data-id="'+globalId+'">'+escapeHtml(hidden.join(" "))+'</span>');
+                  }
+                });
+                while(wi < wordsC.length){ htmlParts.push(escapeHtml(wordsC[wi])); wi++; }
+                var outHtml = htmlParts.join(" ");
+                // Re-apply bold on leading label if original had <b>label:</b>
+                if(bi2.label){
+                  var labelEsc = escapeHtml(bi2.label);
+                  var reLabel = new RegExp("^("+labelEsc.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*:?)");
+                  outHtml = outHtml.replace(reLabel, "<b>$1</b>");
+                }
+                unitByBlockKey[bi2.key] = { renderHtml: outHtml, blankIds: idsC };
+              }
             }
           } else if(mode === "headings"){
             if(bi2.label){
@@ -595,7 +630,7 @@
               }
             } else {
               lastInlineHid = null;
-              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
               if(sentences.length <= 1){
                 unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; // too short to safely blank — stays visible
               } else {
@@ -614,7 +649,7 @@
               }
             }
           } else if(mode === "sentences"){ // 'sentences' mode
-            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
             if(sents.length === 0){
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             } else {
@@ -644,14 +679,28 @@
         var blocks = sec.blocks.map(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
           var unit = unitByBlockKey[key];
-          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html) };
-        });
-        return { sub: sec.sub, subBlankId: subBlankId, blocks: blocks };
-      });
+          // Skip poetry / promo blocks entirely in every mode
+          if(isPromoOrVerse(stripHtml(html))){
+            return null;
+          }
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html), originalHtml: html };
+        }).filter(Boolean);
+        return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, subBlankId: subBlankId, blocks: blocks };
+      }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
       return { heading: page.heading, sections: sections };
-    });
+    }).filter(function(p){ return p.sections.length > 0; });
 
     return { pages: pages, allIds: allIds };
+  }
+
+  function isPromoOrVerse(text){
+    if(!text) return false;
+    var t = text.trim();
+    if(/\*\*\*/.test(t)) return true;
+    if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(t)) return true;
+    if(/https?:\/\/|t\.me\/|youtube\.com|youtu\.be|wixsite/i.test(t) && t.length > 40) return true;
+    if(t.length > 100 && /تليجرام|يوتيوب|واتساب/.test(t) && /رابط|انضم|تابع|قناة/.test(t)) return true;
+    return false;
   }
 
   /* ---------- State ---------- */
@@ -803,6 +852,188 @@
     $("pageText").textContent = "صفحة " + ar(state.page+1) + " من " + ar(MODEL.pages.length);
   }
 
+  // Parse original HTML into word spans, preserving <b>
+  function renderSelectableBlock(bd, block){
+    var src = block.originalHtml || block.html || escapeHtml(block.plainText || "");
+    // Convert HTML to a flat list of {text, bold} runs then to words
+    var tmp = document.createElement("div");
+    tmp.innerHTML = src;
+    var runs = [];
+    function walk(node, bold){
+      if(node.nodeType === 3){
+        var t = node.textContent;
+        if(t) runs.push({ text: t, bold: !!bold });
+      } else if(node.nodeType === 1){
+        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
+        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
+      }
+    }
+    walk(tmp, false);
+    // Build words with bold flag
+    var wordList = [];
+    runs.forEach(function(run){
+      var parts = run.text.split(/(\s+)/);
+      parts.forEach(function(p){
+        if(!p) return;
+        if(/^\s+$/.test(p)){
+          // whitespace — attach to previous or skip
+        } else {
+          wordList.push({ text: p, bold: run.bold });
+        }
+      });
+    });
+    if(wordList.length === 0){
+      bd.textContent = block.plainText || "";
+      return;
+    }
+    // Determine which word indices are already selected (from stored ranges)
+    var selectedIdx = {};
+    Object.keys(state.customSelected).forEach(function(k){
+      if(k.indexOf(block.key + "|w|") === 0){
+        var parts = k.split("|");
+        var a = +parts[2], b = +parts[3];
+        if(!isNaN(a) && !isNaN(b)){
+          for(var i=Math.min(a,b); i<=Math.max(a,b); i++) selectedIdx[i] = true;
+        }
+      }
+    });
+    wordList.forEach(function(w, idx){
+      var span = document.createElement("span");
+      span.className = "selectable-word";
+      span.dataset.blockKey = block.key;
+      span.dataset.wordIdx = idx;
+      span.textContent = w.text;
+      if(w.bold){ span.style.fontWeight = "800"; }
+      if(selectedIdx[idx]) span.classList.add("selected");
+      bd.appendChild(span);
+      bd.appendChild(document.createTextNode(" "));
+    });
+    bd.dataset.wordCount = wordList.length;
+  }
+
+  var _selDrag = { active:false, blockKey:null, startIdx:-1, endIdx:-1, lastTap:0, lastTapKey:null };
+
+  function bindWordSelection(wrap){
+    function updateCount(){
+      var count = Object.keys(state.customSelected).length;
+      $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر بإصبعك على الكلمات أو اضغط مرتين للجملة";
+    }
+    function applyRange(blockKey, a, b, add){
+      var lo = Math.min(a,b), hi = Math.max(a,b);
+      var key = blockKey + "|w|" + lo + "|" + hi;
+      // Remove any overlapping ranges for this block first when adding
+      if(add){
+        Object.keys(state.customSelected).forEach(function(k){
+          if(k.indexOf(blockKey + "|w|") === 0){
+            var p = k.split("|");
+            var x = +p[2], y = +p[3];
+            if(y >= lo && x <= hi) delete state.customSelected[k];
+          }
+        });
+        state.customSelected[key] = true;
+      } else {
+        delete state.customSelected[key];
+        // also clear any range that overlaps
+        Object.keys(state.customSelected).forEach(function(k){
+          if(k.indexOf(blockKey + "|w|") === 0){
+            var p = k.split("|");
+            var x = +p[2], y = +p[3];
+            if(y >= lo && x <= hi) delete state.customSelected[k];
+          }
+        });
+      }
+      // Re-paint words in this block
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
+      if(blockEl){
+        var selectedIdx = {};
+        Object.keys(state.customSelected).forEach(function(k){
+          if(k.indexOf(blockKey + "|w|") === 0){
+            var p = k.split("|");
+            var x = +p[2], y = +p[3];
+            for(var i=Math.min(x,y);i<=Math.max(x,y);i++) selectedIdx[i]=true;
+          }
+        });
+        blockEl.querySelectorAll(".selectable-word").forEach(function(sp){
+          sp.classList.toggle("selected", !!selectedIdx[+sp.dataset.wordIdx]);
+        });
+      }
+      updateCount();
+    }
+    function wordFromEvent(e){
+      var t = e.target;
+      if(t && t.classList && t.classList.contains("selectable-word")) return t;
+      // touch
+      if(e.touches && e.touches[0]){
+        var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+        if(el && el.classList && el.classList.contains("selectable-word")) return el;
+      }
+      if(e.changedTouches && e.changedTouches[0]){
+        var el2 = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        if(el2 && el2.classList && el2.classList.contains("selectable-word")) return el2;
+      }
+      return null;
+    }
+    function onStart(e){
+      var w = wordFromEvent(e);
+      if(!w) return;
+      var blockKey = w.dataset.blockKey;
+      var idx = +w.dataset.wordIdx;
+      var now = Date.now();
+      // Double-tap → select whole block (all words = whole paragraph/sentence group)
+      if(_selDrag.lastTapKey === blockKey && (now - _selDrag.lastTap) < 350){
+        var count = +(w.parentElement.dataset.wordCount || 0);
+        if(count > 0){
+          var allSelected = true;
+          for(var i=0;i<count;i++){
+            var found = false;
+            Object.keys(state.customSelected).forEach(function(k){
+              if(k.indexOf(blockKey+"|w|")===0){
+                var p=k.split("|"); var x=+p[2],y=+p[3];
+                if(i>=Math.min(x,y)&&i<=Math.max(x,y)) found=true;
+              }
+            });
+            if(!found) allSelected=false;
+          }
+          applyRange(blockKey, 0, count-1, !allSelected);
+        }
+        _selDrag.lastTap = 0;
+        _selDrag.lastTapKey = null;
+        e.preventDefault();
+        return;
+      }
+      _selDrag.lastTap = now;
+      _selDrag.lastTapKey = blockKey;
+      _selDrag.active = true;
+      _selDrag.blockKey = blockKey;
+      _selDrag.startIdx = idx;
+      _selDrag.endIdx = idx;
+      // preview highlight
+      applyRange(blockKey, idx, idx, true);
+      e.preventDefault();
+    }
+    function onMove(e){
+      if(!_selDrag.active) return;
+      var w = wordFromEvent(e);
+      if(!w || w.dataset.blockKey !== _selDrag.blockKey) return;
+      var idx = +w.dataset.wordIdx;
+      if(idx === _selDrag.endIdx) return;
+      _selDrag.endIdx = idx;
+      applyRange(_selDrag.blockKey, _selDrag.startIdx, _selDrag.endIdx, true);
+      e.preventDefault();
+    }
+    function onEnd(){
+      _selDrag.active = false;
+    }
+    wrap.addEventListener("mousedown", onStart);
+    wrap.addEventListener("mousemove", onMove);
+    wrap.addEventListener("mouseup", onEnd);
+    wrap.addEventListener("mouseleave", onEnd);
+    wrap.addEventListener("touchstart", onStart, {passive:false});
+    wrap.addEventListener("touchmove", onMove, {passive:false});
+    wrap.addEventListener("touchend", onEnd);
+    updateCount();
+  }
+
   function renderPage(){
     renderProgress();
     var wrap = $("docWrap");
@@ -812,7 +1043,7 @@
 
     // If custom mode and nothing selected yet (and not currently selecting)
     if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش جمل للإخفاء.<br>اضغط «ابدأ التحديد» فوق واختار الجمل اللي عايز تخفيها، وبعدين احفظ.</div>';
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» فوق، مرّر بإصبعك على الكلمات اللي عايز تخفيها (أو اضغط مرتين للجملة كاملة)، وبعدين احفظ.</div>';
       updateNavButtons();
       return;
     }
@@ -840,28 +1071,8 @@
         bd.className = "doc-block";
         bd.dataset.blockKey = block.key;
         if(useClean){
-          // Split into sentences and make each selectable
-          var plain = block.plainText || stripHtml(block.html);
-          var sents = splitSentences(plain).filter(function(s){ return !VERSE_RE.test(s); });
-          if(sents.length === 0){
-            bd.textContent = plain;
-          } else {
-            sents.forEach(function(s, si){
-              if(isTrivialFragment(s)){
-                var spanT = document.createElement("span");
-                spanT.textContent = s + " ";
-                bd.appendChild(spanT);
-              } else {
-                var span = document.createElement("span");
-                span.className = "selectable";
-                span.dataset.selKey = block.key + "|" + si;
-                span.textContent = s;
-                if(state.customSelected[span.dataset.selKey]) span.classList.add("selected");
-                bd.appendChild(span);
-                bd.appendChild(document.createTextNode(" "));
-              }
-            });
-          }
+          // Word-level selection with bold preserved from original HTML
+          renderSelectableBlock(bd, block);
         } else {
           bd.innerHTML = block.html;
         }
@@ -888,21 +1099,7 @@
     wrap.appendChild(docCard);
 
     if(useClean){
-      // Selection mode: tap sentence to toggle
-      wrap.querySelectorAll(".selectable").forEach(function(el){
-        el.addEventListener("click", function(){
-          var key = el.dataset.selKey;
-          if(state.customSelected[key]){
-            delete state.customSelected[key];
-            el.classList.remove("selected");
-          } else {
-            state.customSelected[key] = true;
-            el.classList.add("selected");
-          }
-          var count = Object.keys(state.customSelected).length;
-          $("customSelectCount").textContent = count ? ar(count) + " جملة محددة" : "اضغط على الجمل لتحديدها";
-        });
-      });
+      bindWordSelection(wrap);
     } else {
       wrap.querySelectorAll(".blank").forEach(function(span){
         var id = +span.dataset.id;
@@ -1164,6 +1361,7 @@
 
     paragraphs.forEach(function(p){
       if(!p.text.trim()) return;
+      if(isPromoOrVerse(p.text)) return; // drop poetry & promo entirely
       if(p.level === 1){
         if(!docHeading) docHeading = p.text.trim();
         newPage(p.text.trim()); newSection(null);
@@ -1295,9 +1493,10 @@
         if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b|youtube\.com|youtu\.be/i.test(norm)) return false;
         if(/\d{7,}/.test(norm) && norm.length < 40) return false;
         if(/\*\*\*/.test(norm)) return false; // poetry/proverb line
-        // promotional / channel join text
-        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(norm)) return false;
-        if(norm.length > 80 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع/.test(norm)) return false;
+        // promotional / channel join text — drop completely
+        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline|UCTnIvc38rMXJctKDfude4vA/i.test(norm)) return false;
+        if(norm.length > 60 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع|تحميل/.test(norm)) return false;
+        if(/\*\*\*/.test(norm)) return false;
         return true;
       });
     });
@@ -1516,8 +1715,8 @@
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
     var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جملة محددة" : "اضغط على الجمل لتحديدها";
-    showToast("وضع التحديد — اضغط على أي جملة عشان تخفيها");
+    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر على الكلمات أو اضغط مرتين للجملة";
+    showToast("مرّر بإصبعك على الكلمات — أو اضغط مرتين للجملة كاملة");
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
@@ -1533,16 +1732,16 @@
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جملة" : "";
-    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جملة)" : "مفيش حاجة محددة");
+    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
+    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
     renderPage();
   });
   $("btnClearCustom").addEventListener("click", function(){
     if(!confirm("تمسح كل التحديد الحالي؟")) return;
     state.customSelected = {};
     saveCustomSelection(state.malzamaKey, {});
-    $("customSelectCount").textContent = "اضغط على الجمل لتحديدها";
-    document.querySelectorAll(".selectable.selected").forEach(function(el){ el.classList.remove("selected"); });
+    $("customSelectCount").textContent = "مرّر على الكلمات أو اضغط مرتين للجملة";
+    document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
     showToast("تم مسح التحديد");
   });
 
