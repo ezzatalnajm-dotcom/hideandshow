@@ -778,25 +778,62 @@
               }
             }
           } else if(mode === "headings"){
-            // Fixed: hide sub-titles / side labels. Never hide page.heading (unit/lesson).
+            // Fixed: hide side titles / short title-lines. Never page.heading.
             var plainH = stripHtml(bi2.html);
-            var labelIsMarker = bi2.label && (isTrivialFragment(bi2.label) || LIST_MARKER_RE.test(bi2.label.trim()) || BARE_ENUM_RE.test(bi2.label.trim()) || NOT_TITLE_RE.test(bi2.label.trim()));
-            if(excluded(plainH) || (bi2.label && excluded(bi2.label))){
+            var idsH = [];
+            function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+            function blankSpan(txt){
+              globalId++; idsH.push(globalId); allIds.push(globalId);
+              return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(txt)+'">'+escapeHtml(txt)+'</span>';
+            }
+            function isMarkerTxt(t){
+              t = (t||"").trim();
+              return !t || isTrivialFragment(t) || LIST_MARKER_RE.test(t) || BARE_ENUM_RE.test(t) || NOT_TITLE_RE.test(t) || /^(لاحظ|الل|القط)\b/.test(t);
+            }
+            if(excluded(plainH)){
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-            } else if(forced(plainH) || (bi2.label && forced(bi2.label))){
-              globalId++; var idF=globalId; allIds.push(idF);
-              unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idF+'" data-hide-text="'+escapeHtml(plainH)+'">'+escapeHtml(plainH)+'</span>', blankIds:[idF] };
-            } else if(bi2.label && !labelIsMarker && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
-              // Hide only the lead label, keep body visible
-              globalId++; var idL=globalId; allIds.push(idL);
-              var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
-              unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'" data-hide-text="'+escapeHtml(labelShow)+'">'+escapeHtml(labelShow)+'</span></b> '+bi2.restHtml, blankIds:[idL] };
-            } else if(isSubHeadingBlock(bi2.html, plainH) || (bi2.label && !labelIsMarker)){
-              // Whole short title block
-              globalId++; var idT=globalId; allIds.push(idT);
-              unitByBlockKey[bi2.key] = { renderHtml: '<span class="blank" data-id="'+idT+'" data-hide-text="'+escapeHtml(plainH)+'">'+escapeHtml(plainH)+'</span>', blankIds:[idT] };
+            } else if(forced(plainH) && plainH.length <= 120){
+              unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
             } else {
-              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              // Split block into lines (PDF often puts each title on its own line)
+              var lines = plainH.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+              if(lines.length <= 1){
+                // try sentence-like split for "عنوان. شرح..."
+                lines = plainH.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+                if(lines.length <= 1) lines = [plainH];
+              }
+              // Apply forced phrases inside the block
+              var fp = forcedPhraseIn(plainH);
+              if(fp && !excluded(fp) && plainH.indexOf(fp) >= 0){
+                var bi = plainH.indexOf(fp);
+                var htmlF = escapeHtml(plainH.slice(0,bi)) + blankSpan(fp) + escapeHtml(plainH.slice(bi+fp.length));
+                unitByBlockKey[bi2.key] = { renderHtml: htmlF, blankIds: idsH };
+              } else if(lines.length >= 2){
+                var htmlLines = lines.map(function(line){
+                  if(excluded(line) || isMarkerTxt(line)) return escapeHtml(line);
+                  if(forced(line) || isSubHeadingBlock("", line)) return blankSpan(line);
+                  // leading label in line
+                  var lm = line.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
+                  if(lm && !isMarkerTxt(lm[1])){
+                    return blankSpan(lm[1]) + " " + escapeHtml(lm[2]);
+                  }
+                  return escapeHtml(line);
+                });
+                unitByBlockKey[bi2.key] = { renderHtml: htmlLines.join("<br>"), blankIds: idsH };
+              } else if(bi2.label && !isMarkerTxt(bi2.label) && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
+                var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(labelShow)+'</b> '+bi2.restHtml, blankIds: idsH };
+              } else if(isSubHeadingBlock(bi2.html, plainH)){
+                unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
+              } else {
+                // last try: leading plain label
+                var pm2 = plainH.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
+                if(pm2 && !isMarkerTxt(pm2[1])){
+                  unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(pm2[1])+'</b> '+escapeHtml(pm2[2]), blankIds: idsH };
+                } else {
+                  unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+                }
+              }
             }
           } else if(mode === "sentences"){ // 'sentences' mode
             var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
@@ -852,12 +889,12 @@
         var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
         var blocks = sec.blocks.map(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
-          var unit = unitByBlockKey[key];
+          var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [] };
           // Skip poetry / promo blocks entirely in every mode
           if(isPromoOrVerse(stripHtml(html))){
             return null;
           }
-          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html), originalHtml: html };
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html };
         }).filter(Boolean);
         return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, subBlankId: subBlankId, blocks: blocks };
       }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
@@ -915,6 +952,8 @@
   }
   function forceHideText(text){
     if(!text) return;
+    text = String(text).replace(/\s+/g," ").trim();
+    if(text.length < 2) return;
     var set = loadForceHideSet(state.malzamaKey);
     set[normExcludeText(text)] = true;
     var ex = loadExcludeSet(state.malzamaKey);
@@ -922,7 +961,7 @@
     saveExcludeSet(state.malzamaKey, ex);
     saveForceHideSet(state.malzamaKey, set);
     loadProgress(false);
-    showToast("تم تعديل الإخفاء ✏️");
+    showToast("تم إخفاء: " + text.slice(0, 40) + (text.length>40?"…":""));
     renderPage();
   }
   // Pen: edit wrong hide (too short / too long) — replace old hide with corrected phrase
@@ -1350,7 +1389,7 @@
         if(useClean){
           sh.textContent = sec.sub;
         } else {
-          sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
+          sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'" data-hide-text="'+String(sec.sub).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'">'+sec.sub+'</span>' : sec.sub;
         }
         docCard.appendChild(sh);
       }
@@ -1411,20 +1450,24 @@
           if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
         }
       });
-      // Headings mode: user can tap a visible sub-title to force-hide it
+      // Headings mode: tap a visible side-title to force-hide it
       if(state.mode === "headings"){
         wrap.querySelectorAll(".doc-subheading, .doc-block").forEach(function(el){
-          // skip if already has a blank (already hidden)
           if(el.querySelector(".blank")) return;
-          var txt = (el.textContent || "").replace(/[✕]/g,"").trim();
-          if(!txt || txt.length < 2 || txt.length > 90) return;
-          if(isTrivialFragment(txt) || LIST_MARKER_RE.test(txt) || BARE_ENUM_RE.test(txt) || NOT_TITLE_RE.test(txt)) return;
+          var txt = (el.textContent || "").replace(/[✕]/g,"").replace(/\s+/g," ").trim();
+          if(!txt || txt.length < 2) return;
+          // Prefer first short line if block is long
+          var firstLine = txt.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/)[0].trim();
+          var target = (firstLine.length >= 2 && firstLine.length <= 70) ? firstLine : txt;
+          if(target.length > 100) return;
+          if(isTrivialFragment(target) || LIST_MARKER_RE.test(target) || BARE_ENUM_RE.test(target) || NOT_TITLE_RE.test(target)) return;
           el.style.cursor = "pointer";
-          el.title = "اضغط لإخفاء هذا العنوان الفرعي";
+          el.title = "اضغط لإخفاء العنوان: " + target.slice(0, 40);
           el.classList.add("title-pickable");
           el.addEventListener("click", function(ev){
             if(ev.target.closest(".pin-btn, .blank, .rate-btn, .mic-mini")) return;
-            forceHideText(txt);
+            ev.preventDefault();
+            forceHideText(target);
           });
         });
       }
