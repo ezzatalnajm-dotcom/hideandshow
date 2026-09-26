@@ -85,6 +85,7 @@
 
   .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
   :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
+  :root:not([data-theme="light"]) #customGuide{color:var(--gold-400);}
 
   .doc-wrap{padding:8px 18px 16px;flex:1;}
   .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
@@ -220,14 +221,19 @@
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">اختر بنفسك بالتمرير</span></button>
       <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين فقط</span><span class="mtime">إخفاء العناوين الفرعية</span></button>
       <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
+    <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
+      <div style="margin-bottom:2px;">① حدّد ما يلزم إخفاؤه (اضغط أو مرّر على الكلمات)</div>
+      <div style="margin-bottom:2px;">② احفظ التخصيص</div>
+      <div>③ اختبر نفسك — اكشف جزء بجزء</div>
+    </div>
     <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">✏️ ابدأ التحديد — مرّر على الكلمات</button>
-      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">💾 حفظ التخصيص</button>
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">① ابدأ التحديد</button>
+      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ التخصيص</button>
       <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
       <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
     </div>
@@ -266,8 +272,8 @@
   <div class="modal">
     <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li>اختار مود المراجعة: <b>تخصيص</b> (تخفي بنفسك)، أو <b>العناوين فقط</b> (ثابت)، أو <b>الجمل</b> (عشوائي).</li>
-      <li>في مود التخصيص: اضغط «ابدأ التحديد» ثم مرّر على الكلمات. ضغطتين = جملة كاملة. اضغط تاني للإلغاء.</li>
+      <li>اختار مود المراجعة بالترتيب: <b>العناوين فقط</b> → <b>الجمل</b> → <b>تخصيص</b>.</li>
+      <li>مود التخصيص على ٣ خطوات: ① حدّد ما يلزم إخفاؤه ② احفظ التخصيص ③ اختبر نفسك.</li>
       <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
       <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف — وفيها مفتاح تذكير ظاهر.</li>
       <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
@@ -338,7 +344,7 @@
 
   var MODE_LABELS = { custom:"تخصيص", headings:"العناوين فقط", sentences:"الجمل" };
   var MODE_HINTS = {
-    custom: "✏️ اضغط «ابدأ التحديد» ثم مرّر على الكلمات. ضغطتين = الجملة كاملة. اضغط تاني على المحدد عشان تشيل التحديد.",
+    custom: "✏️ ١) حدّد ما يلزم إخفاؤه  ٢) احفظ التخصيص  ٣) اختبر نفسك",
     headings: "🏷️ بيخفي العناوين الفرعية فقط (ثابت). عنوان الوحدة وعنوان الدرس يفضلوا ظاهرين.",
     sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين"
   };
@@ -794,7 +800,7 @@
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    setMode(state.mode || "custom", true);
+    setMode(state.mode || "headings", true);
   }
 
   function setMode(mode, skipToast, reshuffle){
@@ -804,6 +810,7 @@
     $("hintBanner").textContent = MODE_HINTS[mode] || "";
     var isCustom = mode === "custom";
     $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
+    $("customGuide").classList.toggle("hidden", !isCustom);
     $("customToolbar").classList.toggle("hidden", !isCustom);
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
