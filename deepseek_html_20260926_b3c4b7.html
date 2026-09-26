@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ذاكر بالإخفاء من نجم الأحياء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1b2e; --navy-900:#0f2740; --navy-850:#122d4a; --navy-800:#153351; --navy-700:#1c4266;
+    --gold-400:#f0c948; --gold-500:#e0b62f; --gold-600:#c79a1f;
+    --ink:#0a1b2e; --paper:#f4f1ea; --card:#ffffff; --muted:#5c6b7a;
+    --ok:#2e9e5b; --warn:#d9822b; --danger:#c94b4b;
+    --radius-lg:20px; --radius-md:13px; --radius-sm:9px;
+    --shadow:0 10px 30px rgba(10,27,46,.18);
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{margin:0;font-family:'Cairo','Tajawal',sans-serif;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent;}
+  :root:not([data-theme="light"]){--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
+  @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#f4f1ea;--card:#ffffff;--ink:#0a1b2e;--muted:#5c6b7a;}}
+  :root[data-theme="light"]{--paper:#f4f1ea;--card:#ffffff;--ink:#0a1b2e;--muted:#5c6b7a;}
+  :root[data-theme="dark"]{--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
+
+  .app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+  .topbar{background:linear-gradient(160deg,var(--navy-900),var(--navy-950));padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand .star{font-size:20px;filter:drop-shadow(0 0 6px rgba(240,201,72,.7));}
+  .brand h1{font-size:14px;margin:0;font-weight:800;line-height:1.3;}
+  .brand h1 small{display:block;font-weight:400;font-size:10px;opacity:.75;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;position:relative;}
+  .icon-btn:active{background:rgba(255,255,255,.2);}
+  .icon-btn .dot{position:absolute;top:-2px;left:-2px;background:var(--danger);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+  .topbar-actions{display:flex;gap:7px;}
+
+  .home-hero{padding:22px 18px 6px;text-align:center;}
+  .home-hero .badge{display:inline-flex;align-items:center;gap:6px;background:var(--navy-900);color:var(--gold-400);padding:7px 16px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--shadow);}
+  .home-hero h2{font-size:20px;margin:14px 0 4px;font-weight:800;}
+  .home-hero p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7;}
+  .contact-strip{display:flex;gap:8px;padding:14px 18px 4px;}
+  .contact-strip a,.contact-strip button{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .cs-wa{background:#25D366;color:#fff;}
+  .cs-call{background:var(--navy-900);color:#fff;}
+  .cs-tg{background:#229ED9;color:#fff;}
+
+  .section-title{font-size:13px;color:var(--muted);font-weight:700;padding:18px 18px 8px;display:flex;justify-content:space-between;align-items:center;}
+  .add-btn{background:var(--navy-900);color:var(--gold-400);border:none;width:30px;height:30px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .malzama-list{padding:0 16px 8px;display:flex;flex-direction:column;gap:10px;}
+  .malzama-card{background:var(--card);border-radius:var(--radius-md);padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(10,27,46,.10);border:1px solid rgba(10,27,46,.06);}
+  .malzama-main{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer;}
+  .malzama-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .malzama-info{flex:1;min-width:0;}
+  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
+  .malzama-del:active{color:var(--danger);}
+  .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
+  .upload-hint b{color:var(--ink);}
+
+  .unit-topinfo{padding:14px 18px 2px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .unit-title{font-size:17px;font-weight:800;margin:0 0 2px;}
+  .unit-sub{color:var(--muted);font-size:12px;margin:0;}
+  .review-pill{background:rgba(217,130,43,.14);color:var(--warn);border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
+
+  .mode-row{display:flex;gap:7px;padding:12px 18px 2px;overflow-x:auto;}
+  .mode-btn{flex:0 0 auto;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:normal;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:140px;}
+  :root:not([data-theme="light"]) .mode-btn{border-color:rgba(255,255,255,.14);}
+  .mode-btn .mt{display:flex;align-items:center;gap:5px;}
+  .mode-btn .mtime{font-size:9.5px;font-weight:600;color:var(--muted);}
+  .mode-btn.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
+  .mode-btn.active .mtime{color:var(--gold-400);}
+
+  .shuffle-note{margin:8px 18px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+
+  .progress-wrap{padding:10px 18px 2px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+  .progress-track{height:7px;border-radius:999px;background:rgba(10,27,46,.08);overflow:hidden;}
+  :root:not([data-theme="light"]) .progress-track{background:rgba(255,255,255,.10);}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-500),var(--gold-400));border-radius:999px;transition:width .35s ease;}
+
+  .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
+  :root:not([data-theme="light"]) #customGuide{color:var(--gold-400);}
+
+  .doc-wrap{padding:8px 18px 16px;flex:1;}
+  .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
+  .doc-heading{background:var(--navy-900);color:#fff;padding:11px 16px;font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px;}
+  .doc-heading .star{color:var(--gold-400);font-size:13px;}
+  .doc-subheading{color:var(--navy-700);font-weight:800;font-size:13.5px;padding:14px 16px 2px;}
+  :root:not([data-theme="light"]) .doc-subheading{color:var(--gold-400);}
+  .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
+  .doc-block b{font-weight:800;}
+
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
+  .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
+  .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
+  :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
+  :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
+  .doc-subheading .blank{font-weight:800;}
+  .doc-block b .blank, .doc-block .blank b{font-weight:800;}
+  .pin-actions{display:inline-flex;gap:4px;margin-inline-start:6px;vertical-align:middle;}
+  .pin-btn{border:none;background:rgba(10,27,46,.06);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:0 0 auto;}
+  .pin-btn:active{transform:scale(.92);}
+  .pin-btn.x{color:#c94b4b;background:rgba(201,75,75,.12);}
+  .pin-btn.pen{color:var(--navy-900);background:rgba(224,182,47,.18);}
+  :root:not([data-theme="light"]) .pin-btn{background:rgba(255,255,255,.08);}
+  :root:not([data-theme="light"]) .pin-btn.x{color:#ff8a8a;background:rgba(201,75,75,.2);}
+  :root:not([data-theme="light"]) .pin-btn.pen{color:var(--gold-400);}
+  .blank-wrap{display:inline;position:relative;}
+  .blank-wrap .pin-btn.x{width:20px;height:20px;font-size:10px;margin-inline-start:2px;vertical-align:super;}
+  .title-pickable{outline:1px dashed transparent;border-radius:6px;transition:outline .15s, background .15s;}
+  .title-pickable:hover{outline-color:rgba(224,182,47,.55);background:rgba(224,182,47,.08);}
+  :root:not([data-theme="light"]) .title-pickable:hover{background:rgba(224,182,47,.12);}
+
+  /* Custom selection mode */
+  .selectable-word{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .12s ease;display:inline-block; -webkit-user-select:none; user-select:none; touch-action:none;}
+  .selectable-word:hover{background:rgba(224,182,47,.15);}
+  .selectable-word.selected{background:rgba(224,182,47,.42); outline:1.5px solid var(--gold-500);}
+  .selecting-mode .doc-block, .selecting-mode .doc-subheading{user-select:none; -webkit-user-select:none;}
+  .selecting-mode .doc-block{line-height:2.4;}
+  #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
+  #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
+  :root:not([data-theme="light"]) #btnRestartUnit{background:rgba(255,255,255,.1);color:var(--ink);}
+
+  .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
+  .block-rate.show{display:flex;}
+  .block-rate .lbl{font-size:11.5px;color:var(--muted);font-weight:700;}
+  .rate-btn{border:none;border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .rate-know{background:rgba(46,158,91,.12);color:var(--ok);}
+  .rate-know.active{background:var(--ok);color:#fff;}
+  .rate-review{background:rgba(217,130,43,.14);color:var(--warn);}
+  .rate-review.active{background:var(--warn);color:#fff;}
+  .mic-mini{border:none;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;}
+  .mic-mini.on{color:var(--danger);}
+  .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
+
+  .bottombar{position:sticky;bottom:0;background:var(--card);border-top:1px solid rgba(10,27,46,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 -6px 16px rgba(10,27,46,.08);}
+  :root:not([data-theme="light"]) .bottombar{border-top-color:rgba(255,255,255,.08);}
+  .nav-btn{flex:1;background:rgba(10,27,46,.07);color:var(--ink);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  :root:not([data-theme="light"]) .nav-btn{background:rgba(255,255,255,.08);}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .reveal-btn{flex:1.5;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:800;font-size:13px;cursor:pointer;}
+  .reveal-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .done-screen{padding:36px 22px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .done-screen .emoji{font-size:48px;margin-bottom:8px;}
+  .done-screen h2{font-size:19px;margin:6px 0;}
+  .done-screen p{color:var(--muted);font-size:13px;line-height:1.8;max-width:320px;}
+  .done-stats{display:flex;gap:14px;margin:16px 0;}
+  .done-stat{background:var(--card);border-radius:var(--radius-md);padding:12px 16px;box-shadow:var(--shadow);min-width:80px;}
+  .done-stat .n{font-size:20px;font-weight:800;}
+  .done-stat.ok .n{color:var(--ok);}
+  .done-stat.warn .n{color:var(--warn);}
+  .done-stat .l{font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .done-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
+  .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) .btn-ghost{background:rgba(255,255,255,.08);}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto;}
+  .modal h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;justify-content:space-between;}
+  .modal .close-x{cursor:pointer;color:var(--muted);font-size:15px;}
+  .modal p, .modal li{font-size:13.5px;line-height:1.9;color:var(--ink);}
+  .modal ol,.modal ul{padding-inline-start:20px;margin:8px 0;}
+  .modal .contact-row{display:flex;gap:10px;margin-top:14px;}
+  .modal .contact-row a{flex:1;text-align:center;padding:11px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:13px;}
+  .wa{background:#25D366;color:#fff;}
+  .tg{background:#229ED9;color:#fff;}
+  .modal .file-choice{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+  .file-choice button{border:1px solid rgba(10,27,46,.15);background:var(--paper);color:var(--ink);border-radius:var(--radius-sm);padding:13px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:right;display:flex;align-items:center;gap:10px;}
+  .review-item{background:var(--paper);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:9px;font-size:13px;line-height:1.8;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  :root:not([data-theme="light"]) .review-item{background:rgba(255,255,255,.05);}
+  .review-item .txt{flex:1;}
+  .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .empty-note{color:var(--muted);font-size:13px;text-align:center;padding:20px 0;}
+  .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:88%;text-align:center;}
+  .toast.show{opacity:1;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <span class="star">⭐</span>
+        <h1>ذاكر بالإخفاء<small>من نجم الأحياء</small></h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btnTheme" title="الوضع الفاتح/الداكن">🌓</button>
+        <button class="icon-btn" id="btnInfo" title="تعليمات الاستخدام">؟</button>
+        <button class="icon-btn" id="btnSettings" title="الإعدادات">⚙️</button>
+        <button class="icon-btn hidden" id="btnHome" title="الرئيسية">🏠</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewHome">
+    <div class="home-hero">
+      <span class="badge">⭐ النجم في الأحياء</span>
+      <h2>ذاكر بالإخفاء</h2>
+      <p>اقرا الملزمة زي ما هي، وحاول تفتكر الأجزاء المموّهة قبل ما تكشفها.</p>
+    </div>
+    <div class="contact-strip">
+      <a class="cs-wa" href="https://wa.me/97477107247" target="_blank">💬 واتساب</a>
+      <a class="cs-call" href="tel:+97477107247">📞 اتصال</a>
+      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 قناة التليجرام</a>
+    </div>
+    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة جديدة">+</button></div>
+    <div class="malzama-list" id="malzamaList"></div>
+    <div class="upload-hint">تقدر ترفع ملزمة أي مادة (مش بس الأحياء) — <b>Word</b> أو <b>PDF</b> — وهتتحول تلقائيًا لنفس أسلوب المراجعة دي.</div>
+  </div>
+
+  <div id="viewUnit" class="hidden" style="display:flex;flex-direction:column;flex:1;">
+    <div class="unit-topinfo">
+      <div>
+        <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
+        <p class="unit-sub" id="unitSub">العضلات والحركة</p>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
+        <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
+      </div>
+    </div>
+
+    <div class="mode-row" id="modeRow">
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">يعتمد على تنسيق الملف</span></button>
+    </div>
+    <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
+    <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
+      <div style="margin-bottom:2px;">① حدّد ما يلزم إخفاؤه (اضغط أو مرّر على الكلمات)</div>
+      <div style="margin-bottom:2px;">② احفظ التخصيص</div>
+      <div>③ اختبر نفسك — اكشف جزء بجزء</div>
+    </div>
+    <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">① ابدأ التحديد</button>
+      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ التخصيص</button>
+      <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
+      <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+    </div>
+    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر أو تقول الإجابة بصوت عالٍ الأول، وبعدين اكشفها</div>
+    <div class="doc-wrap" id="docWrap"></div>
+
+    <div class="bottombar">
+      <button class="nav-btn" id="btnPrevPage">◀ السابقة</button>
+      <button class="reveal-btn" id="btnReveal">إظهار التالي</button>
+      <button class="nav-btn" id="btnNextPage">التالية ▶</button>
+    </div>
+  </div>
+
+  <div id="viewDone" class="hidden done-screen">
+    <div class="emoji">🎉</div>
+    <h2>أحسنت! خلّصت المحاولة دي</h2>
+    <p>كده تكون راجعت كل حاجة في الملزمة دي بالمود اللي اخترته.</p>
+    <div class="done-stats">
+      <div class="done-stat ok"><div class="n" id="statKnow">0</div><div class="l">عرفتها</div></div>
+      <div class="done-stat warn"><div class="n" id="statReview">0</div><div class="l">محتاج مراجعة</div></div>
+    </div>
+    <div class="done-actions">
+      <button class="btn-gold" id="btnReviewNeeded">📋 راجع اللي محتاج مراجعة</button>
+      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة (تجديد عشوائي)</button>
+      <button class="btn-ghost" id="btnBackHome">الرئيسية</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalInfo">
+  <div class="modal">
+    <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
+    <ol>
+      <li>اختار مود المراجعة بالترتيب: <b>الجمل</b> → <b>تخصيص</b> → <b>العناوين</b>.</li>
+      <li>مود التخصيص على ٣ خطوات: ① حدّد ما يلزم إخفاؤه ② احفظ التخصيص ③ اختبر نفسك.</li>
+      <li>مود العناوين يعتمد على تنسيق الملف (خط سميك / عناوين Word) وقد يخطئ — الأفضل الجمل أو التخصيص.</li>
+      <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
+      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف — وفيها مفتاح تذكير ظاهر.</li>
+      <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
+      <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
+      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق.</li>
+      <li>مود العناوين والجمل بيختاروا أجزاء مختلفة عشوائيًا في كل محاولة جديدة.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalContact">
+  <div class="modal">
+    <h3>راسلنا <span class="close-x" data-close="modalContact">✕</span></h3>
+    <p>لأي استفسار أو اقتراح، تواصل مباشرة مع أ. عزت شعبان.</p>
+    <div class="contact-row">
+      <a class="wa" href="https://wa.me/97477107247" target="_blank">واتساب</a>
+      <a class="tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">تليجرام</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal">
+    <h3>ارفع ملزمة جديدة <span class="close-x" data-close="modalUpload">✕</span></h3>
+    <p>اختار ملف أو أكتر (Word أو PDF) من جهازك. لو عندك الملف على Google Drive، حمّله على جهازك الأول من تطبيق درايف وبعدين ارفعه من هنا.</p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
+      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (هتتضاف لملف المكتبة المشتركة اللي بترفعه مع الموقع)
+    </label>
+    <div class="file-choice">
+      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز (Word أو PDF)</button>
+    </div>
+    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
+    <p id="uploadStatus" style="display:none;"></p>
+    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
+      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية الحالية (اللي هتتصدّر في library.json) — <span id="pendingCount">٠</span> ملزمة. شيل أي واحدة قبل ما تنزّل لو محتاجة تتغيّر.</p>
+      <div id="pendingListWrap"></div>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalReview">
+  <div class="modal">
+    <h3>محتاج مراجعة <span class="close-x" data-close="modalReview">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">القائمة دي مجمّعة من كل المودات — أي فقرة قيّمتها "محتاج مراجعة" في أي مود هتلاقيها هنا.</p>
+    <div id="reviewListWrap"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalSettings">
+  <div class="modal">
+    <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها. مش بيأثر على الملازم الرسمية اللي جايه من library.json.</p>
+    <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج (حذف كل حاجة محلية)</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+  }
+
+  var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
+  var MODE_HINTS = {
+    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين",
+    custom: "✏️ ١) حدّد ما يلزم إخفاؤه  ٢) احفظ التخصيص  ٣) اختبر نفسك",
+    headings: "🏷️ يخفي العناوين الفرعية. اضغط على عنوان ظاهر لإخفائه. ✕ على المخفي لإلغاء الإخفاء الغلط."
+  };
+
+  var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+  function ar(n){ return String(n).split("").map(function(ch){ return /[0-9]/.test(ch)?ARABIC_DIGITS[+ch]:ch; }).join(""); }
+  function stripHtml(html){ var d=document.createElement("div"); d.innerHTML=html; return (d.textContent||"").trim(); }
+  function slugify(str){
+    return "m_" + String(str).trim().toLowerCase()
+      .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
+  }
+  function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function splitIntoWords(text){
+    if(!text || !text.trim()) return [];
+    var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
+    return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
+  }
+
+  function splitSentences(text){
+    if(!text || !text.trim()) return [];
+    var rough = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    var parts = [];
+    rough.forEach(function(chunk){
+      var sub = chunk.split(/(?<=[:：])\s+|(?<=[،,;؛])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+      if(sub.length > 1){
+        sub.forEach(function(s){ if(s) parts.push(s); });
+      } else {
+        parts.push(chunk);
+      }
+    });
+    return parts.length ? parts : (text.trim()?[text.trim()]:[]);
+  }
+  function shuffleWith(arr, rnd){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function seededRandom(seed){
+    var s = seed % 2147483647; if(s<=0) s += 2147483646;
+    return function(){ s = s*16807 % 2147483647; return (s-1)/2147483646; };
+  }
+
+  /* ---------- Library ---------- */
+  var LIB_INDEX_KEY = "najm_lib_index_v2";
+  var SHARED_INDEX = [];
+  var SHARED_CONTENT = {};
+
+  function fetchSharedLibrary(){
+    return fetch("./library.json").then(function(res){
+      if(!res.ok) throw new Error("no library.json");
+      return res.json();
+    }).then(function(data){
+      if(data && Array.isArray(data.items)){
+        SHARED_INDEX = data.items.map(function(it){ return { key:it.key, title:it.title, subtitle:it.subtitle }; });
+        data.items.forEach(function(it){ SHARED_CONTENT[it.key] = it.rawPages; });
+      }
+    }).catch(function(){ });
+  }
+
+  function getLibraryIndex(){
+    var personal = [];
+    try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
+    personal = personal.filter(function(x){ return x.key !== "seed_u1l1"; });
+    var sharedTagged = SHARED_INDEX.map(function(x){ return Object.assign({shared:true}, x); });
+    var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
+    return sharedTagged.concat(personalTagged);
+  }
+  function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
+  function saveLibraryIndex(list){ savePersonalIndex(list); }
+  function getMalzamaContent(key){
+    if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
+    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
+    return null;
+  }
+  function saveMalzamaContent(key, rawPages){ try{ localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages)); }catch(e){} }
+
+  /* ---------- Cross-mode aggregated review list ---------- */
+  function reviewKey(malzamaKey){ return "najm_review_" + malzamaKey; }
+  function loadReviewMap(malzamaKey){
+    try{ var raw = localStorage.getItem(reviewKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveReviewMap(malzamaKey, map){ try{ localStorage.setItem(reviewKey(malzamaKey), JSON.stringify(map)); }catch(e){} }
+  function setReviewStatus(malzamaKey, blockKey, rating, text){
+    var map = loadReviewMap(malzamaKey);
+    if(rating === "review"){ map[blockKey] = { text:text, updatedAt: Date.now() }; }
+    else { delete map[blockKey]; }
+    saveReviewMap(malzamaKey, map);
+    updateReviewBadge();
+  }
+  function updateReviewBadge(){
+    if(!state.malzamaKey) return;
+    var map = loadReviewMap(state.malzamaKey);
+    var count = Object.keys(map).length;
+    var el = $("reviewCount");
+    if(el) el.textContent = ar(count);
+  }
+
+  var LEAD_RE = /^(\s*<b>([^<]{1,50}?):?<\/b>\s*)/;
+  var VERSE_RE = /\*\*\*/;
+  var LIST_MARKER_RE = /^(أولا|أولًا|اولا|ثانيًا|ثانيا|ثالثا|ثالثًا|رابعا|رابعًا|خامسا|خامسًا|سادسا|سادسًا|سابعا|سابعًا|ثامنا|ثامنًا|تاسعا|تاسعًا|عاشرا|عاشرًا)([.:：\s]|$)/i;
+  var BARE_ENUM_RE = /^([أ-ي]|[a-zA-Z]|[0-9٠-٩]{1,3}|ال|الل|القط|لاحظ|\?|؟|💡)\s*[.)\:：]?\s*$/;
+  var NOT_TITLE_RE = /^(الل|القط|لاحظ|ملاحظة|تنبيه|مهم|مثال|مثل|انظر|انظري)[:：]?\s*$/i;
+
+  function isSubHeadingBlock(html, plain){
+    var t = (plain || "").trim();
+    if(!t || t.length > 80) return false;
+    if(typeof isPromoOrVerse === "function" && isPromoOrVerse(t)) return false;
+    if(isTrivialFragment(t)) return false;
+    if(LIST_MARKER_RE.test(t)) return false;
+    if(BARE_ENUM_RE.test(t)) return false;
+    if(NOT_TITLE_RE.test(t)) return false;
+    if(/^(لاحظ|الل|القط)\b/i.test(t)) return false;
+    if(/^[:：.?؟!\-–—•●▪]+$/.test(t)) return false;
+    if(!/[\u0600-\u06FFa-zA-Z]{2,}/.test(t)) return false;
+
+    var h = (html || "").trim();
+    var words = t.split(/\s+/).filter(Boolean);
+
+    if(t.length <= 60 && /[:：]$/.test(t) && words.length <= 8) return true;
+    if(/^<b>[\s\S]+<\/b>\s*$/i.test(h) && t.length >= 3) return true;
+    var boldLen = 0;
+    h.replace(/<b>([^<]*)<\/b>/gi, function(_, x){ boldLen += (x||"").length; });
+    if(t.length <= 70 && boldLen >= Math.max(3, t.length * 0.55)) return true;
+    if(t.length <= 50 && words.length <= 7 && !/[.!?؟]/.test(t)) return true;
+    return false;
+  }
+  var KEY_STARTERS = /^(مثال|مثل|كـ|كـ |أي|منها|مثلًا|مثلا|مثلًا:|مثال:|مثل:|وهي|وهو|وهم|هن|هي|هو|وذلك|أي أن|بمعنى|مثلًا|على سبيل المثال)/i;
+
+  function isTrivialFragment(s){
+    var t = s.trim();
+    if(t.length < 2) return true;
+    if(/^[\u0621-\u064A]\s*[-.)]?\s*$/.test(t)) return true;
+    if(/^\(?[0-9٠-٩]+\)?[-.]?\s*$/.test(t)) return true;
+    if(/^[\u0621-\u064A0-9٠-٩]{1,2}\s*[-–—.]?\s*$/.test(t)) return true;
+    if(LIST_MARKER_RE.test(t)) return true;
+    if(NOT_TITLE_RE.test(t)) return true;
+    if(/^[:：.?؟!\-–—•●▪💡]+$/.test(t)) return true;
+    if(BARE_ENUM_RE.test(t)) return true;
+    return false;
+  }
+
+  /* ---- User exclusions (red X) ---- */
+  function excludeKey(malzamaKey){ return "najm_exclude_" + malzamaKey; }
+  function forceHideKey(malzamaKey){ return "najm_forcehide_" + malzamaKey; }
+  function normExcludeText(t){ return String(t||"").replace(/\s+/g," ").trim().slice(0,200); }
+  function loadExcludeSet(malzamaKey){
+    try{ var raw=localStorage.getItem(excludeKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveExcludeSet(malzamaKey, set){ try{ localStorage.setItem(excludeKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
+  function loadForceHideSet(malzamaKey){
+    try{ var raw=localStorage.getItem(forceHideKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveForceHideSet(malzamaKey, set){ try{ localStorage.setItem(forceHideKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
+  function isExcludedText(malzamaKey, text){
+    var set = loadExcludeSet(malzamaKey);
+    return !!set[normExcludeText(text)];
+  }
+  function addExcludeText(malzamaKey, text){
+    var set = loadExcludeSet(malzamaKey);
+    set[normExcludeText(text)] = true;
+    saveExcludeSet(malzamaKey, set);
+  }
+
+  function mergeBilingualUnits(parts){
+    var out = [];
+    for(var i=0;i<parts.length;i++){
+      var cur = parts[i];
+      var next = parts[i+1];
+      if(next){
+        var hasAr = /[\u0600-\u06FF]/.test(cur);
+        var hasEn = /[a-zA-Z]/.test(cur);
+        var nextEn = /[a-zA-Z]/.test(next);
+        var nextAr = /[\u0600-\u06FF]/.test(next);
+        if(hasAr && !hasEn && nextEn && next.length <= 40){ out.push(cur + " " + next); i++; continue; }
+        if(hasEn && !nextEn && nextAr && cur.length <= 40){ out.push(cur + " " + next); i++; continue; }
+      }
+      out.push(cur);
+    }
+    return out;
+  }
+
+  function splitKeyAndRest(sentence){
+    var t = sentence.trim();
+    var colonM = t.match(/^(.{1,40}[:：])\s+(.+)$/);
+    if(colonM && colonM[2].length > 6) return { key: colonM[1], rest: colonM[2] };
+    var m = t.match(KEY_STARTERS);
+    if(m){
+      var key = m[0];
+      var rest = t.slice(key.length).trim();
+      if(rest.length > 8) return { key: key, rest: rest };
+    }
+    var words = t.split(/\s+/);
+    if(words.length >= 5){
+      var key2 = words.slice(0, 2).join(" ");
+      var rest2 = words.slice(2).join(" ");
+      if(rest2.length > 10) return { key: key2, rest: rest2 };
+    }
+    return null;
+  }
+
+  function pickSentenceHides(sentences, ratio, rnd){
+    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){ return !isTrivialFragment(sentences[i]); });
+    if(candidates.length === 0) return {};
+    var order = shuffleWith(candidates, rnd);
+    var target = Math.max(1, Math.min(candidates.length - (candidates.length>1?1:0), Math.round(candidates.length*ratio)));
+    var hideSet = {};
+    order.forEach(function(i){
+      if(Object.keys(hideSet).length >= target) return;
+      if(hideSet[i-1] || hideSet[i+1]) return;
+      hideSet[i] = true;
+    });
+    return hideSet;
+  }
+
+  function flattenBlocks(rawPages){
+    var flat = [];
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        sec.blocks.forEach(function(html, bi){
+          flat.push({ pageIdx:pi, secIdx:si, blockIdx:bi, html:html, sectionSub:sec.sub, isFirstInSection: bi===0 });
+        });
+      });
+    });
+    return flat;
+  }
+
+  function buildModel(rawPages, mode, seed, customSelected, excludeSet){
+    customSelected = customSelected || {};
+    var rnd = seededRandom(seed || 1);
+    var globalId = 0, allIds = [];
+    var unitByBlockKey = {};
+    var sectionHeadingBlankByKey = {};
+    var excludeSetLocal = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
+    var forceHideSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
+    function excluded(text){
+      return !!excludeSetLocal[normExcludeText(text)];
+    }
+    function forced(text){
+      var n = normExcludeText(text);
+      if(!n) return false;
+      if(forceHideSet[n]) return true;
+      var keys = Object.keys(forceHideSet);
+      for(var i=0;i<keys.length;i++){
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0) return true;
+      }
+      return false;
+    }
+    function forcedPhraseIn(text){
+      var n = normExcludeText(text);
+      var keys = Object.keys(forceHideSet);
+      var best = null;
+      for(var i=0;i<keys.length;i++){
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0){
+          if(!best || keys[i].length > best.length) best = keys[i];
+        }
+      }
+      return best;
+    }
+
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        var secKeyPrefix = pi+"_"+si+"_";
+        var blocksInfo = sec.blocks.map(function(html, bi){
+          var m = html.match(LEAD_RE);
+          var label = m ? m[2] : null;
+          var restHtml = m ? html.slice(m[0].length) : html;
+          if(!label){
+            var plainLead = stripHtml(html);
+            var pm = plainLead.match(/^([\u0600-\u06FFA-Za-z0-9\s]{1,40}?[:：])\s+(.{9,})$/);
+            if(pm){
+              var cand = pm[1].replace(/[:：]\s*$/, "").trim();
+              if(cand && !isTrivialFragment(cand) && !LIST_MARKER_RE.test(cand) && !NOT_TITLE_RE.test(cand)){
+                label = cand;
+                restHtml = escapeHtml(pm[2]);
+              }
+            }
+          }
+          return { key: secKeyPrefix+bi, html: html, label: label, restHtml: restHtml };
+        });
+
+        if(mode === "headings" && sec.sub){
+          var subT = String(sec.sub).trim();
+          var subIsMarker = isTrivialFragment(subT) || LIST_MARKER_RE.test(subT) || BARE_ENUM_RE.test(subT) || NOT_TITLE_RE.test(subT);
+          if(!subIsMarker && !excluded(subT) && subT.length >= 3){
+            globalId++; var shid = globalId; allIds.push(shid);
+            sectionHeadingBlankByKey[pi+"_"+si] = shid;
+          }
+        }
+
+        blocksInfo.forEach(function(bi2){
+          if(mode === "custom"){
+            if(isPromoOrVerse(stripHtml(bi2.html))){
+              unitByBlockKey[bi2.key] = { renderHtml: "", blankIds: [] };
+            } else {
+              var wordsC = splitIntoWords(stripHtml(bi2.html));
+              var idsC = [];
+              var ranges = [];
+              Object.keys(customSelected).forEach(function(k){
+                if(k.indexOf(bi2.key + "|w|") === 0){
+                  var parts = k.split("|");
+                  var a = +parts[2], b = +parts[3];
+                  if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
+                }
+              });
+              ranges = ranges.map(function(r){ return expandBilingualRange(wordsC, r[0], r[1]); });
+              ranges.sort(function(x,y){ return x[0]-y[0]; });
+              var merged = [];
+              ranges.forEach(function(r){
+                if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
+                else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
+              });
+              if(wordsC.length === 0 || merged.length === 0){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              } else {
+                var htmlParts = [];
+                var wi = 0;
+                merged.forEach(function(r){
+                  while(wi < r[0] && wi < wordsC.length){ htmlParts.push(escapeHtml(wordsC[wi])); wi++; }
+                  if(wi <= r[1] && wi < wordsC.length){
+                    globalId++; idsC.push(globalId); allIds.push(globalId);
+                    var hidden = [];
+                    while(wi <= r[1] && wi < wordsC.length){ hidden.push(wordsC[wi]); wi++; }
+                    htmlParts.push('<span class="blank" data-id="'+globalId+'">'+escapeHtml(hidden.join(" "))+'</span>');
+                  }
+                });
+                while(wi < wordsC.length){ htmlParts.push(escapeHtml(wordsC[wi])); wi++; }
+                var outHtml = htmlParts.join(" ");
+                if(bi2.label){
+                  var labelEsc = escapeHtml(bi2.label);
+                  var reLabel = new RegExp("^("+labelEsc.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\s*:?)");
+                  outHtml = outHtml.replace(reLabel, "<b>$1</b>");
+                }
+                unitByBlockKey[bi2.key] = { renderHtml: outHtml, blankIds: idsC };
+              }
+            }
+          } else if(mode === "headings"){
+            var plainH = stripHtml(bi2.html);
+            var idsH = [];
+            function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+            function blankSpan(txt){
+              globalId++; idsH.push(globalId); allIds.push(globalId);
+              return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(txt)+'">'+escapeHtml(txt)+'</span>';
+            }
+            function isMarkerTxt(t){
+              t = (t||"").trim();
+              return !t || isTrivialFragment(t) || LIST_MARKER_RE.test(t) || BARE_ENUM_RE.test(t) || NOT_TITLE_RE.test(t) || /^(لاحظ|الل|القط)\b/.test(t);
+            }
+            if(excluded(plainH)){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else if(forced(plainH) && plainH.length <= 120){
+              unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
+            } else {
+              var lines = plainH.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+              if(lines.length <= 1){
+                lines = plainH.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+                if(lines.length <= 1) lines = [plainH];
+              }
+              var fp = forcedPhraseIn(plainH);
+              if(fp && !excluded(fp) && plainH.indexOf(fp) >= 0){
+                var bi = plainH.indexOf(fp);
+                var htmlF = escapeHtml(plainH.slice(0,bi)) + blankSpan(fp) + escapeHtml(plainH.slice(bi+fp.length));
+                unitByBlockKey[bi2.key] = { renderHtml: htmlF, blankIds: idsH };
+              } else if(lines.length >= 2){
+                var htmlLines = lines.map(function(line){
+                  if(excluded(line) || isMarkerTxt(line)) return escapeHtml(line);
+                  if(forced(line) || isSubHeadingBlock("", line)) return blankSpan(line);
+                  var lm = line.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
+                  if(lm && !isMarkerTxt(lm[1])){
+                    return blankSpan(lm[1]) + " " + escapeHtml(lm[2]);
+                  }
+                  return escapeHtml(line);
+                });
+                unitByBlockKey[bi2.key] = { renderHtml: htmlLines.join("<br>"), blankIds: idsH };
+              } else if(bi2.label && !isMarkerTxt(bi2.label) && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
+                var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(labelShow)+'</b> '+bi2.restHtml, blankIds: idsH };
+              } else if(isSubHeadingBlock(bi2.html, plainH)){
+                unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
+              } else {
+                var pm2 = plainH.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
+                if(pm2 && !isMarkerTxt(pm2[1])){
+                  unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(pm2[1])+'</b> '+escapeHtml(pm2[2]), blankIds: idsH };
+                } else {
+                  unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+                }
+              }
+            }
+          } else if(mode === "sentences"){
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
+            sents = mergeBilingualUnits(sents);
+            if(sents.length === 0){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else {
+              var hSet = pickSentenceHides(sents, 0.45, rnd);
+              sents.forEach(function(s, ix){ if(forced(s)) hSet[ix] = true; });
+              Object.keys(hSet).forEach(function(ix){ if(excluded(sents[ix])) delete hSet[ix]; });
+              var ids2 = [];
+              var anyForcedPhrase = sents.some(function(s){ var fp=forcedPhraseIn(s); return fp && !excluded(fp); });
+              var anyHidden = Object.keys(hSet).length > 0 || anyForcedPhrase;
+              if(!anyHidden){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              } else {
+                var html3 = sents.map(function(s,i){
+                  if(hSet[i]){
+                    globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var phrase = forcedPhraseIn(s);
+                    if(phrase && s.indexOf(phrase) >= 0 && phrase.length < s.length){
+                      var before = s.slice(0, s.indexOf(phrase));
+                      var after = s.slice(s.indexOf(phrase) + phrase.length);
+                      return escapeHtml(before) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(phrase)+'">'+escapeHtml(phrase)+'</span>' + escapeHtml(after);
+                    }
+                    var kr2 = splitKeyAndRest(s);
+                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(kr2.rest)+'</span>';
+                    return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(s)+'</span>';
+                  }
+                  var fp = forcedPhraseIn(s);
+                  if(fp && !excluded(fp)){
+                    globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var bi = s.indexOf(fp);
+                    return escapeHtml(s.slice(0,bi)) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(fp)+'">'+escapeHtml(fp)+'</span>' + escapeHtml(s.slice(bi+fp.length));
+                  }
+                  return escapeHtml(s);
+                }).join(" ");
+                anyHidden = ids2.length > 0;
+                unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+escapeHtml(bi2.label)+':</b> ':'') + html3, blankIds: ids2 };
+              }
+            }
+          } else {
+            unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+          }
+        });
+      });
+    });
+
+    var pages = rawPages.map(function(page, pi){
+      var sections = page.sections.map(function(sec, si){
+        var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
+        var blocks = sec.blocks.map(function(html, bi){
+          var key = pi+"_"+si+"_"+bi;
+          var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [] };
+          if(isPromoOrVerse(stripHtml(html))){
+            return null;
+          }
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html };
+        }).filter(Boolean);
+        return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, subBlankId: subBlankId, blocks: blocks };
+      }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
+      return { heading: page.heading, sections: sections };
+    }).filter(function(p){ return p.sections.length > 0; });
+
+    return { pages: pages, allIds: allIds };
+  }
+
+  function isPromoOrVerse(text){
+    if(!text) return false;
+    var t = text.trim();
+    if(/\*\*\*/.test(t)) return true;
+    if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(t)) return true;
+    if(/https?:\/\/|t\.me\/|youtube\.com|youtu\.be|wixsite/i.test(t) && t.length > 40) return true;
+    if(t.length > 100 && /تليجرام|يوتيوب|واتساب/.test(t) && /رابط|انضم|تابع|قناة/.test(t)) return true;
+    return false;
+  }
+
+  /* ---------- State ---------- */
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"sentences", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
+  var MODEL = null, RAW_PAGES = null;
+
+  function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
+  function customKey(malzamaKey){ return "najm_custom_" + malzamaKey; }
+  function loadCustomSelection(malzamaKey){
+    try{ var raw = localStorage.getItem(customKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveCustomSelection(malzamaKey, sel){
+    try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
+  }
+  function expandBilingualRange(words, lo, hi){
+    var a = lo, b = hi;
+    while(b + 1 < words.length){
+      var n = words[b+1];
+      if(/^\([\w\s\-\/%+]+\)$/.test(n) || /^[A-Za-z][A-Za-z0-9\-\s]{1,30}$/.test(n)){ b++; continue; }
+      break;
+    }
+    while(a > 0){
+      var cur = words[a];
+      if(/^\([\w\s\-\/%+]+\)$/.test(cur) || (/^[A-Za-z]/.test(cur) && /[\u0600-\u06FF]/.test(words[a-1]||""))){ a--; continue; }
+      break;
+    }
+    return [a, b];
+  }
+
+  function excludeFromHide(text){
+    if(!text) return;
+    addExcludeText(state.malzamaKey, text);
+    loadProgress(false);
+    showToast("تم إلغاء إخفاء الجزء ده ✕");
+    renderPage();
+  }
+  function forceHideText(text){
+    if(!text) return;
+    text = String(text).replace(/\s+/g," ").trim();
+    if(text.length < 2) return;
+    var set = loadForceHideSet(state.malzamaKey);
+    set[normExcludeText(text)] = true;
+    var ex = loadExcludeSet(state.malzamaKey);
+    delete ex[normExcludeText(text)];
+    saveExcludeSet(state.malzamaKey, ex);
+    saveForceHideSet(state.malzamaKey, set);
+    loadProgress(false);
+    showToast("تم إخفاء: " + text.slice(0, 40) + (text.length>40?"…":""));
+    renderPage();
+  }
+  function openHideEditor(oldText, contextText){
+    var existing = $("hideEditModal");
+    if(existing) existing.remove();
+    var modal = document.createElement("div");
+    modal.id = "hideEditModal";
+    modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;";
+    var box = document.createElement("div");
+    box.style.cssText = "background:var(--card,#fff);color:var(--ink,#111);border-radius:16px;padding:16px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);";
+    box.innerHTML =
+      '<div style="font-weight:800;font-size:15px;margin-bottom:8px;">✏️ تعديل الإخفاء</div>'+
+      '<div style="font-size:12px;color:var(--muted,#666);margin-bottom:8px;line-height:1.6;">عدّل النص اللي المفروض يتخفي (وسّع لو ناقص زي «اللي» → «الليف العضلي»، أو قصّر لو زايد).</div>'+
+      (contextText ? '<div style="font-size:11.5px;background:rgba(0,0,0,.04);padding:8px;border-radius:8px;margin-bottom:8px;line-height:1.7;max-height:90px;overflow:auto;">'+escapeHtml(contextText)+'</div>' : '')+
+      '<textarea id="hideEditInput" rows="3" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:10px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>'+
+      '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">'+
+        '<button type="button" id="hideEditSave" style="flex:1;border:none;border-radius:999px;padding:10px;font-weight:800;background:linear-gradient(150deg,var(--gold-400,#e0b62f),var(--gold-600,#c49a1a));color:#0a1b2e;cursor:pointer;">حفظ التعديل</button>'+
+        '<button type="button" id="hideEditCancel" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;background:rgba(0,0,0,.06);cursor:pointer;">إلغاء</button>'+
+      '</div>';
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+    var input = box.querySelector("#hideEditInput");
+    input.value = oldText || "";
+    input.focus();
+    input.select();
+    box.querySelector("#hideEditCancel").onclick = function(){ modal.remove(); };
+    modal.addEventListener("click", function(e){ if(e.target === modal) modal.remove(); });
+    box.querySelector("#hideEditSave").onclick = function(){
+      var neu = (input.value || "").trim();
+      if(!neu){ showToast("اكتب النص المطلوب إخفاؤه"); return; }
+      if(oldText && normExcludeText(oldText) !== normExcludeText(neu)){
+        addExcludeText(state.malzamaKey, oldText);
+      }
+      forceHideText(neu);
+      modal.remove();
+    };
+  }
+
+  function loadProgress(reshuffle){
+    var pk = progressKey(state.malzamaKey, state.mode);
+    var seed = null;
+    try{
+      var raw = localStorage.getItem(pk);
+      if(raw && !reshuffle){
+        var d = JSON.parse(raw);
+        state.revealedIds = d.revealedIds || {}; state.blockRatings = d.blockRatings || {}; state.page = d.page || 0;
+        seed = d.seed;
+      }
+    }catch(e){}
+    if(state.mode === "headings"){
+      seed = 1;
+      if(reshuffle){ state.revealedIds={}; state.blockRatings={}; state.page=0; }
+    } else if(!seed){
+      seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0;
+    }
+    state.seed = seed;
+    state.customSelected = loadCustomSelection(state.malzamaKey);
+    state.excludeSet = loadExcludeSet(state.malzamaKey);
+    MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, state.excludeSet);
+    saveProgress();
+  }
+  function saveProgress(){
+    try{ localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({ revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed })); }catch(e){}
+  }
+  function loadTheme(){ try{ var t = localStorage.getItem("najm_theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} }
+  function toggleTheme(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next = cur==="dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("najm_theme", next); }catch(e){}
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var viewHome=$("viewHome"), viewUnit=$("viewUnit"), viewDone=$("viewDone"), btnHome=$("btnHome");
+
+  function showToast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2200); }
+  function switchView(name){
+    viewHome.classList.toggle("hidden", name!=="home");
+    viewUnit.classList.toggle("hidden", name!=="unit");
+    viewDone.classList.toggle("hidden", name!=="done");
+    btnHome.classList.toggle("hidden", name==="home");
+    window.scrollTo(0,0);
+  }
+
+  function completionFor(malzamaKey, mode){
+    var raw = getMalzamaContent(malzamaKey);
+    if(!raw) return {done:0,total:0,pct:0};
+    var pk = progressKey(malzamaKey, mode);
+    var revealed = {}, seed = null;
+    try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
+    if(!seed) return {done:0,total:null,pct:0};
+    var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
+    var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey));
+    var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
+    return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
+  }
+
+  /* ---------- Home ---------- */
+  function renderHome(){
+    var list = $("malzamaList"); list.innerHTML="";
+    var index = getLibraryIndex();
+    if(index.length === 0){
+      list.innerHTML = '<div class="empty-note">لسه مفيش ملازم — دوس على + فوق وابدأ ارفع أول ملزمة</div>';
+      return;
+    }
+    index.forEach(function(entry, i){
+      var comp = completionFor(entry.key, "sentences");
+      var card = document.createElement("div");
+      card.className = "malzama-card";
+      var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
+      var delBtn = entry.shared
+        ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
+        : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+      card.innerHTML =
+        '<div class="malzama-main" data-key="'+entry.key+'">' +
+          '<div class="malzama-num">'+ar(i+1)+'</div>' +
+          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
+        '</div>' + delBtn;
+      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
+      var delEl = card.querySelector(".malzama-del");
+      if(delEl && !entry.shared){
+        delEl.addEventListener("click", function(e){
+          e.stopPropagation();
+          if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
+            savePersonalIndex(getLibraryIndex().filter(function(x){ return !x.shared; }).filter(function(x){ return x.key!==entry.key; }));
+            renderHome();
+          }
+        });
+      }
+      list.appendChild(card);
+    });
+  }
+
+  function openUnit(key, title, subtitle){
+    var raw = getMalzamaContent(key);
+    if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة دي"); return; }
+    state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
+    RAW_PAGES = raw;
+    $("unitTitle").textContent = title;
+    $("unitSub").textContent = subtitle||"";
+    switchView("unit");
+    updateReviewBadge();
+    setMode(state.mode || "sentences", true);
+  }
+
+  function setMode(mode, skipToast, reshuffle){
+    state.mode = mode; state.freeMode = false; state.selecting = false;
+    loadProgress(reshuffle);
+    document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
+    $("hintBanner").textContent = MODE_HINTS[mode] || "";
+    var isCustom = mode === "custom";
+    $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
+    $("customGuide").classList.toggle("hidden", !isCustom);
+    $("customToolbar").classList.toggle("hidden", !isCustom);
+    $("btnStartSelect").classList.remove("hidden");
+    $("btnSaveCustom").classList.add("hidden");
+    $("btnClearCustom").classList.add("hidden");
+    $("customSelectCount").textContent = "";
+    if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
+    renderPage();
+  }
+
+  function blankIndex(id){ return MODEL.allIds.indexOf(id); }
+  function isUnlocked(id){
+    if(state.freeMode) return true;
+    var idx = blankIndex(id);
+    if(idx===0) return true;
+    return !!state.revealedIds[MODEL.allIds[idx-1]];
+  }
+  function computeCompletion(){
+    var done=0; MODEL.allIds.forEach(function(id){ if(state.revealedIds[id]) done++; });
+    return { done:done, total: MODEL.allIds.length, pct: MODEL.allIds.length? Math.round(done/MODEL.allIds.length*100):0 };
+  }
+  function renderProgress(){
+    var comp = computeCompletion();
+    $("progressText").textContent = ar(comp.done) + " من " + ar(comp.total);
+    $("progressFill").style.width = comp.pct + "%";
+    $("pageText").textContent = "صفحة " + ar(state.page+1) + " من " + ar(MODEL.pages.length);
+  }
+
+  // Parse original HTML into word spans, preserving <b>
+  function renderSelectableBlock(bd, block){
+    var src = block.originalHtml || block.html || escapeHtml(block.plainText || "");
+    var tmp = document.createElement("div");
+    tmp.innerHTML = src;
+    var runs = [];
+    function walk(node, bold){
+      if(node.nodeType === 3){
+        var t = node.textContent;
+        if(t) runs.push({ text: t, bold: !!bold });
+      } else if(node.nodeType === 1){
+        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
+        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
+      }
+    }
+    walk(tmp, false);
+    var wordList = [];
+    runs.forEach(function(run){
+      var parts = run.text.split(/(\s+)/);
+      parts.forEach(function(p){
+        if(!p) return;
+        if(!/^\s+$/.test(p)){
+          wordList.push({ text: p, bold: run.bold });
+        }
+      });
+    });
+    if(wordList.length === 0){
+      bd.textContent = block.plainText || "";
+      return;
+    }
+    var selectedIdx = {};
+    Object.keys(state.customSelected).forEach(function(k){
+      if(k.indexOf(block.key + "|w|") === 0){
+        var parts = k.split("|");
+        var a = +parts[2], b = +parts[3];
+        if(!isNaN(a) && !isNaN(b)){
+          for(var i=Math.min(a,b); i<=Math.max(a,b); i++) selectedIdx[i] = true;
+        }
+      }
+    });
+    wordList.forEach(function(w, idx){
+      var span = document.createElement("span");
+      span.className = "selectable-word";
+      span.dataset.blockKey = block.key;
+      span.dataset.wordIdx = idx;
+      span.textContent = w.text;
+      if(w.bold){ span.style.fontWeight = "800"; }
+      if(selectedIdx[idx]) span.classList.add("selected");
+      bd.appendChild(span);
+      bd.appendChild(document.createTextNode(" "));
+    });
+    bd.dataset.wordCount = wordList.length;
+  }
+
+  /* ---------- Word selection: click, drag, double-tap ---------- */
+  var _selDrag = {
+    active:false, moved:false, blockKey:null,
+    anchorIdx:-1, curIdx:-1,
+    lastTap:0, lastTapIdx:-1, lastTapKey:null
+  };
+
+  function bindWordSelection(wrap){
+    function updateCount(){
+      var count = Object.keys(state.customSelected).length;
+      $("customSelectCount").textContent = count
+        ? ar(count) + " جزء محدد"
+        : "اضغط كلمة · مرّر لجزء · ضغطتين للجملة · اضغط تاني للإلغاء";
+    }
+    function isIdxSelected(blockKey, idx){
+      var keys = Object.keys(state.customSelected);
+      for(var i=0;i<keys.length;i++){
+        var k = keys[i];
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) return true;
+        }
+      }
+      return false;
+    }
+    function clearOverlapping(blockKey, lo, hi){
+      Object.keys(state.customSelected).forEach(function(k){
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          if(y >= lo && x <= hi) delete state.customSelected[k];
+        }
+      });
+    }
+    function repaintBlock(blockKey){
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
+      if(!blockEl) return;
+      var selectedIdx = {};
+      Object.keys(state.customSelected).forEach(function(k){
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          for(var i=Math.min(x,y);i<=Math.max(x,y);i++) selectedIdx[i]=true;
+        }
+      });
+      blockEl.querySelectorAll(".selectable-word").forEach(function(sp){
+        sp.classList.toggle("selected", !!selectedIdx[+sp.dataset.wordIdx]);
+      });
+      updateCount();
+    }
+    function applyRange(blockKey, a, b){
+      var lo = Math.min(a,b), hi = Math.max(a,b);
+      clearOverlapping(blockKey, lo, hi);
+      state.customSelected[blockKey + "|w|" + lo + "|" + hi] = true;
+      repaintBlock(blockKey);
+    }
+    function removeRangeCovering(blockKey, idx){
+      Object.keys(state.customSelected).forEach(function(k){
+        if(k.indexOf(blockKey + "|w|") === 0){
+          var p = k.split("|");
+          var x = +p[2], y = +p[3];
+          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) delete state.customSelected[k];
+        }
+      });
+      repaintBlock(blockKey);
+    }
+    function sentenceRangeForWord(blockEl, idx){
+      var words = blockEl.querySelectorAll(".selectable-word");
+      var n = words.length;
+      if(n === 0) return [idx, idx];
+      var start = idx, end = idx;
+      while(start > 0){
+        var prev = (words[start-1].textContent || "").trim();
+        if(/[.!؟?:：،,;؛]$/.test(prev)) break;
+        start--;
+      }
+      while(end < n-1){
+        var cur = (words[end].textContent || "").trim();
+        if(/[.!؟?:：،,;؛]$/.test(cur)) break;
+        end++;
+      }
+      return [start, end];
+    }
+    function wordFromEvent(e){
+      var t = e.target;
+      if(t && t.classList && t.classList.contains("selectable-word")) return t;
+      var pt = null;
+      if(e.touches && e.touches[0]) pt = e.touches[0];
+      else if(e.changedTouches && e.changedTouches[0]) pt = e.changedTouches[0];
+      else if(typeof e.clientX === "number") pt = { clientX:e.clientX, clientY:e.clientY };
+      if(pt && typeof pt.clientX === "number"){
+        var el = document.elementFromPoint(pt.clientX, pt.clientY);
+        if(el){
+          var cur = el;
+          while(cur && cur !== wrap){
+            if(cur.classList && cur.classList.contains("selectable-word")) return cur;
+            cur = cur.parentNode;
+          }
+        }
+      }
+      return null;
+    }
+    function endDrag(){
+      if(!_selDrag.active) return;
+      _selDrag.active = false;
+      _selDrag.moved = false;
+    }
+    function onStart(e){
+      var w = wordFromEvent(e);
+      if(!w) return;
+      var blockKey = w.dataset.blockKey;
+      var idx = +w.dataset.wordIdx;
+      var now = Date.now();
+
+      // Double-tap → toggle whole sentence
+      if(_selDrag.lastTapKey === blockKey && _selDrag.lastTapIdx === idx && (now - _selDrag.lastTap) < 450){
+        var blockEl = w.parentElement;
+        var range = sentenceRangeForWord(blockEl, idx);
+        var allOn = true;
+        for(var i=range[0];i<=range[1];i++){ if(!isIdxSelected(blockKey, i)){ allOn=false; break; } }
+        if(allOn) removeRangeCovering(blockKey, idx);
+        else applyRange(blockKey, range[0], range[1]);
+        _selDrag.lastTap = 0;
+        _selDrag.lastTapKey = null;
+        _selDrag.lastTapIdx = -1;
+        _selDrag.active = false;
+        if(e.cancelable) e.preventDefault();
+        return;
+      }
+      _selDrag.lastTap = now;
+      _selDrag.lastTapKey = blockKey;
+      _selDrag.lastTapIdx = idx;
+
+      _selDrag.active = true;
+      _selDrag.moved = false;
+      _selDrag.blockKey = blockKey;
+      _selDrag.anchorIdx = idx;
+      _selDrag.curIdx = idx;
+      if(e.cancelable) e.preventDefault();
+    }
+    function onMove(e){
+      if(!_selDrag.active) return;
+      var w = wordFromEvent(e);
+      if(!w || w.dataset.blockKey !== _selDrag.blockKey) return;
+      var idx = +w.dataset.wordIdx;
+      if(idx === _selDrag.curIdx) return;
+      _selDrag.moved = true;
+      _selDrag.curIdx = idx;
+      applyRange(_selDrag.blockKey, _selDrag.anchorIdx, _selDrag.curIdx);
+      if(e.cancelable) e.preventDefault();
+    }
+    function onEnd(e){
+      if(!_selDrag.active) return;
+      var blockKey = _selDrag.blockKey;
+      var a = _selDrag.anchorIdx;
+      var b = _selDrag.curIdx;
+      if(!_selDrag.moved){
+        // Single click: toggle this word
+        if(isIdxSelected(blockKey, a)) removeRangeCovering(blockKey, a);
+        else applyRange(blockKey, a, a);
+      }
+      endDrag();
+    }
+
+    // Use Pointer Events when available (uniform mouse + touch + pen)
+    if(window.PointerEvent){
+      wrap.addEventListener("pointerdown", onStart);
+      wrap.addEventListener("pointermove", onMove);
+      wrap.addEventListener("pointerup", onEnd);
+      wrap.addEventListener("pointercancel", onEnd);
+      // Prevent scrolling while dragging over words
+      wrap.addEventListener("touchstart", function(e){
+        if(_selDrag.active && e.cancelable) e.preventDefault();
+      }, {passive:false});
+      wrap.addEventListener("touchmove", function(e){
+        if(_selDrag.active && e.cancelable) e.preventDefault();
+      }, {passive:false});
+    } else {
+      wrap.addEventListener("mousedown", onStart);
+      wrap.addEventListener("mousemove", onMove);
+      wrap.addEventListener("mouseup", onEnd);
+      wrap.addEventListener("touchstart", onStart, {passive:false});
+      wrap.addEventListener("touchmove", onMove, {passive:false});
+      wrap.addEventListener("touchend", onEnd);
+      wrap.addEventListener("touchcancel", onEnd);
+    }
+    updateCount();
+  }
+
+  function renderPage(){
+    renderProgress();
+    var wrap = $("docWrap");
+    wrap.innerHTML = "";
+    var page = MODEL.pages[state.page];
+    if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
+
+    if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ضغطتين للجملة · اضغط تاني للإلغاء · ثم احفظ.</div>';
+      updateNavButtons();
+      return;
+    }
+
+    var docCard = document.createElement("div");
+    docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
+    docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
+
+    var useClean = state.selecting && state.mode === "custom";
+
+    page.sections.forEach(function(sec){
+      if(sec.sub){
+        var sh = document.createElement("div");
+        sh.className = "doc-subheading";
+        if(useClean){
+          sh.textContent = sec.sub;
+        } else {
+          sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'" data-hide-text="'+String(sec.sub).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")+'">'+sec.sub+'</span>' : sec.sub;
+        }
+        docCard.appendChild(sh);
+      }
+      sec.blocks.forEach(function(block){
+        var bd = document.createElement("div");
+        bd.className = "doc-block";
+        bd.dataset.blockKey = block.key;
+        if(useClean){
+          renderSelectableBlock(bd, block);
+        } else {
+          bd.innerHTML = block.html;
+        }
+        docCard.appendChild(bd);
+
+        if(!useClean && block.blankIds.length > 0){
+          var rateRow = document.createElement("div");
+          rateRow.className = "block-rate";
+          rateRow.dataset.blockKey = block.key;
+          var rating = state.blockRatings[block.key];
+          rateRow.innerHTML =
+            '<span class="lbl">قيّم نفسك:</span>' +
+            '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
+            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>' +
+            '<button class="mic-mini" data-key="'+block.key+'" title="قول إجابتك بصوتك">🎤</button>';
+          docCard.appendChild(rateRow);
+          var saidEl = document.createElement("div");
+          saidEl.className = "said-inline";
+          saidEl.id = "said-" + block.key;
+          docCard.appendChild(saidEl);
+        }
+      });
+    });
+    wrap.appendChild(docCard);
+
+    if(useClean){
+      bindWordSelection(wrap);
+    } else {
+      wrap.querySelectorAll(".blank").forEach(function(span){
+        var id = +span.dataset.id;
+        var revealed = !!state.revealedIds[id];
+        var unlocked = isUnlocked(id);
+        span.classList.toggle("revealed", revealed);
+        span.classList.toggle("locked", !revealed && !unlocked);
+        if(!span.dataset.pinAttached){
+          span.dataset.pinAttached = "1";
+          var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
+          var xBtn = document.createElement("button");
+          xBtn.type = "button";
+          xBtn.className = "pin-btn x";
+          xBtn.title = "إلغاء الإخفاء الغلط";
+          xBtn.textContent = "✕";
+          xBtn.addEventListener("click", function(ev){
+            ev.preventDefault(); ev.stopPropagation();
+            if(hideText) excludeFromHide(hideText);
+          });
+          if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
+        }
+      });
+      if(state.mode === "headings"){
+        wrap.querySelectorAll(".doc-subheading, .doc-block").forEach(function(el){
+          if(el.querySelector(".blank")) return;
+          var txt = (el.textContent || "").replace(/[✕]/g,"").replace(/\s+/g," ").trim();
+          if(!txt || txt.length < 2) return;
+          var firstLine = txt.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/)[0].trim();
+          var target = (firstLine.length >= 2 && firstLine.length <= 70) ? firstLine : txt;
+          if(target.length > 100) return;
+          if(isTrivialFragment(target) || LIST_MARKER_RE.test(target) || BARE_ENUM_RE.test(target) || NOT_TITLE_RE.test(target)) return;
+          el.style.cursor = "pointer";
+          el.title = "اضغط لإخفاء العنوان: " + target.slice(0, 40);
+          el.classList.add("title-pickable");
+          el.addEventListener("click", function(ev){
+            if(ev.target.closest(".pin-btn, .blank, .rate-btn, .mic-mini")) return;
+            ev.preventDefault();
+            forceHideText(target);
+          });
+        });
+      }
+      wrap.querySelectorAll(".block-rate").forEach(function(row){
+        var key = row.dataset.blockKey;
+        var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+        if(!blockEl) return;
+        var blanksInBlock = blockEl.querySelectorAll(".blank");
+        var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
+        row.classList.toggle("show", allRevealed);
+      });
+      wrap.querySelectorAll(".blank").forEach(function(span){
+        span.addEventListener("click", function(){
+          var id = +span.dataset.id;
+          if(state.revealedIds[id]) return;
+          if(!isUnlocked(id)){
+            state.stuckTaps = (state.stuckTaps||0) + 1;
+            if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
+            else showToast("خلّص الجزء اللي قبل ده الأول");
+            return;
+          }
+          state.stuckTaps = 0;
+          revealBlank(id);
+        });
+      });
+      wrap.querySelectorAll(".rate-btn").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          var key = btn.dataset.key;
+          state.blockRatings[key] = btn.dataset.rate;
+          saveProgress();
+          var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+          setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
+          renderPage();
+        });
+      });
+      wrap.querySelectorAll(".mic-mini").forEach(function(btn){
+        btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+      });
+    }
+
+    updateNavButtons();
+  }
+
+  function revealBlank(id){
+    state.revealedIds[id] = true;
+    state.stuckTaps = 0;
+    saveProgress();
+    renderPage();
+    var comp = computeCompletion();
+    if(comp.total>0 && comp.done === comp.total){ setTimeout(finishUnit, 350); }
+  }
+  function firstUnrevealedGlobal(){
+    for(var i=0;i<MODEL.allIds.length;i++){ var id=MODEL.allIds[i]; if(!state.revealedIds[id]) return id; }
+    return null;
+  }
+  function handleStuckSkip(){
+    var blockId = firstUnrevealedGlobal();
+    if(!blockId) return;
+    state.revealedIds[blockId] = true;
+    saveProgress();
+    renderPage();
+    var el = document.querySelector('.blank[data-id="'+blockId+'"]');
+    if(el){
+      var blockEl = el.closest(".doc-block");
+      if(blockEl){
+        var key = blockEl.dataset.blockKey;
+        state.blockRatings[key] = "review";
+        saveProgress();
+        setReviewStatus(state.malzamaKey, key, "review", blockEl.textContent.trim());
+      } else {
+        var subEl = el.closest(".doc-subheading");
+        if(subEl) setReviewStatus(state.malzamaKey, "sec_"+blockId, "review", subEl.textContent.trim());
+      }
+    }
+    renderPage();
+    showToast("تخطينا الجزء ده وحطيناه في «محتاج مراجعة» — كمّل عادي");
+  }
+  function nextUnrevealedOnPage(){
+    var page = MODEL.pages[state.page];
+    for(var s=0;s<page.sections.length;s++){
+      var sec = page.sections[s];
+      if(sec.subBlankId && !state.revealedIds[sec.subBlankId] && isUnlocked(sec.subBlankId)) return sec.subBlankId;
+      for(var b=0;b<sec.blocks.length;b++){
+        var ids = sec.blocks[b].blankIds;
+        for(var i=0;i<ids.length;i++){
+          if(!state.revealedIds[ids[i]] && isUnlocked(ids[i])) return ids[i];
+        }
+      }
+    }
+    return null;
+  }
+  function updateNavButtons(){
+    $("btnPrevPage").disabled = state.page===0 || state.selecting;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1 || state.selecting;
+    var next = nextUnrevealedOnPage();
+    if(!next) next = firstUnrevealedGlobal();
+    $("btnReveal").disabled = !next || state.selecting;
+    $("btnReveal").onclick = function(){
+      if(state.selecting) return;
+      var onPage = nextUnrevealedOnPage();
+      if(onPage){
+        state.stuckTaps = 0;
+        revealBlank(onPage);
+        return;
+      }
+      state.stuckTaps = (state.stuckTaps||0) + 1;
+      if(state.stuckTaps >= 3){
+        state.stuckTaps = 0;
+        handleStuckSkip();
+      } else {
+        var globalNext = firstUnrevealedGlobal();
+        if(globalNext){
+          for(var pi=0; pi<MODEL.pages.length; pi++){
+            var p = MODEL.pages[pi];
+            for(var s=0;s<p.sections.length;s++){
+              var sec = p.sections[s];
+              if(sec.subBlankId === globalNext){ state.page = pi; saveProgress(); renderPage(); showToast("انتقلنا للصفحة اللي فيها الجزء المخفي"); return; }
+              for(var b=0;b<sec.blocks.length;b++){
+                if(sec.blocks[b].blankIds.indexOf(globalNext) >= 0){ state.page = pi; saveProgress(); renderPage(); showToast("انتقلنا للصفحة اللي فيها الجزء المخفي"); return; }
+              }
+            }
+          }
+        }
+        showToast("مفيش جزء ظاهر هنا — اضغط تاني أو غيّر الصفحة (" + ar(state.stuckTaps) + "/٣)");
+      }
+    };
+  }
+  function finishUnit(){
+    var know=0, review=0;
+    Object.keys(state.blockRatings).forEach(function(k){
+      if(state.blockRatings[k]==="know") know++; else if(state.blockRatings[k]==="review") review++;
+    });
+    $("statKnow").textContent = ar(know);
+    $("statReview").textContent = ar(review);
+    switchView("done");
+  }
+
+  function startSpeech(key, btn){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ showToast("المتصفح ده مش بيدعم التعرف على الصوت"); return; }
+    var rec = new SR(); rec.lang="ar-SA"; rec.interimResults=false;
+    btn.classList.add("on");
+    rec.onresult = function(e){
+      var text = e.results[0][0].transcript;
+      var out = $("said-" + key);
+      if(out){ out.style.display="block"; out.textContent = "🎤 قلت: " + text; }
+    };
+    rec.onerror = function(){ showToast("مقدرش أسمعك، جرب تاني"); };
+    rec.onend = function(){ btn.classList.remove("on"); };
+    try{ rec.start(); }catch(e){ btn.classList.remove("on"); }
+  }
+
+  /* ---------- Review list modal ---------- */
+  function renderReviewModal(){
+    var map = loadReviewMap(state.malzamaKey);
+    var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
+    var wrap = $("reviewListWrap");
+    if(keys.length === 0){
+      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة دلوقتي 🎉</div>';
+      return;
+    }
+    wrap.innerHTML = "";
+    keys.forEach(function(k){
+      var item = document.createElement("div");
+      item.className = "review-item";
+      item.innerHTML = '<div class="txt">'+escapeHtml(map[k].text)+'</div><button data-key="'+k+'">✓ خلصت</button>';
+      item.querySelector("button").addEventListener("click", function(){
+        var m = loadReviewMap(state.malzamaKey);
+        delete m[k];
+        saveReviewMap(state.malzamaKey, m);
+        updateReviewBadge();
+        renderReviewModal();
+      });
+      wrap.appendChild(item);
+    });
+  }
+
+  /* ---------- Upload pipeline: Word (.docx) ---------- */
+  var WNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  function wEls(node, tag){ return Array.prototype.slice.call(node.getElementsByTagNameNS(WNS, tag)); }
+  function wAttrVal(el){
+    if(!el) return null;
+    var v = el.getAttributeNS(WNS, "val");
+    if(v === null || v === "") v = el.getAttribute("w:val");
+    return v;
+  }
+  function isFlagOn(el){
+    if(!el) return false;
+    var v = wAttrVal(el);
+    return v === null || v === "" || v === "1" || v === "true" || v === "on";
+  }
+
+  function loadHeadingStyleLevels(stylesXmlText){
+    var levels = {};
+    if(!stylesXmlText) return levels;
+    var doc = new DOMParser().parseFromString(stylesXmlText, "application/xml");
+    wEls(doc, "style").forEach(function(styleEl){
+      var id = styleEl.getAttributeNS(WNS,"styleId") || styleEl.getAttribute("w:styleId");
+      var nameEl = wEls(styleEl, "name")[0];
+      var name = nameEl ? (wAttrVal(nameEl)||"") : "";
+      var m = name.match(/^heading\s*([1-9])$/i);
+      if(m) levels[id] = +m[1];
+      else if(/^title$/i.test(name)) levels[id] = 1;
+    });
+    return levels;
+  }
+
+  function paragraphToRuns(pEl){
+    var runs = [];
+    wEls(pEl, "r").forEach(function(rEl){
+      var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
+      var struck = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"strike")[0] || null) : false;
+      if(!struck && rPr){
+        var dstrike = rEl.getElementsByTagNameNS(WNS,"dstrike")[0];
+        if(dstrike) struck = isFlagOn(dstrike);
+      }
+      if(struck) return;
+      var bold = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"b")[0] || null) : false;
+      var text = "";
+      Array.prototype.forEach.call(rEl.childNodes, function(child){
+        if(child.namespaceURI===WNS && child.localName==="t") text += child.textContent;
+        else if(child.namespaceURI===WNS && child.localName==="tab") text += " ";
+        else if(child.namespaceURI===WNS && (child.localName==="br"||child.localName==="cr")) text += " ";
+      });
+      if(text) runs.push({ text:text, bold:bold });
+    });
+    return runs;
+  }
+
+  function runsToHtml(runs){
+    return runs.map(function(r){ return r.bold ? "<b>"+escapeHtml(r.text)+"</b>" : escapeHtml(r.text); }).join("");
+  }
+  function runsToPlainText(runs){ return runs.map(function(r){ return r.text; }).join(""); }
+
+  function docxParagraphsToRawPages(paragraphs, fallbackTitle){
+    var pages = [], docHeading = null, curPage = null, curSection = null;
+    function newPage(h){ curPage = { heading:h, sections:[] }; pages.push(curPage); }
+    function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+
+    paragraphs.forEach(function(p){
+      if(!p.text.trim()) return;
+      if(isPromoOrVerse(p.text)) return;
+      if(p.level === 1){
+        if(!docHeading) docHeading = p.text.trim();
+        newPage(p.text.trim()); newSection(null);
+      } else if(p.level && p.level >= 2){
+        if(!curPage) newPage(docHeading || fallbackTitle);
+        newSection(p.text.trim());
+      } else {
+        if(!curPage) newPage(docHeading || fallbackTitle);
+        if(!curSection) newSection(null);
+        curSection.blocks.push(p.html);
+      }
+    });
+    if(pages.length === 0){ newPage(fallbackTitle); newSection(null); }
+
+    var flat = [];
+    pages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curP = null, curH = null;
+    flat.forEach(function(item){
+      if(!curP || curH !== item.heading || curBlocks >= 6){
+        curP = { heading:item.heading, sections:[] }; rechunked.push(curP);
+        curH = item.heading; curBlocks = 0;
+      }
+      curP.sections.push({ sub:item.sub, blocks:item.blocks });
+      curBlocks += item.blocks.length;
+    });
+    return { rawPages: rechunked.length?rechunked:pages, heading: docHeading || fallbackTitle };
+  }
+
+  function handleDocx(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        JSZip.loadAsync(e.target.result).then(function(zip){
+          var docXmlP = zip.file("word/document.xml") ? zip.file("word/document.xml").async("text") : Promise.reject("مش ملف Word سليم");
+          var stylesXmlP = zip.file("word/styles.xml") ? zip.file("word/styles.xml").async("text") : Promise.resolve(null);
+          return Promise.all([docXmlP, stylesXmlP]);
+        }).then(function(res){
+          var docXml = res[0], stylesXml = res[1];
+          var headingLevels = loadHeadingStyleLevels(stylesXml);
+          var doc = new DOMParser().parseFromString(docXml, "application/xml");
+          var bodyParas = wEls(doc, "p");
+          var paragraphs = bodyParas.map(function(pEl){
+            var pPr = pEl.getElementsByTagNameNS(WNS,"pPr")[0];
+            var styleEl = pPr ? pPr.getElementsByTagNameNS(WNS,"pStyle")[0] : null;
+            var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
+            var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
+            var runs = paragraphToRuns(pEl);
+            var html = runsToHtml(runs);
+            var text = runsToPlainText(runs);
+            if(!level && text.trim().length > 0 && text.trim().length <= 80){
+              var tTrim = text.trim();
+              var isMarker = isTrivialFragment(tTrim) || LIST_MARKER_RE.test(tTrim) || BARE_ENUM_RE.test(tTrim);
+              if(!isMarker){
+                var allBold = runs.length > 0 && runs.every(function(r){ return r.bold || !r.text.trim(); });
+                var hasBold = runs.some(function(r){ return r.bold && r.text.trim(); });
+                if(allBold && hasBold && /[\u0600-\u06FFa-zA-Z]{3,}/.test(tTrim)) level = 2;
+              }
+            }
+            return { level: level, html: html, text: text };
+          });
+          var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
+          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
+      };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function handlePdf(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var typedarray = new Uint8Array(e.target.result);
+        pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
+          var pageLinesList = [], pending = Promise.resolve();
+          for(var i=1;i<=pdf.numPages;i++){
+            (function(pageNum){
+              pending = pending.then(function(){
+                return pdf.getPage(pageNum).then(function(page){ return page.getTextContent(); })
+                  .then(function(tc){ pageLinesList.push(groupIntoLines(tc.items)); });
+              });
+            })(i);
+          }
+          return pending.then(function(){ return pageLinesList; });
+        }).then(function(pageLinesList){
+          var cleaned = filterNoiseLines(pageLinesList);
+          var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
+          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.pdf$/i,""), heading: parsed.heading });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
+      };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function groupIntoLines(items){
+    var lines = [];
+    items.forEach(function(it){
+      var y = Math.round(it.transform[5]);
+      var size = Math.abs(it.transform[3]) || Math.abs(it.transform[0]) || 10;
+      var line = lines.find(function(l){ return Math.abs(l.y - y) <= 2; });
+      if(!line){ line = { y:y, size:size, text:"" }; lines.push(line); }
+      line.text += (line.text ? " " : "") + it.str;
+      line.size = Math.max(line.size, size);
+    });
+    lines.sort(function(a,b){ return b.y - a.y; });
+    return lines.filter(function(l){ return l.text.trim(); });
+  }
+
+  function filterNoiseLines(pageLinesList){
+    if(pageLinesList.length <= 1) return pageLinesList;
+    var freq = {};
+    pageLinesList.forEach(function(lines){
+      var seenThisPage = {};
+      lines.forEach(function(l){
+        var norm = l.text.trim().replace(/\s+/g," ");
+        if(!norm || seenThisPage[norm]) return;
+        seenThisPage[norm] = true;
+        freq[norm] = (freq[norm]||0) + 1;
+      });
+    });
+    var repeatThreshold = Math.max(2, Math.ceil(pageLinesList.length * 0.5));
+    return pageLinesList.map(function(lines){
+      return lines.filter(function(l){
+        var norm = l.text.trim().replace(/\s+/g," ");
+        if(!norm) return false;
+        if(freq[norm] >= repeatThreshold) return false;
+        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b|youtube\.com|youtu\.be/i.test(norm)) return false;
+        if(/\d{7,}/.test(norm) && norm.length < 40) return false;
+        if(/\*\*\*/.test(norm)) return false;
+        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline|UCTnIvc38rMXJctKDfude4vA/i.test(norm)) return false;
+        if(norm.length > 60 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع|تحميل/.test(norm)) return false;
+        return true;
+      });
+    });
+  }
+
+  function pdfLinesToRawPages(pageLinesList, fallbackTitle){
+    var allSizes = [];
+    pageLinesList.forEach(function(lines){ lines.forEach(function(l){ allSizes.push(Math.round(l.size)); }); });
+    var freq = {}; allSizes.forEach(function(s){ freq[s]=(freq[s]||0)+1; });
+    var baseline = 12;
+    var best = 0;
+    Object.keys(freq).forEach(function(s){ if(freq[s]>best){ best=freq[s]; baseline=+s; } });
+    var headingMin = baseline * 1.15;
+
+    var rawPages = [];
+    var docHeading = null;
+    var curPage = null, curSection = null;
+
+    function newPage(h){ curPage = { heading:h, sections:[] }; rawPages.push(curPage); }
+    function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+    function pushParagraph(text){
+      if(!text.trim()) return;
+      if(!curPage) newPage(fallbackTitle);
+      if(!curSection) newSection(null);
+      curSection.blocks.push(escapeHtml(text.trim()));
+    }
+
+    pageLinesList.forEach(function(lines, pageIdx){
+      var buffer = "";
+      var sawHeadingThisPage = false;
+      lines.forEach(function(l){
+        var txt = l.text.trim();
+        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 70 && !/^[0-9\s.\-–|]+$/.test(txt);
+        if(isHeading){
+          pushParagraph(buffer); buffer = "";
+          if(!docHeading) docHeading = txt;
+          if(!curPage || (!sawHeadingThisPage && pageIdx>0)) newPage(txt);
+          else if(!curPage) newPage(txt);
+          newSection(txt);
+          sawHeadingThisPage = true;
+        } else {
+          buffer += (buffer ? " " : "") + txt;
+          if(buffer.length > 260){ pushParagraph(buffer); buffer=""; }
+        }
+      });
+      pushParagraph(buffer);
+    });
+
+    if(rawPages.length === 0){ newPage(fallbackTitle); newSection(null); }
+
+    var flat = [];
+    rawPages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curP = null, curH = null;
+    flat.forEach(function(item){
+      if(!curP || curH !== item.heading || curBlocks >= 6){
+        curP = { heading:item.heading, sections:[] }; rechunked.push(curP);
+        curH = item.heading; curBlocks = 0;
+      }
+      curP.sections.push({ sub:item.sub, blocks:item.blocks });
+      curBlocks += item.blocks.length;
+    });
+    return { rawPages: rechunked.length?rechunked:rawPages, heading: docHeading || fallbackTitle };
+  }
+
+  function setUploadStatus(msg){ var el=$("uploadStatus"); el.style.display="block"; el.textContent=msg; }
+  function uploadFailed(msg){ setUploadStatus("⚠️ " + msg); }
+
+  var pendingSharedBatch = [];
+  var pendingSeeded = false;
+  function seedPendingFromShared(){
+    if(pendingSeeded) return;
+    pendingSeeded = true;
+    pendingSharedBatch = SHARED_INDEX.map(function(it){
+      return { key:it.key, title:it.title, subtitle:it.subtitle, rawPages: SHARED_CONTENT[it.key] };
+    });
+  }
+  function upsertPendingShared(item){
+    var idx = pendingSharedBatch.findIndex(function(x){ return x.key===item.key; });
+    if(idx>=0) pendingSharedBatch[idx] = item; else pendingSharedBatch.push(item);
+  }
+  function renderPendingList(){
+    var wrap = $("pendingListWrap");
+    $("pendingCount").textContent = ar(pendingSharedBatch.length);
+    if(pendingSharedBatch.length===0){ wrap.innerHTML = '<div class="empty-note">القائمة فاضية</div>'; return; }
+    wrap.innerHTML = "";
+    pendingSharedBatch.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "review-item";
+      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button data-key="'+item.key+'">🗑️ شيل</button>';
+      row.querySelector("button").addEventListener("click", function(){
+        pendingSharedBatch = pendingSharedBatch.filter(function(x){ return x.key!==item.key; });
+        renderPendingList();
+      });
+      wrap.appendChild(row);
+    });
+  }
+
+  function processFiles(files){
+    var isOfficial = $("officialCheck").checked;
+    var queue = Promise.resolve();
+    var results = [];
+    Array.prototype.forEach.call(files, function(file){
+      queue = queue.then(function(){
+        setUploadStatus("بيتقرا: " + file.name + "...");
+        var task = /\.docx$/i.test(file.name) ? handleDocx(file)
+                  : /\.pdf$/i.test(file.name) ? handlePdf(file)
+                  : Promise.reject("الصيغة دي مش مدعومة: " + file.name);
+        return task.then(function(r){ results.push(r); })
+          .catch(function(err){ showToast(typeof err==="string"?err:"حصل خطأ في: "+file.name); });
+      });
+    });
+    return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
+  }
+
+  function finishUploadBatch(results, isOfficial){
+    var lastKey = null, lastTitle = null, lastSub = null;
+    results.forEach(function(r){
+      var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
+      var key = slugify(title);
+      saveMalzamaContent(key, r.rawPages);
+      if(isOfficial){
+        upsertPendingShared({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
+      } else {
+        var index = getLibraryIndex().filter(function(x){ return !x.shared; });
+        if(!index.some(function(e){ return e.key===key; })){
+          index.push({ key:key, title:title, subtitle:r.fallbackTitle });
+          savePersonalIndex(index);
+        }
+      }
+      lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
+    });
+    setUploadStatus("");
+    if(results.length===0) return;
+    if(isOfficial){
+      $("exportBox").classList.remove("hidden");
+      renderPendingList();
+      showToast("اترفع "+results.length+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة");
+      renderHome();
+    } else {
+      $("modalUpload").classList.remove("show");
+      renderHome();
+      showToast('اتضافت "'+lastTitle+'" للملازم');
+      openUnit(lastKey, lastTitle, lastSub);
+    }
+  }
+
+  function downloadLibraryJson(){
+    var payload = { items: pendingSharedBatch };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "library.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function resetApp(){
+    if(!confirm("متأكد؟ هيتمسح كل الملازم الشخصية وتقدمك المحفوظ فيها من الجهاز ده، ومينفعش يترجع.")) return;
+    try{
+      var toRemove = [];
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && k.indexOf("najm_") === 0) toRemove.push(k);
+      }
+      toRemove.forEach(function(k){ localStorage.removeItem(k); });
+    }catch(e){}
+    showToast("اترفع البرنامج — بيعيد التحميل...");
+    setTimeout(function(){ location.reload(); }, 600);
+  }
+
+  /* ---------- Wiring ---------- */
+  $("btnTheme").addEventListener("click", toggleTheme);
+  $("btnInfo").addEventListener("click", function(){ $("modalInfo").classList.add("show"); });
+  $("btnHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
+  document.querySelectorAll("[data-close]").forEach(function(x){ x.addEventListener("click", function(){ $(x.dataset.close).classList.remove("show"); }); });
+  document.querySelectorAll(".modal-overlay").forEach(function(ov){ ov.addEventListener("click", function(e){ if(e.target===ov) ov.classList.remove("show"); }); });
+
+  document.querySelectorAll(".mode-btn").forEach(function(btn){ btn.addEventListener("click", function(){ setMode(btn.dataset.mode); }); });
+  $("btnPrevPage").addEventListener("click", function(){ if(state.page>0){ state.page--; saveProgress(); renderPage(); } });
+  $("btnNextPage").addEventListener("click", function(){ if(state.page<MODEL.pages.length-1){ state.page++; saveProgress(); renderPage(); } });
+
+  $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
+  $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
+  $("btnRestart").addEventListener("click", function(){
+    switchView("unit");
+    setMode(state.mode, true, true);
+    showToast("محاولة جديدة — أجزاء مختلفة اتخفت هالمرة");
+  });
+  $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
+
+  $("btnAdd").addEventListener("click", function(){
+    seedPendingFromShared();
+    $("exportBox").classList.toggle("hidden", pendingSharedBatch.length===0);
+    renderPendingList();
+    $("modalUpload").classList.add("show");
+  });
+  $("pickFile").addEventListener("click", function(){ $("fileInput").click(); });
+  $("fileInput").addEventListener("change", function(e){
+    var files = e.target.files;
+    if(!files || !files.length) return;
+    seedPendingFromShared();
+    processFiles(files).then(function(res){ finishUploadBatch(res.results, res.isOfficial); });
+    e.target.value = "";
+  });
+  $("downloadLibrary").addEventListener("click", downloadLibraryJson);
+  $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
+  $("btnResetApp").addEventListener("click", resetApp);
+
+  // Custom mode selection buttons
+  $("btnStartSelect").addEventListener("click", function(){
+    if(state.mode !== "custom") return;
+    state.selecting = true;
+    state.customSelected = loadCustomSelection(state.malzamaKey);
+    $("btnStartSelect").classList.add("hidden");
+    $("btnSaveCustom").classList.remove("hidden");
+    $("btnClearCustom").classList.remove("hidden");
+    var count = Object.keys(state.customSelected).length;
+    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر على الكلمات أو اضغط مرتين للجملة";
+    showToast("اضغط كلمة · مرّر لجزء · ضغطتين للجملة");
+    renderPage();
+  });
+  $("btnSaveCustom").addEventListener("click", function(){
+    if(state.mode !== "custom") return;
+    saveCustomSelection(state.malzamaKey, state.customSelected);
+    state.selecting = false;
+    state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
+    state.seed = Math.floor(Math.random()*1e9)+1;
+    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
+    saveProgress();
+    $("btnStartSelect").classList.remove("hidden");
+    $("btnSaveCustom").classList.add("hidden");
+    $("btnClearCustom").classList.add("hidden");
+    var count = Object.keys(state.customSelected).length;
+    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
+    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
+    renderPage();
+  });
+  $("btnClearCustom").addEventListener("click", function(){
+    if(!confirm("تمسح كل التحديد الحالي؟")) return;
+    state.customSelected = {};
+    saveCustomSelection(state.malzamaKey, {});
+    $("customSelectCount").textContent = "مرّر على الكلمات أو اضغط مرتين للجملة";
+    document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
+    showToast("تم مسح التحديد");
+  });
+
+  // Restart button
+  $("btnRestartUnit").addEventListener("click", function(){
+    if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
+    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم" + (state.mode !== "custom" ? " ويتخفي أجزاء عشوائية جديدة" : "") + ".")) return;
+    setMode(state.mode, true, true);
+    showToast(state.mode === "custom" ? "تم الإعادة من الأول" : "محاولة جديدة — أجزاء مختلفة اتخفت");
+  });
+
+  loadTheme();
+  renderHome();
+  switchView("home");
+  fetchSharedLibrary().then(function(){ seedPendingFromShared(); renderHome(); });
+})();
+</script>
+</body>
+</html>
