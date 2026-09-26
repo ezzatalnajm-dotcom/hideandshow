@@ -663,8 +663,31 @@
     var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
     var excludeSet = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
     var forceHideSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
-    function excluded(text){ return !!excludeSet[normExcludeText(text)]; }
-    function forced(text){ return !!forceHideSet[normExcludeText(text)]; }
+    function excluded(text){
+      return !!excludeSet[normExcludeText(text)];
+    }
+    function forced(text){
+      var n = normExcludeText(text);
+      if(!n) return false;
+      if(forceHideSet[n]) return true;
+      // sentence contains a user-corrected phrase (min 4 chars)
+      var keys = Object.keys(forceHideSet);
+      for(var i=0;i<keys.length;i++){
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0) return true;
+      }
+      return false;
+    }
+    function forcedPhraseIn(text){
+      var n = normExcludeText(text);
+      var keys = Object.keys(forceHideSet);
+      var best = null;
+      for(var i=0;i<keys.length;i++){
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0){
+          if(!best || keys[i].length > best.length) best = keys[i];
+        }
+      }
+      return best;
+    }
 
     rawPages.forEach(function(page, pi){
       page.sections.forEach(function(sec, si){
@@ -773,23 +796,38 @@
               unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             } else {
               var hSet = pickSentenceHides(sents, 0.45, rnd);
-              // force-hide user-pinned sentences; respect exclusions
+              // force-hide user-pinned sentences/phrases; respect exclusions
               sents.forEach(function(s, ix){ if(forced(s)) hSet[ix] = true; });
               Object.keys(hSet).forEach(function(ix){ if(excluded(sents[ix])) delete hSet[ix]; });
               var ids2 = [];
-              var anyHidden = Object.keys(hSet).length > 0;
+              var anyForcedPhrase = sents.some(function(s){ var fp=forcedPhraseIn(s); return fp && !excluded(fp); });
+              var anyHidden = Object.keys(hSet).length > 0 || anyForcedPhrase;
               if(!anyHidden){
                 unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
               } else {
                 var html3 = sents.map(function(s,i){
                   if(hSet[i]){
                     globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var phrase = forcedPhraseIn(s);
+                    if(phrase && s.indexOf(phrase) >= 0 && phrase.length < s.length){
+                      var before = s.slice(0, s.indexOf(phrase));
+                      var after = s.slice(s.indexOf(phrase) + phrase.length);
+                      return escapeHtml(before) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(phrase)+'">'+escapeHtml(phrase)+'</span>' + escapeHtml(after);
+                    }
                     var kr2 = splitKeyAndRest(s);
                     if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(kr2.rest)+'</span>';
                     return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(s)+'</span>';
                   }
+                  // not randomly hidden — but user may have forced a phrase inside
+                  var fp = forcedPhraseIn(s);
+                  if(fp && !excluded(fp)){
+                    globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var bi = s.indexOf(fp);
+                    return escapeHtml(s.slice(0,bi)) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(fp)+'">'+escapeHtml(fp)+'</span>' + escapeHtml(s.slice(bi+fp.length));
+                  }
                   return escapeHtml(s);
                 }).join(" ");
+                anyHidden = ids2.length > 0;
                 unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+escapeHtml(bi2.label)+':</b> ':'') + html3, blankIds: ids2 };
               }
             }
@@ -860,13 +898,14 @@
   }
 
   function excludeFromHide(text){
+    if(!text) return;
     addExcludeText(state.malzamaKey, text);
-    // rebuild without reshuffling sentences seed if possible
     loadProgress(false);
-    showToast("تم استبعاد الجزء من الإخفاء ✕");
+    showToast("تم إلغاء إخفاء الجزء ده ✕");
     renderPage();
   }
   function forceHideText(text){
+    if(!text) return;
     var set = loadForceHideSet(state.malzamaKey);
     set[normExcludeText(text)] = true;
     var ex = loadExcludeSet(state.malzamaKey);
@@ -874,8 +913,45 @@
     saveExcludeSet(state.malzamaKey, ex);
     saveForceHideSet(state.malzamaKey, set);
     loadProgress(false);
-    showToast("هيتحفي الجزء ده ✏️");
+    showToast("تم تعديل الإخفاء ✏️");
     renderPage();
+  }
+  // Pen: edit wrong hide (too short / too long) — replace old hide with corrected phrase
+  function openHideEditor(oldText, contextText){
+    var existing = $("hideEditModal");
+    if(existing) existing.remove();
+    var modal = document.createElement("div");
+    modal.id = "hideEditModal";
+    modal.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;";
+    var box = document.createElement("div");
+    box.style.cssText = "background:var(--card,#fff);color:var(--ink,#111);border-radius:16px;padding:16px;max-width:420px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.25);";
+    box.innerHTML =
+      '<div style="font-weight:800;font-size:15px;margin-bottom:8px;">✏️ تعديل الإخفاء</div>'+
+      '<div style="font-size:12px;color:var(--muted,#666);margin-bottom:8px;line-height:1.6;">عدّل النص اللي المفروض يتخفي (وسّع لو ناقص زي «اللي» → «الليف العضلي»، أو قصّر لو زايد).</div>'+
+      (contextText ? '<div style="font-size:11.5px;background:rgba(0,0,0,.04);padding:8px;border-radius:8px;margin-bottom:8px;line-height:1.7;max-height:90px;overflow:auto;">'+escapeHtml(contextText)+'</div>' : '')+
+      '<textarea id="hideEditInput" rows="3" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:10px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>'+
+      '<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">'+
+        '<button type="button" id="hideEditSave" style="flex:1;border:none;border-radius:999px;padding:10px;font-weight:800;background:linear-gradient(150deg,var(--gold-400,#e0b62f),var(--gold-600,#c49a1a));color:#0a1b2e;cursor:pointer;">حفظ التعديل</button>'+
+        '<button type="button" id="hideEditCancel" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;background:rgba(0,0,0,.06);cursor:pointer;">إلغاء</button>'+
+      '</div>';
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+    var input = box.querySelector("#hideEditInput");
+    input.value = oldText || "";
+    input.focus();
+    input.select();
+    box.querySelector("#hideEditCancel").onclick = function(){ modal.remove(); };
+    modal.addEventListener("click", function(e){ if(e.target === modal) modal.remove(); });
+    box.querySelector("#hideEditSave").onclick = function(){
+      var neu = (input.value || "").trim();
+      if(!neu){ showToast("اكتب النص المطلوب إخفاؤه"); return; }
+      // exclude the wrong (old) hide, force the corrected phrase
+      if(oldText && normExcludeText(oldText) !== normExcludeText(neu)){
+        addExcludeText(state.malzamaKey, oldText);
+      }
+      forceHideText(neu);
+      modal.remove();
+    };
   }
 
   function loadProgress(reshuffle){
@@ -1310,51 +1386,36 @@
         var unlocked = isUnlocked(id);
         span.classList.toggle("revealed", revealed);
         span.classList.toggle("locked", !revealed && !unlocked);
-        // Red X: exclude this hidden text from future hides
+        // ✕ and ✏️ only on parts the app actually hid (blanks)
         if(!span.dataset.pinAttached){
           span.dataset.pinAttached = "1";
           var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
+          var blockEl = span.closest(".doc-block, .doc-subheading");
+          var contextText = blockEl ? (blockEl.textContent || "").replace(/[✕✏️]/g,"").trim().slice(0, 280) : "";
+          var actions = document.createElement("span");
+          actions.className = "pin-actions";
           var xBtn = document.createElement("button");
           xBtn.type = "button";
           xBtn.className = "pin-btn x";
-          xBtn.title = "استبعاد من الإخفاء";
+          xBtn.title = "إلغاء الإخفاء الغلط";
           xBtn.textContent = "✕";
           xBtn.addEventListener("click", function(ev){
             ev.preventDefault(); ev.stopPropagation();
             if(hideText) excludeFromHide(hideText);
           });
-          if(span.parentNode) span.parentNode.insertBefore(xBtn, span.nextSibling);
+          var penBtn = document.createElement("button");
+          penBtn.type = "button";
+          penBtn.className = "pin-btn pen";
+          penBtn.title = "تعديل التظليل (ناقص أو زايد)";
+          penBtn.textContent = "✏️";
+          penBtn.addEventListener("click", function(ev){
+            ev.preventDefault(); ev.stopPropagation();
+            openHideEditor(hideText, contextText);
+          });
+          actions.appendChild(xBtn);
+          actions.appendChild(penBtn);
+          if(span.parentNode) span.parentNode.insertBefore(actions, span.nextSibling);
         }
-      });
-      // Pen on subheadings / blocks: force-hide or note
-      wrap.querySelectorAll(".doc-subheading, .doc-block").forEach(function(el){
-        if(el.dataset.penAttached) return;
-        el.dataset.penAttached = "1";
-        var txt = (el.textContent || "").trim().slice(0, 200);
-        if(!txt || txt.length < 2) return;
-        var actions = document.createElement("span");
-        actions.className = "pin-actions";
-        var pen = document.createElement("button");
-        pen.type = "button";
-        pen.className = "pin-btn pen";
-        pen.title = "إخفاء هذا الجزء / تعديل";
-        pen.textContent = "✏️";
-        pen.addEventListener("click", function(ev){
-          ev.preventDefault(); ev.stopPropagation();
-          forceHideText(txt);
-        });
-        var x2 = document.createElement("button");
-        x2.type = "button";
-        x2.className = "pin-btn x";
-        x2.title = "استبعاد من الإخفاء";
-        x2.textContent = "✕";
-        x2.addEventListener("click", function(ev){
-          ev.preventDefault(); ev.stopPropagation();
-          excludeFromHide(txt);
-        });
-        actions.appendChild(pen);
-        actions.appendChild(x2);
-        el.appendChild(actions);
       });
       wrap.querySelectorAll(".block-rate").forEach(function(row){
         var key = row.dataset.blockKey;
