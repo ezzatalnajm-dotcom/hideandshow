@@ -233,15 +233,15 @@
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
+        <button class="review-pill" id="btnRestartUnit" title="ابدأ الاختبار" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">▶️ ابدأ الاختبار</button>
         <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
       </div>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">حدّد العناوين · احفظ</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">حدّد الجمل · احفظ</span></button>
       <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">يعتمد على تنسيق الملف</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
     <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
@@ -280,7 +280,7 @@
     </div>
     <div class="done-actions">
       <button class="btn-gold" id="btnReviewNeeded">📋 راجع اللي محتاج مراجعة</button>
-      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة (تجديد عشوائي)</button>
+      <button class="btn-ghost" id="btnRestart">▶️ ابدأ الاختبار من جديد</button>
       <button class="btn-ghost" id="btnBackHome">الرئيسية</button>
     </div>
   </div>
@@ -1102,7 +1102,7 @@
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
           '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
         '</div>' + delBtn;
-      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
+      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle, !!entry.shared); });
       var delEl = card.querySelector(".malzama-del");
       if(delEl && !entry.shared){
         delEl.addEventListener("click", function(e){
@@ -1117,16 +1117,30 @@
     });
   }
 
-  function openUnit(key, title, subtitle){
+  function openUnit(key, title, subtitle, isShared){
     var raw = getMalzamaContent(key);
     if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة دي"); return; }
     state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
+    state.isShared = !!isShared; // رسمية من المكتبة المشتركة
     RAW_PAGES = raw;
     $("unitTitle").textContent = title;
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    setMode(state.mode || "sentences", true);
+    // الترتيب الافتراضي: العناوين أولاً
+    setMode("headings", true);
+    // ملزمة غير رسمية (رفعها مستخدم) → توجيه لبدء التحديد
+    if(!state.isShared){
+      setTimeout(function(){
+        var btn = $("btnStartSelect");
+        if(btn && !btn.classList.contains("hidden")){
+          btn.style.boxShadow = "0 0 0 3px rgba(224,182,47,.85)";
+          btn.scrollIntoView({ behavior:"smooth", block:"nearest" });
+          setTimeout(function(){ btn.style.boxShadow = ""; }, 3500);
+        }
+        showToast("ملزمة غير رسمية — اضغط «① ابدأ التحديد» عشان تختار اللي يتخفي");
+      }, 350);
+    }
   }
 
   function setMode(mode, skipToast, reshuffle){
@@ -2320,12 +2334,18 @@
     showToast("تم مسح التحديد");
   });
 
-  // Restart: reset progress only — does NOT erase saved hides
+  // ابدأ الاختبار: reset progress only — does NOT erase saved hides
   $("btnRestartUnit").addEventListener("click", function(){
-    if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
-    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم فقط (التحديد المحفوظ يفضل).")) return;
+    if(state.selecting){ showToast("احفظ التحديد الأول أو ألغِه قبل ما تبدأ الاختبار"); return; }
+    if(MODEL && MODEL.allIds.length === 0){
+      showToast("حدّد أجزاء للإخفاء واحفظها الأول — من «① ابدأ التحديد»");
+      var btn = $("btnStartSelect");
+      if(btn){ btn.style.boxShadow = "0 0 0 3px rgba(224,182,47,.85)"; setTimeout(function(){ btn.style.boxShadow=""; }, 3000); }
+      return;
+    }
+    if(!confirm("بدء الاختبار من الأول؟ هيتصفّر التقدم فقط (التحديد المحفوظ يفضل).")) return;
     setMode(state.mode, true, true);
-    showToast("تم تصفير التقدم — المخفيات المحفوظة كما هي");
+    showToast("يلا — ابدأ الاختبار ▶️");
   });
 
   loadTheme();
