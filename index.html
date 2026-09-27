@@ -734,20 +734,29 @@
       var n = normExcludeText(text);
       if(!n || permanentlyExcluded(n) || excludeSet[n]) return false;
       if(forceHideSet[n]) return true;
+      // also match original plain text containing a forced phrase
       var keys = Object.keys(forceHideSet);
       for(var i=0;i<keys.length;i++){
-        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0 && !permanentlyExcluded(keys[i])) return true;
+        if(permanentlyExcluded(keys[i]) || excludeSet[keys[i]]) continue;
+        var orig = forceHideSet[keys[i]];
+        var needle = (typeof orig === "string" && orig.length >= 2) ? orig : keys[i];
+        if(needle.length >= 2 && (n.indexOf(keys[i]) >= 0 || String(text||"").indexOf(needle) >= 0)) return true;
       }
       return false;
     }
     function forcedPhraseIn(text){
-      var n = normExcludeText(text);
+      // Return original phrase string (for indexOf on plain text), not only normalized key
+      var plain = String(text||"");
+      var n = normExcludeText(plain);
       var keys = Object.keys(forceHideSet);
-      var best = null;
+      var best = null, bestLen = 0;
       for(var i=0;i<keys.length;i++){
         if(permanentlyExcluded(keys[i]) || excludeSet[keys[i]]) continue;
-        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0){
-          if(!best || keys[i].length > best.length) best = keys[i];
+        var orig = forceHideSet[keys[i]];
+        var needle = (typeof orig === "string" && orig.length >= 2) ? orig : keys[i];
+        if(needle.length < 2) continue;
+        if(plain.indexOf(needle) >= 0 || n.indexOf(keys[i]) >= 0){
+          if(needle.length > bestLen){ best = needle; bestLen = needle.length; }
         }
       }
       return best;
@@ -1030,7 +1039,7 @@
       return;
     }
     var set = loadForceHideSet(state.malzamaKey);
-    set[n] = true;
+    set[n] = text; // store original wording for matching
     var ex = loadExcludeSet(state.malzamaKey);
     delete ex[n];
     saveExcludeSet(state.malzamaKey, ex);
@@ -2176,27 +2185,81 @@
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
 
-  // Selection buttons — custom mode + sentences mode (tap/drag hide)
+  // Selection buttons — custom / sentences / headings (tap/drag hide)
   function phrasesFromCurrentSelection(){
     var phrases = [];
-    if(!MODEL || !MODEL.pages) return phrases;
-    MODEL.pages.forEach(function(pg){
-      pg.sections.forEach(function(sec){
-        sec.blocks.forEach(function(block){
-          var words = splitIntoWords(block.plainText || stripHtml(block.originalHtml || block.html || ""));
-          if(!words.length) return;
-          Object.keys(state.customSelected).forEach(function(k){
-            if(k.indexOf(block.key + "|w|") !== 0) return;
-            var p = k.split("|");
-            var a = +p[2], b = +p[3];
-            if(isNaN(a) || isNaN(b)) return;
-            var exp = expandBilingualRange(words, Math.min(a,b), Math.max(a,b));
-            var phrase = words.slice(exp[0], exp[1]+1).join(" ").trim();
-            if(phrase.length >= 2) phrases.push(phrase);
+    var seen = {};
+    function addPhrase(ph){
+      ph = String(ph||"").replace(/\s+/g," ").trim();
+      if(ph.length < 2) return;
+      var n = normExcludeText(ph);
+      if(seen[n]) return;
+      seen[n] = true;
+      phrases.push(ph);
+    }
+    // 1) Prefer live DOM words (same indices used while selecting)
+    var wrap = $("docWrap");
+    if(wrap){
+      var byBlock = {};
+      wrap.querySelectorAll(".selectable-word").forEach(function(sp){
+        var bk = sp.dataset.blockKey;
+        if(!byBlock[bk]) byBlock[bk] = [];
+        byBlock[bk][+sp.dataset.wordIdx] = (sp.textContent||"").trim();
+      });
+      Object.keys(state.customSelected || {}).forEach(function(k){
+        if(k.indexOf("|w|") < 0) return;
+        var p = k.split("|");
+        // key = blockKey|w|a|b  — blockKey itself may contain underscores
+        var a = +p[p.length-2], b = +p[p.length-1];
+        if(isNaN(a) || isNaN(b)) return;
+        var blockKey = p.slice(0, p.length-3).join("|");
+        // fix: format is blockKey + "|w|" + lo + "|" + hi
+        var wi = k.lastIndexOf("|w|");
+        if(wi < 0) return;
+        blockKey = k.slice(0, wi);
+        var rest = k.slice(wi+3).split("|");
+        a = +rest[0]; b = +rest[1];
+        if(isNaN(a) || isNaN(b)) return;
+        var words = byBlock[blockKey] || [];
+        if(!words.length && MODEL){
+          // fallback from model
+          MODEL.pages.forEach(function(pg){
+            pg.sections.forEach(function(sec){
+              sec.blocks.forEach(function(block){
+                if(block.key === blockKey){
+                  words = splitIntoWords(block.plainText || stripHtml(block.originalHtml || block.html || ""));
+                }
+              });
+            });
+          });
+        }
+        if(!words.length) return;
+        var lo = Math.min(a,b), hi = Math.max(a,b);
+        var exp = expandBilingualRange(words.filter(Boolean), lo, hi);
+        var parts = [];
+        for(var i=exp[0];i<=exp[1];i++){ if(words[i]) parts.push(words[i]); }
+        addPhrase(parts.join(" "));
+      });
+    }
+    // 2) Fallback: model plain text if DOM empty
+    if(!phrases.length && MODEL){
+      MODEL.pages.forEach(function(pg){
+        pg.sections.forEach(function(sec){
+          sec.blocks.forEach(function(block){
+            var words = splitIntoWords(block.plainText || stripHtml(block.originalHtml || block.html || ""));
+            if(!words.length) return;
+            Object.keys(state.customSelected || {}).forEach(function(k){
+              if(k.indexOf(block.key + "|w|") !== 0) return;
+              var p = k.slice(block.key.length + 3).split("|");
+              var a = +p[0], b = +p[1];
+              if(isNaN(a) || isNaN(b)) return;
+              var exp = expandBilingualRange(words, Math.min(a,b), Math.max(a,b));
+              addPhrase(words.slice(exp[0], exp[1]+1).join(" "));
+            });
           });
         });
       });
-    });
+    }
     return phrases;
   }
 
@@ -2233,24 +2296,30 @@
     }
     if(state.mode === "sentences" || state.mode === "headings"){
       var phrases = phrasesFromCurrentSelection();
+      if(!phrases.length){
+        showToast("مفيش حاجة محددة — ظلّل كلمة أو اسحب ثم احفظ");
+        return;
+      }
       var fh = loadForceHideSet(state.malzamaKey);
-      // Don't re-force items excluded twice
       var counts = loadExcludeCounts(state.malzamaKey);
+      var saved = 0;
       phrases.forEach(function(ph){
         var n = normExcludeText(ph);
         if((counts[n] || 0) >= 2) return;
-        fh[n] = true;
+        fh[n] = ph; // original text for reliable match later
+        saved++;
       });
       saveForceHideSet(state.malzamaKey, fh);
       state.selecting = false;
       state.customSelected = {};
+      // rebuild model so headings mode shows new fixed hides
       loadProgress(false);
       $("btnStartSelect").classList.remove("hidden");
       $("btnSaveCustom").classList.add("hidden");
       $("btnClearCustom").classList.add("hidden");
-      $("customSelectCount").textContent = phrases.length ? "محفوظ: " + ar(phrases.length) + " جزء ثابت" : "";
+      $("customSelectCount").textContent = saved ? "محفوظ: " + ar(saved) + " جزء ثابت" : "";
       var modeLabel = state.mode === "headings" ? "العناوين" : "الجمل";
-      showToast(phrases.length ? "اتحفظ " + ar(phrases.length) + " جزء ثابت مع مود " + modeLabel : "مفيش حاجة محددة");
+      showToast(saved ? "اتحفظ " + ar(saved) + " جزء ثابت مع مود " + modeLabel : "مفيش حاجة محددة");
       renderPage();
     }
   });
