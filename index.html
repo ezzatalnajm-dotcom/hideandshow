@@ -362,9 +362,9 @@
 
   var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
   var MODE_HINTS = {
-    sentences: "✂️ إخفاء عشوائي للجمل + زر «ابدأ التحديد» لسحب أجزاء ثابتة إضافية",
-    custom: "✏️ نقرة = كلمة واحدة · سحب = عدة كلمات · بعدين احفظ واختبر نفسك",
-    headings: "🏷️ إخفاء ثابت. «ابدأ التحديد» لإضافة عنوان نسيه التطبيق. ✕ مرتين = مش هيتخفي تاني."
+    sentences: "✂️ حدّد بنفسك ما يُخفى (نقرة/سحب) ثم احفظ. ✕ مرتين = مش هيتخفي تاني.",
+    custom: "✏️ نقرة = كلمة · سحب = عدة كلمات · احفظ ثم اختبر. ✕ مرتين = مش هيتخفي تاني.",
+    headings: "🏷️ حدّد العناوين بنفسك ثم احفظ. كل ملزمة لوحدها. ✕ مرتين = مش هيتخفي تاني."
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -784,23 +784,11 @@
           return { key: secKeyPrefix+bi, html: html, label: label, restHtml: restHtml };
         });
 
-        // Headings-only mode: hide real section sub-titles only (not list markers / الل / لاحظ).
-        // Keep page.heading (unit/lesson title) visible — never hidden.
-        if(mode === "headings" && sec.sub){
-          var subT = String(sec.sub).trim();
-          var subIsMarker = isTrivialFragment(subT) || LIST_MARKER_RE.test(subT) || BARE_ENUM_RE.test(subT) || NOT_TITLE_RE.test(subT);
-          if(!subIsMarker && !excluded(subT) && subT.length >= 3){
-            globalId++; var shid = globalId; allIds.push(shid);
-            sectionHeadingBlankByKey[pi+"_"+si] = shid;
-          }
-        }
-
+        // page.heading (unit/lesson) never hidden. User hides manually in headings/sentences/custom.
         var lastInlineHid = null;
         blocksInfo.forEach(function(bi2){
-          if(mode === "custom"){
-            // Custom: hide word ranges the user selected.
-            // Keys look like: "blockKey|w|startIdx|endIdx" (inclusive word indices)
-            // Also support legacy sentence keys "blockKey|si" by ignoring them if no match.
+          // Shared manual hide: custom + headings + sentences (word ranges the user saved)
+          if(mode === "custom" || mode === "headings" || mode === "sentences"){
             if(isPromoOrVerse(stripHtml(bi2.html))){
               unitByBlockKey[bi2.key] = { renderHtml: "", blankIds: [] };
             } else {
@@ -808,10 +796,10 @@
               var wordsC = wb.map(function(x){ return x.text; });
               var idsC = [];
               var ranges = [];
-              Object.keys(customSelected).forEach(function(k){
+              Object.keys(customSelected || {}).forEach(function(k){
                 if(k.indexOf(bi2.key + "|w|") === 0){
-                  var parts = k.split("|");
-                  var a = +parts[2], b = +parts[3];
+                  var tail = k.slice(bi2.key.length + 3).split("|");
+                  var a = +tail[0], b = +tail[1];
                   if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
                 }
               });
@@ -821,6 +809,11 @@
               ranges.forEach(function(r){
                 if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
                 else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
+              });
+              // Drop ranges whose text was excluded twice (permanent)
+              merged = merged.filter(function(r){
+                var ph = wordsC.slice(r[0], r[1]+1).join(" ");
+                return !excluded(ph) && !permanentlyExcluded(ph);
               });
               if(wordsC.length === 0 || merged.length === 0){
                 unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
@@ -840,142 +833,6 @@
                 });
                 while(wi < wb.length){ htmlParts.push(formatWordHtml(wb[wi])); wi++; }
                 unitByBlockKey[bi2.key] = { renderHtml: htmlParts.join(" "), blankIds: idsC };
-              }
-            }
-          } else if(mode === "headings"){
-            // Fixed hides: (1) user-added titles from selection  (2) auto-detected side titles
-            var plainH = stripHtml(bi2.html);
-            var idsH = [];
-            function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-            function blankSpan(txt, bold){
-              globalId++; idsH.push(globalId); allIds.push(globalId);
-              return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(txt)+'"'+(bold?' style="font-weight:800"':'')+'>'+escapeHtml(txt)+'</span>';
-            }
-            function isMarkerTxt(t){
-              t = (t||"").trim();
-              return !t || isTrivialFragment(t) || LIST_MARKER_RE.test(t) || BARE_ENUM_RE.test(t) || NOT_TITLE_RE.test(t) || /^(لاحظ|الل|القط)\b/.test(t);
-            }
-            // Word-level apply of ALL user force-hide phrases (saved selections)
-            var wbH = wordsWithBold(bi2.html);
-            var wordsH = wbH.map(function(w){ return w.text; });
-            var forceRanges = [];
-            Object.keys(forceHideSet).forEach(function(key){
-              if(permanentlyExcluded(key) || excludeSet[key]) return;
-              var orig = forceHideSet[key];
-              if(typeof orig !== "string" || orig.length < 2) orig = key;
-              if(excluded(orig)) return;
-              var fw = splitIntoWords(orig);
-              if(!fw.length || fw.length > wordsH.length) return;
-              function softW(w){
-                return normExcludeText(w).replace(/^[^\u0600-\u06FFa-zA-Z0-9]+|[^\u0600-\u06FFa-zA-Z0-9]+$/g,"");
-              }
-              for(var i=0;i<=wordsH.length-fw.length;i++){
-                var ok = true;
-                for(var j=0;j<fw.length;j++){
-                  if(softW(wordsH[i+j]) !== softW(fw[j])){ ok=false; break; }
-                }
-                if(ok) forceRanges.push([i, i+fw.length-1]);
-              }
-            });
-            // merge force ranges
-            forceRanges.sort(function(a,b){ return a[0]-b[0]; });
-            var mergedF = [];
-            forceRanges.forEach(function(r){
-              if(!mergedF.length || r[0] > mergedF[mergedF.length-1][1]+1) mergedF.push(r.slice());
-              else mergedF[mergedF.length-1][1] = Math.max(mergedF[mergedF.length-1][1], r[1]);
-            });
-
-            if(excluded(plainH) && mergedF.length === 0){
-              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-            } else if(mergedF.length > 0){
-              // Build HTML with user-forced blanks + keep bold
-              var htmlPartsH = [];
-              var wiH = 0;
-              mergedF.forEach(function(r){
-                while(wiH < r[0] && wiH < wbH.length){ htmlPartsH.push(formatWordHtml(wbH[wiH])); wiH++; }
-                if(wiH <= r[1] && wiH < wbH.length){
-                  var hidden = []; var anyB = false;
-                  while(wiH <= r[1] && wiH < wbH.length){ hidden.push(wbH[wiH].text); if(wbH[wiH].bold) anyB=true; wiH++; }
-                  htmlPartsH.push(blankSpan(hidden.join(" "), anyB));
-                }
-              });
-              while(wiH < wbH.length){ htmlPartsH.push(formatWordHtml(wbH[wiH])); wiH++; }
-              unitByBlockKey[bi2.key] = { renderHtml: htmlPartsH.join(" "), blankIds: idsH };
-            } else if(forced(plainH) && plainH.length <= 160){
-              unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH, /<b>/i.test(bi2.html)), blankIds: idsH };
-            } else {
-              var lines = plainH.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
-              if(lines.length <= 1){
-                lines = plainH.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
-                if(lines.length <= 1) lines = [plainH];
-              }
-              var fp = forcedPhraseIn(plainH);
-              if(fp && !excluded(fp) && plainH.indexOf(fp) >= 0){
-                var bi = plainH.indexOf(fp);
-                unitByBlockKey[bi2.key] = { renderHtml: escapeHtml(plainH.slice(0,bi)) + blankSpan(fp) + escapeHtml(plainH.slice(bi+fp.length)), blankIds: idsH };
-              } else if(lines.length >= 2){
-                var htmlLines = lines.map(function(line){
-                  if(excluded(line) || isMarkerTxt(line)) return escapeHtml(line);
-                  if(forced(line) || isSubHeadingBlock("", line)) return blankSpan(line);
-                  var lm = line.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
-                  if(lm && !isMarkerTxt(lm[1])) return blankSpan(lm[1]) + " " + escapeHtml(lm[2]);
-                  return escapeHtml(line);
-                });
-                unitByBlockKey[bi2.key] = { renderHtml: htmlLines.join("<br>"), blankIds: idsH };
-              } else if(bi2.label && !isMarkerTxt(bi2.label) && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
-                var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
-                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(labelShow)+'</b> '+bi2.restHtml, blankIds: idsH };
-              } else if(isSubHeadingBlock(bi2.html, plainH)){
-                unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH, true), blankIds: idsH };
-              } else {
-                var pm2 = plainH.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
-                if(pm2 && !isMarkerTxt(pm2[1])){
-                  unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(pm2[1])+'</b> '+escapeHtml(pm2[2]), blankIds: idsH };
-                } else {
-                  unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-                }
-              }
-            }
-          } else if(mode === "sentences"){ // 'sentences' mode
-            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
-            sents = mergeBilingualUnits(sents);
-            if(sents.length === 0){
-              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-            } else {
-              var hSet = pickSentenceHides(sents, 0.45, rnd);
-              // force-hide user-pinned sentences/phrases; respect exclusions
-              sents.forEach(function(s, ix){ if(forced(s)) hSet[ix] = true; });
-              Object.keys(hSet).forEach(function(ix){ if(excluded(sents[ix])) delete hSet[ix]; });
-              var ids2 = [];
-              var anyForcedPhrase = sents.some(function(s){ var fp=forcedPhraseIn(s); return fp && !excluded(fp); });
-              var anyHidden = Object.keys(hSet).length > 0 || anyForcedPhrase;
-              if(!anyHidden){
-                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
-              } else {
-                var html3 = sents.map(function(s,i){
-                  if(hSet[i]){
-                    globalId++; ids2.push(globalId); allIds.push(globalId);
-                    var phrase = forcedPhraseIn(s);
-                    if(phrase && s.indexOf(phrase) >= 0 && phrase.length < s.length){
-                      var before = s.slice(0, s.indexOf(phrase));
-                      var after = s.slice(s.indexOf(phrase) + phrase.length);
-                      return escapeHtml(before) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(phrase)+'">'+escapeHtml(phrase)+'</span>' + escapeHtml(after);
-                    }
-                    var kr2 = splitKeyAndRest(s);
-                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(kr2.rest)+'</span>';
-                    return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(s)+'</span>';
-                  }
-                  // not randomly hidden — but user may have forced a phrase inside
-                  var fp = forcedPhraseIn(s);
-                  if(fp && !excluded(fp)){
-                    globalId++; ids2.push(globalId); allIds.push(globalId);
-                    var bi = s.indexOf(fp);
-                    return escapeHtml(s.slice(0,bi)) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(fp)+'">'+escapeHtml(fp)+'</span>' + escapeHtml(s.slice(bi+fp.length));
-                  }
-                  return escapeHtml(s);
-                }).join(" ");
-                anyHidden = ids2.length > 0;
-                unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+escapeHtml(bi2.label)+':</b> ':'') + html3, blankIds: ids2 };
               }
             }
           } else {
@@ -1020,13 +877,22 @@
   var MODEL = null, RAW_PAGES = null;
 
   function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
-  function customKey(malzamaKey){ return "najm_custom_" + malzamaKey; }
-  function loadCustomSelection(malzamaKey){
-    try{ var raw = localStorage.getItem(customKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {}; // { blockKey: true, ... }
+  // Each mode has its own saved hides (per ملزمة) — teacher/student hide manually
+  function selectionStorageKey(malzamaKey, mode){
+    mode = mode || "custom";
+    if(mode === "custom") return "najm_custom_" + malzamaKey;
+    return "najm_sel_" + mode + "_" + malzamaKey;
   }
-  function saveCustomSelection(malzamaKey, sel){
-    try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
+  function loadCustomSelection(malzamaKey, mode){
+    try{ var raw = localStorage.getItem(selectionStorageKey(malzamaKey, mode || "custom")); if(raw) return JSON.parse(raw); }catch(e){}
+    // legacy fallback for custom only
+    if(!mode || mode === "custom"){
+      try{ var leg = localStorage.getItem("najm_custom_" + malzamaKey); if(leg) return JSON.parse(leg); }catch(e2){}
+    }
+    return {};
+  }
+  function saveCustomSelection(malzamaKey, sel, mode){
+    try{ localStorage.setItem(selectionStorageKey(malzamaKey, mode || "custom"), JSON.stringify(sel || {})); }catch(e){}
   }
   // Expand a word-index range so Arabic word + its English translation stay together
   function expandBilingualRange(words, lo, hi){
@@ -1053,14 +919,46 @@
     if(mEn){ variants.push(mEn[1].trim(), mEn[2].trim(), mEn[1].trim()+" "+mEn[2].trim()); }
     if(mAr){ variants.push(mAr[1].trim(), mAr[2].trim(), mAr[1].trim()+" "+mAr[2].trim()); }
     variants.forEach(function(v){ if(v) addExcludeText(state.malzamaKey, v); });
-    // Remove from manual force-hide so it won't stay with hidden titles
     variants.forEach(function(v){ if(v) removeFromForceHide(state.malzamaKey, v); });
+    // Remove matching word-ranges from THIS mode's saved selection
+    var sel = loadCustomSelection(state.malzamaKey, state.mode);
+    var normT = normExcludeText(text);
+    Object.keys(sel).forEach(function(k){
+      // can't know phrase without model words — drop ranges when rebuilding via excluded()
+    });
+    // Also strip any range whose hide-text equals excluded text from state.customSelected
+    Object.keys(state.customSelected || {}).forEach(function(k){
+      // kept via excluded() filter in buildModel
+    });
     var cnt = bumpExcludeCount(state.malzamaKey, text);
+    // If twice: permanently drop from saved selection any blank that matches
+    if(cnt >= 2 && MODEL){
+      var sel2 = loadCustomSelection(state.malzamaKey, state.mode);
+      MODEL.pages.forEach(function(pg){
+        pg.sections.forEach(function(sec){
+          sec.blocks.forEach(function(block){
+            var words = splitIntoWords(block.plainText || "");
+            Object.keys(sel2).forEach(function(k){
+              if(k.indexOf(block.key + "|w|") !== 0) return;
+              var tail = k.slice(block.key.length + 3).split("|");
+              var a = +tail[0], b = +tail[1];
+              if(isNaN(a)||isNaN(b)) return;
+              var ph = words.slice(Math.min(a,b), Math.max(a,b)+1).join(" ");
+              if(normExcludeText(ph) === normT || normExcludeText(ph).indexOf(normT) >= 0 || normT.indexOf(normExcludeText(ph)) >= 0){
+                delete sel2[k];
+              }
+            });
+          });
+        });
+      });
+      saveCustomSelection(state.malzamaKey, sel2, state.mode);
+      state.customSelected = sel2;
+    }
     loadProgress(false);
     if(cnt >= 2){
-      showToast("اتلغى مرتين — مش هيتخفي تاني مع المخفيات ✕✕");
+      showToast("اتلغى مرتين — اتشال من المخفيات ومش هيرجع ✕✕");
     } else {
-      showToast("تم إلغاء الإخفاء — اضغط ✕ مرة تانية لو مش عايزه يرجع أبدًا");
+      showToast("اتشال من المخفي — ✕ مرة تانية عشان ميرجعش");
     }
     renderPage();
   }
@@ -1141,7 +1039,7 @@
       seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0;
     }
     state.seed = seed;
-    state.customSelected = loadCustomSelection(state.malzamaKey);
+    state.customSelected = loadCustomSelection(state.malzamaKey, state.mode);
     state.excludeSet = loadExcludeSet(state.malzamaKey);
     MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, state.excludeSet);
     saveProgress();
@@ -1176,7 +1074,7 @@
     var revealed = {}, seed = null;
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
-    var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
+    var customSel = loadCustomSelection(malzamaKey, mode);
     var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey));
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
@@ -1236,29 +1134,17 @@
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
     $("hintBanner").textContent = MODE_HINTS[mode] || "";
     var canSelect = (mode === "custom" || mode === "sentences" || mode === "headings");
-    $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
+    $("shuffleNote").classList.add("hidden"); // manual hide modes — no random shuffle note
     $("customGuide").classList.toggle("hidden", !canSelect);
     $("customToolbar").classList.toggle("hidden", !canSelect);
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     $("customSelectCount").textContent = "";
-    if(mode === "sentences"){
-      $("customGuide").innerHTML =
-        '<div style="margin-bottom:2px;">① تحديد إضافي: <b>نقرة</b> = كلمة · <b>سحب</b> = عدة كلمات</div>'+
-        '<div style="margin-bottom:2px;">② احفظ — الأجزاء دي هتفضل مخفية مع الإخفاء العشوائي</div>'+
-        '<div>③ اختبر نفسك · ✕ مرتين = مش هيتخفي تاني</div>';
-    } else if(mode === "headings"){
-      $("customGuide").innerHTML =
-        '<div style="margin-bottom:2px;">① لو التطبيق نسي عنوان: <b>ابدأ التحديد</b> · نقرة أو سحب</div>'+
-        '<div style="margin-bottom:2px;">② احفظ — يفضل مخفي ثابت مع عناوين المود</div>'+
-        '<div>③ ✕ مرة = إلغاء · ✕ مرتين = مش هيتخفي تاني</div>';
-    } else if(mode === "custom"){
-      $("customGuide").innerHTML =
-        '<div style="margin-bottom:2px;">① حدّد: <b>نقرة</b> = كلمة · <b>سحب</b> = عدة كلمات · نقرة تانية = إلغاء</div>'+
-        '<div style="margin-bottom:2px;">② احفظ التخصيص</div>'+
-        '<div>③ اختبر نفسك — اكشف جزء بجزء</div>';
-    }
+    $("customGuide").innerHTML =
+      '<div style="margin-bottom:2px;">① <b>ابدأ التحديد</b>: نقرة = كلمة · سحب = عدة كلمات</div>'+
+      '<div style="margin-bottom:2px;">② <b>احفظ</b> — الإخفاء يتسجّل على الملزمة دي فقط</div>'+
+      '<div>③ ✕ مرة = شيل من المخفي · ✕ مرتين = مش هيرجع للمخفيات</div>';
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -1507,9 +1393,9 @@
     var page = MODEL.pages[state.page];
     if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
 
-    // If custom mode and nothing selected yet (and not currently selecting)
-    if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · نقرة أو سحب ثم إفلات · ثم احفظ.</div>';
+    // No saved hides yet in manual modes
+    if((state.mode === "custom" || state.mode === "headings" || state.mode === "sentences") && !state.selecting && MODEL.allIds.length === 0){
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما فيش أجزاء مخفية في المود ده.<br>اضغط «① ابدأ التحديد» · نقرة أو سحب · ثم «② حفظ».</div>';
       updateNavButtons();
       return;
     }
@@ -2302,83 +2188,55 @@
   $("btnStartSelect").addEventListener("click", function(){
     if(state.mode !== "custom" && state.mode !== "sentences" && state.mode !== "headings") return;
     state.selecting = true;
-    state.customSelected = state.mode === "custom" ? loadCustomSelection(state.malzamaKey) : {};
+    // Load THIS mode's saved hides so user can edit them
+    state.customSelected = loadCustomSelection(state.malzamaKey, state.mode);
     $("btnStartSelect").classList.add("hidden");
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
-    $("customSelectCount").textContent = "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
-    var msg = "حدّد بالنقرة أو السحب ثم احفظ";
-    if(state.mode === "sentences") msg = "مود الجمل: حدّد أجزاء ثابتة بالسحب ثم احفظ";
-    if(state.mode === "headings") msg = "مود العناوين: حدّد عنوان نسيه التطبيق ثم احفظ";
-    showToast(msg);
+    var count = Object.keys(state.customSelected).length;
+    $("customSelectCount").textContent = count ? ar(count) + " جزء محفوظ — عدّل أو زوّد" : "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
+    showToast("حدّد ما يُخفى ثم اضغط حفظ");
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
-    if(state.mode === "custom"){
-      saveCustomSelection(state.malzamaKey, state.customSelected);
-      state.selecting = false;
-      state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
-      state.seed = Math.floor(Math.random()*1e9)+1;
-      MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
-      saveProgress();
-      $("btnStartSelect").classList.remove("hidden");
-      $("btnSaveCustom").classList.add("hidden");
-      $("btnClearCustom").classList.add("hidden");
-      var count = Object.keys(state.customSelected).length;
-      $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
-      showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
-      renderPage();
+    if(state.mode !== "custom" && state.mode !== "sentences" && state.mode !== "headings") return;
+    var count = Object.keys(state.customSelected || {}).length;
+    if(!count){
+      showToast("مفيش حاجة محددة — ظلّل كلمة أو اسحب ثم احفظ");
       return;
     }
-    if(state.mode === "sentences" || state.mode === "headings"){
-      var phrases = phrasesFromCurrentSelection();
-      if(!phrases.length){
-        showToast("مفيش حاجة محددة — ظلّل كلمة أو اسحب ثم احفظ");
-        return;
-      }
-      var fh = loadForceHideSet(state.malzamaKey);
-      var counts = loadExcludeCounts(state.malzamaKey);
-      var saved = 0;
-      phrases.forEach(function(ph){
-        var n = normExcludeText(ph);
-        if((counts[n] || 0) >= 2) return;
-        fh[n] = ph; // original text for reliable match later
-        saved++;
-      });
-      saveForceHideSet(state.malzamaKey, fh);
-      // verify write
-      var check = loadForceHideSet(state.malzamaKey);
-      var okCount = 0;
-      phrases.forEach(function(ph){ if(check[normExcludeText(ph)]) okCount++; });
-      state.selecting = false;
-      state.customSelected = {};
-      loadProgress(false);
-      $("btnStartSelect").classList.remove("hidden");
-      $("btnSaveCustom").classList.add("hidden");
-      $("btnClearCustom").classList.add("hidden");
-      $("customSelectCount").textContent = okCount ? "محفوظ مع المخفيات: " + ar(okCount) : "";
-      var modeLabel = state.mode === "headings" ? "العناوين" : "الجمل";
-      showToast(okCount
-        ? ("اتحفظ " + ar(okCount) + " عنوان/جزء مع مخفيات مود " + modeLabel)
-        : "مفيش حاجة محددة");
-      renderPage();
-    }
+    // Save hides for THIS mode + THIS ملزمة only
+    saveCustomSelection(state.malzamaKey, state.customSelected, state.mode);
+    state.selecting = false;
+    state.revealedIds = {};
+    state.blockRatings = {};
+    state.page = 0;
+    if(state.mode === "headings") state.seed = 1;
+    else state.seed = Math.floor(Math.random()*1e9)+1;
+    MODEL = buildModel(RAW_PAGES, state.mode, state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
+    saveProgress();
+    $("btnStartSelect").classList.remove("hidden");
+    $("btnSaveCustom").classList.add("hidden");
+    $("btnClearCustom").classList.add("hidden");
+    $("customSelectCount").textContent = "محفوظ: " + ar(count) + " جزء";
+    showToast("اتحفظ " + ar(count) + " جزء في مود " + (MODE_LABELS[state.mode] || state.mode));
+    renderPage();
   });
   $("btnClearCustom").addEventListener("click", function(){
     if(!confirm("تمسح كل التحديد الحالي؟")) return;
     state.customSelected = {};
-    if(state.mode === "custom") saveCustomSelection(state.malzamaKey, {});
+    saveCustomSelection(state.malzamaKey, {}, state.mode);
     $("customSelectCount").textContent = "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
     document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
     showToast("تم مسح التحديد");
   });
 
-  // Restart button (any mode): reset progress + new random hides for headings/sentences
+  // Restart: reset progress only — does NOT erase saved hides
   $("btnRestartUnit").addEventListener("click", function(){
     if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
-    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم" + (state.mode !== "custom" ? " ويتخفي أجزاء عشوائية جديدة" : "") + ".")) return;
-    setMode(state.mode, true, true); // reshuffle=true
-    showToast(state.mode === "custom" ? "تم الإعادة من الأول" : "محاولة جديدة — أجزاء مختلفة اتخفت");
+    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم فقط (التحديد المحفوظ يفضل).")) return;
+    setMode(state.mode, true, true);
+    showToast("تم تصفير التقدم — المخفيات المحفوظة كما هي");
   });
 
   loadTheme();
