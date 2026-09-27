@@ -362,9 +362,9 @@
 
   var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
   var MODE_HINTS = {
-    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين",
+    sentences: "✂️ إخفاء عشوائي للجمل + زر «ابدأ التحديد» لسحب أجزاء ثابتة إضافية",
     custom: "✏️ نقرة = كلمة واحدة · سحب = عدة كلمات · بعدين احفظ واختبر نفسك",
-    headings: "🏷️ إخفاء ثابت للعناوين. اضغط أي عنوان ظاهر لإخفائه. ✕ يلغي الإخفاء (والترجمة معه)."
+    headings: "🏷️ إخفاء ثابت. «ابدأ التحديد» لإضافة عنوان نسيه التطبيق. ✕ مرتين = مش هيتخفي تاني."
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -606,6 +606,30 @@
     set[normExcludeText(text)] = true;
     saveExcludeSet(malzamaKey, set);
   }
+  function excludeCountKey(malzamaKey){ return "najm_exclude_cnt_" + malzamaKey; }
+  function loadExcludeCounts(malzamaKey){
+    try{ var raw=localStorage.getItem(excludeCountKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveExcludeCounts(malzamaKey, obj){
+    try{ localStorage.setItem(excludeCountKey(malzamaKey), JSON.stringify(obj)); }catch(e){}
+  }
+  function bumpExcludeCount(malzamaKey, text){
+    var n = normExcludeText(text);
+    if(!n) return 1;
+    var c = loadExcludeCounts(malzamaKey);
+    c[n] = (c[n] || 0) + 1;
+    saveExcludeCounts(malzamaKey, c);
+    return c[n];
+  }
+  function removeFromForceHide(malzamaKey, text){
+    var fh = loadForceHideSet(malzamaKey);
+    var n = normExcludeText(text);
+    delete fh[n];
+    // also remove bilingual pieces
+    String(text||"").split(/\s+/).forEach(function(w){ if(w.length>=2) delete fh[normExcludeText(w)]; });
+    saveForceHideSet(malzamaKey, fh);
+  }
 
   // Merge Arabic word + adjacent English translation into one hide unit
   // e.g. "الدم blood" or "خطوط z (z line)"
@@ -697,17 +721,22 @@
     var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
     var excludeSet = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
     var forceHideSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
+    var excludeCounts = (state && state.malzamaKey) ? loadExcludeCounts(state.malzamaKey) : {};
+    function permanentlyExcluded(text){
+      var n = normExcludeText(text);
+      return !!(excludeCounts[n] && excludeCounts[n] >= 2);
+    }
     function excluded(text){
-      return !!excludeSet[normExcludeText(text)];
+      var n = normExcludeText(text);
+      return !!excludeSet[n] || permanentlyExcluded(text);
     }
     function forced(text){
       var n = normExcludeText(text);
-      if(!n) return false;
+      if(!n || permanentlyExcluded(n) || excludeSet[n]) return false;
       if(forceHideSet[n]) return true;
-      // sentence contains a user-corrected phrase (min 4 chars)
       var keys = Object.keys(forceHideSet);
       for(var i=0;i<keys.length;i++){
-        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0) return true;
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0 && !permanentlyExcluded(keys[i])) return true;
       }
       return false;
     }
@@ -716,6 +745,7 @@
       var keys = Object.keys(forceHideSet);
       var best = null;
       for(var i=0;i<keys.length;i++){
+        if(permanentlyExcluded(keys[i]) || excludeSet[keys[i]]) continue;
         if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0){
           if(!best || keys[i].length > best.length) best = keys[i];
         }
@@ -972,29 +1002,37 @@
   function excludeFromHide(text){
     if(!text) return;
     text = String(text).replace(/\s+/g," ").trim();
-    addExcludeText(state.malzamaKey, text);
-    // Also exclude Arabic+English pair together (الدم blood / blood الدم)
-    var parts = text.split(/\s+/);
-    if(parts.length >= 2){
-      addExcludeText(state.malzamaKey, parts.join(" "));
-    }
-    // If text is only Arabic or only English, try to exclude common bilingual form from blank's data
+    var variants = [text];
     var mEn = text.match(/^([\u0600-\u06FF\s]+)\s+([A-Za-z][A-Za-z0-9\-\s]{0,30})$/);
     var mAr = text.match(/^([A-Za-z][A-Za-z0-9\-\s]{0,30})\s+([\u0600-\u06FF\s]+)$/);
-    if(mEn){ addExcludeText(state.malzamaKey, mEn[1].trim()); addExcludeText(state.malzamaKey, mEn[2].trim()); addExcludeText(state.malzamaKey, mEn[1].trim()+" "+mEn[2].trim()); }
-    if(mAr){ addExcludeText(state.malzamaKey, mAr[1].trim()); addExcludeText(state.malzamaKey, mAr[2].trim()); addExcludeText(state.malzamaKey, mAr[1].trim()+" "+mAr[2].trim()); }
+    if(mEn){ variants.push(mEn[1].trim(), mEn[2].trim(), mEn[1].trim()+" "+mEn[2].trim()); }
+    if(mAr){ variants.push(mAr[1].trim(), mAr[2].trim(), mAr[1].trim()+" "+mAr[2].trim()); }
+    variants.forEach(function(v){ if(v) addExcludeText(state.malzamaKey, v); });
+    // Remove from manual force-hide so it won't stay with hidden titles
+    variants.forEach(function(v){ if(v) removeFromForceHide(state.malzamaKey, v); });
+    var cnt = bumpExcludeCount(state.malzamaKey, text);
     loadProgress(false);
-    showToast("تم إلغاء إخفاء الجزء (والترجمة إن وُجدت) ✕");
+    if(cnt >= 2){
+      showToast("اتلغى مرتين — مش هيتخفي تاني مع المخفيات ✕✕");
+    } else {
+      showToast("تم إلغاء الإخفاء — اضغط ✕ مرة تانية لو مش عايزه يرجع أبدًا");
+    }
     renderPage();
   }
   function forceHideText(text){
     if(!text) return;
     text = String(text).replace(/\s+/g," ").trim();
     if(text.length < 2) return;
+    var n = normExcludeText(text);
+    var counts = loadExcludeCounts(state.malzamaKey);
+    if((counts[n] || 0) >= 2){
+      showToast("الجزء ده اتلغى مرتين — مش هيتخفي تاني");
+      return;
+    }
     var set = loadForceHideSet(state.malzamaKey);
-    set[normExcludeText(text)] = true;
+    set[n] = true;
     var ex = loadExcludeSet(state.malzamaKey);
-    delete ex[normExcludeText(text)];
+    delete ex[n];
     saveExcludeSet(state.malzamaKey, ex);
     saveForceHideSet(state.malzamaKey, set);
     loadProgress(false);
@@ -1152,14 +1190,30 @@
     loadProgress(reshuffle);
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
     $("hintBanner").textContent = MODE_HINTS[mode] || "";
-    var isCustom = mode === "custom";
+    var canSelect = (mode === "custom" || mode === "sentences" || mode === "headings");
     $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
-    $("customGuide").classList.toggle("hidden", !isCustom);
-    $("customToolbar").classList.toggle("hidden", !isCustom);
+    $("customGuide").classList.toggle("hidden", !canSelect);
+    $("customToolbar").classList.toggle("hidden", !canSelect);
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     $("customSelectCount").textContent = "";
+    if(mode === "sentences"){
+      $("customGuide").innerHTML =
+        '<div style="margin-bottom:2px;">① تحديد إضافي: <b>نقرة</b> = كلمة · <b>سحب</b> = عدة كلمات</div>'+
+        '<div style="margin-bottom:2px;">② احفظ — الأجزاء دي هتفضل مخفية مع الإخفاء العشوائي</div>'+
+        '<div>③ اختبر نفسك · ✕ مرتين = مش هيتخفي تاني</div>';
+    } else if(mode === "headings"){
+      $("customGuide").innerHTML =
+        '<div style="margin-bottom:2px;">① لو التطبيق نسي عنوان: <b>ابدأ التحديد</b> · نقرة أو سحب</div>'+
+        '<div style="margin-bottom:2px;">② احفظ — يفضل مخفي ثابت مع عناوين المود</div>'+
+        '<div>③ ✕ مرة = إلغاء · ✕ مرتين = مش هيتخفي تاني</div>';
+    } else if(mode === "custom"){
+      $("customGuide").innerHTML =
+        '<div style="margin-bottom:2px;">① حدّد: <b>نقرة</b> = كلمة · <b>سحب</b> = عدة كلمات · نقرة تانية = إلغاء</div>'+
+        '<div style="margin-bottom:2px;">② احفظ التخصيص</div>'+
+        '<div>③ اختبر نفسك — اكشف جزء بجزء</div>';
+    }
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -1410,7 +1464,7 @@
 
     // If custom mode and nothing selected yet (and not currently selecting)
     if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ضغطتين للجملة · اضغط تاني للإلغاء · ثم احفظ.</div>';
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · نقرة أو سحب ثم إفلات · ثم احفظ.</div>';
       updateNavButtons();
       return;
     }
@@ -1419,8 +1473,8 @@
     docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
     docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
 
-    // When selecting in custom mode, show original clean text (no blanks)
-    var useClean = state.selecting && state.mode === "custom";
+    // Selecting UI (word tap/drag) in custom OR sentences mode
+    var useClean = state.selecting && (state.mode === "custom" || state.mode === "sentences" || state.mode === "headings");
 
     page.sections.forEach(function(sec){
       if(sec.sub){
@@ -2122,41 +2176,89 @@
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
 
-  // Custom mode selection buttons
+  // Selection buttons — custom mode + sentences mode (tap/drag hide)
+  function phrasesFromCurrentSelection(){
+    var phrases = [];
+    if(!MODEL || !MODEL.pages) return phrases;
+    MODEL.pages.forEach(function(pg){
+      pg.sections.forEach(function(sec){
+        sec.blocks.forEach(function(block){
+          var words = splitIntoWords(block.plainText || stripHtml(block.originalHtml || block.html || ""));
+          if(!words.length) return;
+          Object.keys(state.customSelected).forEach(function(k){
+            if(k.indexOf(block.key + "|w|") !== 0) return;
+            var p = k.split("|");
+            var a = +p[2], b = +p[3];
+            if(isNaN(a) || isNaN(b)) return;
+            var exp = expandBilingualRange(words, Math.min(a,b), Math.max(a,b));
+            var phrase = words.slice(exp[0], exp[1]+1).join(" ").trim();
+            if(phrase.length >= 2) phrases.push(phrase);
+          });
+        });
+      });
+    });
+    return phrases;
+  }
+
   $("btnStartSelect").addEventListener("click", function(){
-    if(state.mode !== "custom") return;
+    if(state.mode !== "custom" && state.mode !== "sentences" && state.mode !== "headings") return;
     state.selecting = true;
-    state.customSelected = loadCustomSelection(state.malzamaKey); // start from saved
+    state.customSelected = state.mode === "custom" ? loadCustomSelection(state.malzamaKey) : {};
     $("btnStartSelect").classList.add("hidden");
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
-    var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر على الكلمات أو اضغط مرتين للجملة";
-    showToast("مرّر بإصبعك على الكلمات — أو اضغط مرتين للجملة كاملة");
+    $("customSelectCount").textContent = "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
+    var msg = "حدّد بالنقرة أو السحب ثم احفظ";
+    if(state.mode === "sentences") msg = "مود الجمل: حدّد أجزاء ثابتة بالسحب ثم احفظ";
+    if(state.mode === "headings") msg = "مود العناوين: حدّد عنوان نسيه التطبيق ثم احفظ";
+    showToast(msg);
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
-    if(state.mode !== "custom") return;
-    saveCustomSelection(state.malzamaKey, state.customSelected);
-    state.selecting = false;
-    // rebuild model with the new selection and reset progress for this mode
-    state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
-    state.seed = Math.floor(Math.random()*1e9)+1;
-    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
-    saveProgress();
-    $("btnStartSelect").classList.remove("hidden");
-    $("btnSaveCustom").classList.add("hidden");
-    $("btnClearCustom").classList.add("hidden");
-    var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
-    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
-    renderPage();
+    if(state.mode === "custom"){
+      saveCustomSelection(state.malzamaKey, state.customSelected);
+      state.selecting = false;
+      state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
+      state.seed = Math.floor(Math.random()*1e9)+1;
+      MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
+      saveProgress();
+      $("btnStartSelect").classList.remove("hidden");
+      $("btnSaveCustom").classList.add("hidden");
+      $("btnClearCustom").classList.add("hidden");
+      var count = Object.keys(state.customSelected).length;
+      $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
+      showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
+      renderPage();
+      return;
+    }
+    if(state.mode === "sentences" || state.mode === "headings"){
+      var phrases = phrasesFromCurrentSelection();
+      var fh = loadForceHideSet(state.malzamaKey);
+      // Don't re-force items excluded twice
+      var counts = loadExcludeCounts(state.malzamaKey);
+      phrases.forEach(function(ph){
+        var n = normExcludeText(ph);
+        if((counts[n] || 0) >= 2) return;
+        fh[n] = true;
+      });
+      saveForceHideSet(state.malzamaKey, fh);
+      state.selecting = false;
+      state.customSelected = {};
+      loadProgress(false);
+      $("btnStartSelect").classList.remove("hidden");
+      $("btnSaveCustom").classList.add("hidden");
+      $("btnClearCustom").classList.add("hidden");
+      $("customSelectCount").textContent = phrases.length ? "محفوظ: " + ar(phrases.length) + " جزء ثابت" : "";
+      var modeLabel = state.mode === "headings" ? "العناوين" : "الجمل";
+      showToast(phrases.length ? "اتحفظ " + ar(phrases.length) + " جزء ثابت مع مود " + modeLabel : "مفيش حاجة محددة");
+      renderPage();
+    }
   });
   $("btnClearCustom").addEventListener("click", function(){
     if(!confirm("تمسح كل التحديد الحالي؟")) return;
     state.customSelected = {};
-    saveCustomSelection(state.malzamaKey, {});
-    $("customSelectCount").textContent = "مرّر على الكلمات أو اضغط مرتين للجملة";
+    if(state.mode === "custom") saveCustomSelection(state.malzamaKey, {});
+    $("customSelectCount").textContent = "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
     document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
     showToast("تم مسح التحديد");
   });
