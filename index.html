@@ -55,8 +55,16 @@
   .malzama-main{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer;}
   .malzama-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
   .malzama-info{flex:1;min-width:0;}
-  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
   .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ready-badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;flex:0 0 auto;}
+  .ready-badge.ok{background:rgba(46,158,91,.18);color:var(--ok);}
+  .ready-badge.partial{background:rgba(224,182,47,.2);color:var(--gold-600);}
+  .ready-badge.no{background:rgba(201,75,75,.15);color:#c94b4b;}
+  .ready-modes{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
+  .ready-modes span{font-size:10.5px;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:2px;}
+  .ready-modes span.on{color:var(--ok);}
+  .ready-modes span.off{opacity:.55;}
   .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
   .malzama-del:active{color:var(--danger);}
   .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
@@ -67,13 +75,17 @@
   .unit-sub{color:var(--muted);font-size:12px;margin:0;}
   .review-pill{background:rgba(217,130,43,.14);color:var(--warn);border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
 
-  .mode-row{display:flex;gap:7px;padding:12px 18px 2px;overflow-x:auto;}
-  .mode-btn{flex:0 0 auto;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:normal;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:140px;}
+  .mode-row{display:flex;gap:6px;padding:10px 14px 2px;overflow-x:hidden;}
+  .mode-btn{flex:1 1 0;min-width:0;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;}
   :root:not([data-theme="light"]) .mode-btn{border-color:rgba(255,255,255,.14);}
-  .mode-btn .mt{display:flex;align-items:center;gap:5px;}
-  .mode-btn .mtime{font-size:9.5px;font-weight:600;color:var(--muted);}
+  .mode-btn .mt{display:flex;align-items:center;justify-content:center;gap:3px;}
+  .mode-btn .mtime{font-size:9px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
   .mode-btn.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
   .mode-btn.active .mtime{color:var(--gold-400);}
+  @media (max-width:400px){
+    .mode-btn{padding:7px 4px;font-size:10.5px;}
+    .mode-btn .mtime{display:none;}
+  }
 
   .shuffle-note{margin:8px 18px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
 
@@ -240,16 +252,15 @@
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnExportTop" title="نزّل للطلاب" style="background:var(--ok);color:#fff;border:1px solid rgba(255,255,255,.2);">⬇️ library.json</button>
         <button class="review-pill" id="btnRestartUnit" title="ابدأ الاختبار" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">▶️ ابدأ الاختبار</button>
         <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
       </div>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">حدّد العناوين · احفظ</span></button>
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">حدّد الجمل · احفظ</span></button>
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">حدّد · احفظ</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">حدّد · احفظ</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · اختبر</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
     <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
@@ -417,27 +428,39 @@
     var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
     return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
   }
-  // Words with bold flag from original HTML (preserve thick text)
+  // كلمات مع علامة السميك — نفصل على المسافات الحقيقية فقط
+  // حتى لو Word قسّم الكلمة على أكتر من run (جزء bold وجزء عادي)
   function wordsWithBold(html){
     var tmp = document.createElement("div");
     tmp.innerHTML = html || "";
-    var runs = [];
+    var chars = [];
     function walk(node, bold){
       if(node.nodeType === 3){
-        var t = node.textContent;
-        if(t) runs.push({ text: t, bold: !!bold });
+        var t = node.textContent || "";
+        for(var i=0;i<t.length;i++) chars.push({ ch: t.charAt(i), bold: !!bold });
       } else if(node.nodeType === 1){
         var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
         Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
       }
     }
     walk(tmp, false);
-    var list = [];
-    runs.forEach(function(run){
-      run.text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g,"").split(/\s+/).forEach(function(p){
-        if(p) list.push({ text: p, bold: run.bold });
-      });
+    var list = [], cur = [], boldVotes = 0, total = 0;
+    function flush(){
+      if(!cur.length) return;
+      var t = cur.join("").replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g,"");
+      if(t) list.push({ text: t, bold: total > 0 && boldVotes >= total / 2 });
+      cur = []; boldVotes = 0; total = 0;
+    }
+    chars.forEach(function(item){
+      if(/\s/.test(item.ch)){
+        flush();
+      } else {
+        cur.push(item.ch);
+        total++;
+        if(item.bold) boldVotes++;
+      }
     });
+    flush();
     return list;
   }
   function formatWordHtml(w){
@@ -1146,6 +1169,21 @@
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
   }
 
+  // جاهزية الإخفاء في التلات مودات
+  function modeHasHides(malzamaKey, mode){
+    var sel = loadCustomSelection(malzamaKey, mode);
+    return !!(sel && Object.keys(sel).length > 0);
+  }
+  function readinessFor(malzamaKey){
+    var h = modeHasHides(malzamaKey, "headings");
+    var s = modeHasHides(malzamaKey, "sentences");
+    var c = modeHasHides(malzamaKey, "custom");
+    var n = (h?1:0) + (s?1:0) + (c?1:0);
+    var status = n === 3 ? "ok" : (n === 0 ? "no" : "partial");
+    var label = status === "ok" ? "🟢 جاهزة" : (status === "partial" ? "🟡 جزئي" : "🔴 غير جاهزة");
+    return { headings:h, sentences:s, custom:c, count:n, status:status, label:label };
+  }
+
   /* ---------- Home ---------- */
   function renderHome(){
     var list = $("malzamaList"); list.innerHTML="";
@@ -1156,16 +1194,27 @@
     }
     index.forEach(function(entry, i){
       var comp = completionFor(entry.key, "sentences");
+      var ready = readinessFor(entry.key);
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
       var delBtn = entry.shared
         ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
         : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+      var modesHtml =
+        '<div class="ready-modes">' +
+          '<span class="'+(ready.headings?"on":"off")+'">'+(ready.headings?"✅":"⚪")+' عناوين</span>' +
+          '<span class="'+(ready.sentences?"on":"off")+'">'+(ready.sentences?"✅":"⚪")+' جمل</span>' +
+          '<span class="'+(ready.custom?"on":"off")+'">'+(ready.custom?"✅":"⚪")+' تخصيص</span>' +
+        '</div>';
       card.innerHTML =
         '<div class="malzama-main" data-key="'+entry.key+'">' +
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
-          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
+          '<div class="malzama-info">' +
+            '<div class="t"><span>'+escapeHtml(entry.title)+'</span><span class="ready-badge '+ready.status+'">'+ready.label+'</span></div>' +
+            '<div class="s">'+escapeHtml(entry.subtitle||"")+(entry.subtitle?" · ":"")+progTxt+'</div>' +
+            modesHtml +
+          '</div>' +
         '</div>' + delBtn;
       card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle, !!entry.shared); });
       var delEl = card.querySelector(".malzama-del");
@@ -1537,7 +1586,7 @@
           rateRow.innerHTML =
             rateHtml +
             '<span class="voice-btns">'+
-              '<button type="button" class="mic-mini" data-key="'+block.key+'" title="سجّل إجابتك">🎤 سجّل</button>'+
+              '<button type="button" class="mic-mini" data-key="'+block.key+'" title="اضغط واستمر للتسجيل">🎤 اضغط واستمر</button>'+
               '<button type="button" class="spk-mini" data-key="'+block.key+'" title="اسمع تسجيلك" disabled>🔊 اسمع</button>'+
             '</span>';
           docCard.appendChild(rateRow);
@@ -1626,16 +1675,19 @@
           var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
           setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
           renderPage();
+          tryFinishAfterRate();
         });
       });
+      // مايك: اضغط واستمر (hold) — سيّب عشان توقف (زي واتساب)
       wrap.querySelectorAll(".mic-mini").forEach(function(btn){
-        btn.addEventListener("click", function(){ toggleVoiceRec(btn.dataset.key, btn); });
+        bindHoldMic(btn, btn.dataset.key);
       });
       wrap.querySelectorAll(".spk-mini").forEach(function(btn){
         var key = btn.dataset.key;
         btn.disabled = !hasVoiceRec(key);
         btn.addEventListener("click", function(){ playVoiceRec(key, btn); });
       });
+      if(allBlanksRevealed()) maybeShowFinishHint();
     }
 
     updateNavButtons();
@@ -1647,7 +1699,46 @@
     saveProgress();
     renderPage();
     var comp = computeCompletion();
-    if(comp.total>0 && comp.done === comp.total){ setTimeout(finishUnit, 350); }
+    // لا نقفل الوحدة فور آخر كشف — ندي فرصة للتقييم والمراجعة
+    if(comp.total>0 && comp.done === comp.total){
+      showToast("آخر جزء اتكشف — قيّمه (عرفتها / محتاج مراجعة) ثم إنهاء");
+      maybeShowFinishHint();
+    }
+  }
+  function allBlanksRevealed(){
+    if(!MODEL || !MODEL.allIds.length) return false;
+    return MODEL.allIds.every(function(id){ return !!state.revealedIds[id]; });
+  }
+  function maybeShowFinishHint(){
+    // زر إنهاء يظهر في الشريط السفلي لما كله اتكشف
+    var bar = document.querySelector(".bottombar");
+    if(!bar || $("btnFinishUnit")) return;
+    var btn = document.createElement("button");
+    btn.id = "btnFinishUnit";
+    btn.className = "nav-btn";
+    btn.style.cssText = "background:var(--ok);color:#fff;font-weight:800;";
+    btn.textContent = "✓ إنهاء الوحدة";
+    btn.addEventListener("click", function(){ finishUnit(); });
+    bar.insertBefore(btn, bar.firstChild);
+  }
+  function tryFinishAfterRate(){
+    if(!allBlanksRevealed()) return;
+    // لو كل الفقرات اللي فيها إخفاء اتقيّمت، ننهي تلقائي بعد التقييم
+    var need = {};
+    if(MODEL && MODEL.pages){
+      MODEL.pages.forEach(function(pg){
+        pg.sections.forEach(function(sec){
+          sec.blocks.forEach(function(b){
+            if(b.blankIds && b.blankIds.length) need[b.key] = true;
+          });
+        });
+      });
+    }
+    var keys = Object.keys(need);
+    if(!keys.length) return;
+    var allRated = keys.every(function(k){ return !!state.blockRatings[k]; });
+    if(allRated) setTimeout(finishUnit, 400);
+    else maybeShowFinishHint();
   }
   function firstUnrevealedGlobal(){
     for(var i=0;i<MODEL.allIds.length;i++){ var id=MODEL.allIds[i]; if(!state.revealedIds[id]) return id; }
@@ -1756,14 +1847,14 @@
     document.querySelectorAll(".spk-mini.on").forEach(function(b){ b.classList.remove("on"); });
   }
 
-  function toggleVoiceRec(blockKey, btn){
-    if(activeRecorder && activeRecKey === blockKey){
-      try{ activeRecorder.stop(); }catch(e){}
-      return;
-    }
+  function stopVoiceRec(){
     if(activeRecorder){
       try{ activeRecorder.stop(); }catch(e){}
     }
+  }
+
+  function startVoiceRecHold(blockKey, btn){
+    if(activeRecorder) stopVoiceRec();
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
       showToast("المتصفح مش سامح بالتسجيل الصوتي");
       return;
@@ -1776,14 +1867,13 @@
       activeRecorder = rec;
       activeRecKey = blockKey;
       btn.classList.add("on");
-      showToast("جاري التسجيل… اضغط 🎤 تاني للإيقاف");
       rec.ondataavailable = function(e){ if(e.data && e.data.size) chunks.push(e.data); };
       rec.onstop = function(){
         stream.getTracks().forEach(function(t){ t.stop(); });
         btn.classList.remove("on");
         activeRecorder = null;
         activeRecKey = null;
-        if(!chunks.length){ showToast("مفيش صوت اتسجل"); return; }
+        if(!chunks.length){ showToast("مفيش صوت اتسجل — اضغط واستمر"); return; }
         var blob = new Blob(chunks, { type: chunks[0].type || "audio/webm" });
         var prev = voiceStore[voiceKey(blockKey)];
         if(prev && prev.url) try{ URL.revokeObjectURL(prev.url); }catch(e){}
@@ -1792,8 +1882,8 @@
         var spk = document.querySelector('.spk-mini[data-key="'+CSS.escape(blockKey)+'"]');
         if(spk) spk.disabled = false;
         var out = $("said-" + blockKey);
-        if(out){ out.style.display="block"; out.textContent = "🎤 تم تسجيل إجابتك — اضغط 🔊 للسماع"; }
-        showToast("اتسجل — اضغط 🔊 عشان تسمع");
+        if(out){ out.style.display="block"; out.textContent = "🎤 تم التسجيل — اضغط 🔊 للسماع"; }
+        showToast("اتسجل — 🔊 للسماع");
       };
       rec.onerror = function(){
         stream.getTracks().forEach(function(t){ t.stop(); });
@@ -1809,6 +1899,29 @@
     }).catch(function(){
       showToast("لازم تسمح بالمايك من إعدادات المتصفح");
     });
+  }
+
+  function bindHoldMic(btn, blockKey){
+    if(!btn || btn._holdBound) return;
+    btn._holdBound = true;
+    var started = false;
+    function onDown(e){
+      e.preventDefault();
+      started = true;
+      startVoiceRecHold(blockKey, btn);
+    }
+    function onUp(e){
+      if(!started) return;
+      started = false;
+      stopVoiceRec();
+    }
+    btn.addEventListener("pointerdown", onDown);
+    btn.addEventListener("pointerup", onUp);
+    btn.addEventListener("pointerleave", onUp);
+    btn.addEventListener("pointercancel", onUp);
+    // منع قائمة اللمس الطويلة على الموبايل
+    btn.style.touchAction = "none";
+    btn.addEventListener("contextmenu", function(e){ e.preventDefault(); });
   }
 
   function playVoiceRec(blockKey, btn){
@@ -1855,9 +1968,7 @@
         updateReviewBadge();
         renderReviewModal();
       });
-      item.querySelector(".mic-mini").addEventListener("click", function(){
-        toggleVoiceRec(k, item.querySelector(".mic-mini"));
-      });
+      bindHoldMic(item.querySelector(".mic-mini"), k);
       item.querySelector(".spk-mini").addEventListener("click", function(){
         playVoiceRec(k, item.querySelector(".spk-mini"));
       });
@@ -2467,8 +2578,8 @@
   }
   bindExport("btnExportStudents");
   bindExport("btnExportFromSettings");
-  bindExport("btnExportTop");
   bindExport("btnDownloadFromModal");
+  // زر JSON مش للطلاب — فقط بعد الحفظ / الإعدادات / نافذة التصدير
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
 
