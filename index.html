@@ -141,9 +141,16 @@
   .rate-know.active{background:var(--ok);color:#fff;}
   .rate-review{background:rgba(217,130,43,.14);color:var(--warn);}
   .rate-review.active{background:var(--warn);color:#fff;}
-  .mic-mini{border:none;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;}
-  .mic-mini.on{color:var(--danger);}
+  .mic-mini,.spk-mini{border:1px solid rgba(10,27,46,.12);background:var(--card);color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px;line-height:1;border-radius:999px;}
+  :root:not([data-theme="light"]) .mic-mini,:root:not([data-theme="light"]) .spk-mini{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);}
+  .mic-mini.on{color:#fff;background:var(--danger);border-color:var(--danger);animation:pulseMic .8s ease infinite alternate;}
+  .spk-mini.on{color:#fff;background:var(--ok);border-color:var(--ok);}
+  .spk-mini:disabled{opacity:.4;cursor:default;}
+  @keyframes pulseMic{from{transform:scale(1)}to{transform:scale(1.06)}}
+  .voice-btns{display:inline-flex;align-items:center;gap:6px;margin-inline-start:6px;vertical-align:middle;}
   .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
+  .export-steps{font-size:12.5px;line-height:1.9;color:var(--ink);background:rgba(224,182,47,.1);border:1px solid rgba(224,182,47,.3);border-radius:12px;padding:10px 12px;margin:10px 0;}
+  .export-steps b{color:var(--gold-600);}
 
   .bottombar{position:sticky;bottom:0;background:var(--card);border-top:1px solid rgba(10,27,46,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 -6px 16px rgba(10,27,46,.08);}
   :root:not([data-theme="light"]) .bottombar{border-top-color:rgba(255,255,255,.08);}
@@ -233,6 +240,7 @@
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="review-pill" id="btnExportTop" title="نزّل للطلاب" style="background:var(--ok);color:#fff;border:1px solid rgba(255,255,255,.2);">⬇️ library.json</button>
         <button class="review-pill" id="btnRestartUnit" title="ابدأ الاختبار" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">▶️ ابدأ الاختبار</button>
         <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
       </div>
@@ -253,6 +261,7 @@
       <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">① ابدأ التحديد</button>
       <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ التخصيص</button>
       <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
+      <button id="btnExportStudents" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">⬇️ نزّل library.json للطلاب</button>
       <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
     </div>
 
@@ -327,9 +336,17 @@
     <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
     <p id="uploadStatus" style="display:none;"></p>
     <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
-      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية الحالية (اللي هتتصدّر في library.json) — <span id="pendingCount">٠</span> ملزمة. شيل أي واحدة قبل ما تنزّل لو محتاجة تتغيّر.</p>
+      <div class="export-steps">
+        <div><b>كيف يوصل الإخفاء لطلابك أونلاين؟</b></div>
+        <div>① ارفع الملزمة هنا مع تفعيل «ملازم رسمية»</div>
+        <div>② افتح الملزمة → حدّد الإخفاء في التطبيق → <b>احفظ</b></div>
+        <div>③ ارجع هنا → <b>نزّل library.json</b></div>
+        <div>④ ارفع الملف ده <b>جنب index.html</b> على نفس موقع Vercel</div>
+        <div>⑤ الطالب يفتح الرابط → الإخفاء جاهز → «ابدأ الاختبار»</div>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);">الملازم في الملف الحالي: <span id="pendingCount">٠</span> — شيل أي واحدة قبل التنزيل لو مش عايزها.</p>
       <div id="pendingListWrap"></div>
-      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json) مع الإخفاءات</button></div>
     </div>
   </div>
 </div>
@@ -342,10 +359,27 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="modalExportDone">
+  <div class="modal">
+    <h3>تم الحفظ ✓ <span class="close-x" data-close="modalExportDone">✕</span></h3>
+    <p style="font-size:14px;line-height:1.9;">الإخفاء اتحفظ على جهازك. عشان يوصل للطلاب:</p>
+    <div class="export-steps">
+      <div>① اضغط الزر الأخضر تحت ونزّل <b>library.json</b></div>
+      <div>② ارفع الملف على <b>GitHub</b> جنب <b>index.html</b></div>
+      <div>③ Vercel يحدّث لوحده — الطالب يفتح الرابط ويلاقي الإخفاء</div>
+    </div>
+    <div class="file-choice" style="margin-top:12px;">
+      <button id="btnDownloadFromModal" style="background:var(--ok);color:#fff;font-size:16px;padding:14px;">⬇️ نزّل library.json الآن</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalSettings">
   <div class="modal">
     <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
-    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها. مش بيأثر على الملازم الرسمية اللي جايه من library.json.</p>
+    <p style="color:var(--muted);font-size:12.5px;">بعد ما تحدد الإخفاء وتحفظه، نزّل الملف وارفعه على GitHub جنب index.html.</p>
+    <div class="file-choice"><button id="btnExportFromSettings">⬇️ نزّل library.json للطلاب</button></div>
+    <p style="color:var(--muted);font-size:12.5px;margin-top:12px;">تصفير البرنامج بيمسح الملازم الشخصية والتقدم على جهازك. مش بيأثر على library.json على الموقع.</p>
     <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج (حذف كل حاجة محلية)</button></div>
   </div>
 </div>
@@ -1488,16 +1522,24 @@
         }
         docCard.appendChild(bd);
 
-        if(!useClean && block.blankIds.length > 0){
+        // مايك + سبيكر يظهران دائمًا أثناء الاختبار (حتى لو مفيش إخفاء في الفقرة)
+        if(!useClean){
           var rateRow = document.createElement("div");
           rateRow.className = "block-rate";
           rateRow.dataset.blockKey = block.key;
           var rating = state.blockRatings[block.key];
+          var hasBlanks = block.blankIds && block.blankIds.length > 0;
+          var rateHtml = hasBlanks
+            ? ('<span class="lbl">قيّم نفسك:</span>' +
+               '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
+               '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>')
+            : '<span class="lbl">صوت:</span>';
           rateRow.innerHTML =
-            '<span class="lbl">قيّم نفسك:</span>' +
-            '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
-            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>' +
-            '<button class="mic-mini" data-key="'+block.key+'" title="قول إجابتك بصوتك">🎤</button>';
+            rateHtml +
+            '<span class="voice-btns">'+
+              '<button type="button" class="mic-mini" data-key="'+block.key+'" title="سجّل إجابتك">🎤 سجّل</button>'+
+              '<button type="button" class="spk-mini" data-key="'+block.key+'" title="اسمع تسجيلك" disabled>🔊 اسمع</button>'+
+            '</span>';
           docCard.appendChild(rateRow);
           var saidEl = document.createElement("div");
           saidEl.className = "said-inline";
@@ -1587,7 +1629,12 @@
         });
       });
       wrap.querySelectorAll(".mic-mini").forEach(function(btn){
-        btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+        btn.addEventListener("click", function(){ toggleVoiceRec(btn.dataset.key, btn); });
+      });
+      wrap.querySelectorAll(".spk-mini").forEach(function(btn){
+        var key = btn.dataset.key;
+        btn.disabled = !hasVoiceRec(key);
+        btn.addEventListener("click", function(){ playVoiceRec(key, btn); });
       });
     }
 
@@ -1695,19 +1742,89 @@
     switchView("done");
   }
 
-  function startSpeech(key, btn){
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ showToast("المتصفح ده مش بيدعم التعرف على الصوت"); return; }
-    var rec = new SR(); rec.lang="ar-SA"; rec.interimResults=false;
+  // ---- Voice record + playback (per block, on this device) ----
+  var voiceStore = {}; // key -> { url, blob }
+  var activeRecorder = null;
+  var activeRecKey = null;
+  var activeAudio = null;
+
+  function voiceKey(blockKey){ return (state.malzamaKey || "") + "::" + blockKey; }
+  function hasVoiceRec(blockKey){ return !!(voiceStore[voiceKey(blockKey)] && voiceStore[voiceKey(blockKey)].url); }
+
+  function stopActiveAudio(){
+    if(activeAudio){ try{ activeAudio.pause(); }catch(e){} activeAudio = null; }
+    document.querySelectorAll(".spk-mini.on").forEach(function(b){ b.classList.remove("on"); });
+  }
+
+  function toggleVoiceRec(blockKey, btn){
+    if(activeRecorder && activeRecKey === blockKey){
+      try{ activeRecorder.stop(); }catch(e){}
+      return;
+    }
+    if(activeRecorder){
+      try{ activeRecorder.stop(); }catch(e){}
+    }
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      showToast("المتصفح مش سامح بالتسجيل الصوتي");
+      return;
+    }
+    stopActiveAudio();
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+      var chunks = [];
+      var mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "";
+      var rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      activeRecorder = rec;
+      activeRecKey = blockKey;
+      btn.classList.add("on");
+      showToast("جاري التسجيل… اضغط 🎤 تاني للإيقاف");
+      rec.ondataavailable = function(e){ if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function(){
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        btn.classList.remove("on");
+        activeRecorder = null;
+        activeRecKey = null;
+        if(!chunks.length){ showToast("مفيش صوت اتسجل"); return; }
+        var blob = new Blob(chunks, { type: chunks[0].type || "audio/webm" });
+        var prev = voiceStore[voiceKey(blockKey)];
+        if(prev && prev.url) try{ URL.revokeObjectURL(prev.url); }catch(e){}
+        var url = URL.createObjectURL(blob);
+        voiceStore[voiceKey(blockKey)] = { url: url, blob: blob };
+        var spk = document.querySelector('.spk-mini[data-key="'+CSS.escape(blockKey)+'"]');
+        if(spk) spk.disabled = false;
+        var out = $("said-" + blockKey);
+        if(out){ out.style.display="block"; out.textContent = "🎤 تم تسجيل إجابتك — اضغط 🔊 للسماع"; }
+        showToast("اتسجل — اضغط 🔊 عشان تسمع");
+      };
+      rec.onerror = function(){
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        btn.classList.remove("on");
+        activeRecorder = null;
+        showToast("فشل التسجيل");
+      };
+      try{ rec.start(); }catch(e){
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        btn.classList.remove("on");
+        showToast("مقدرش أبدأ التسجيل");
+      }
+    }).catch(function(){
+      showToast("لازم تسمح بالمايك من إعدادات المتصفح");
+    });
+  }
+
+  function playVoiceRec(blockKey, btn){
+    var rec = voiceStore[voiceKey(blockKey)];
+    if(!rec || !rec.url){ showToast("مفيش تسجيل للجزء ده"); return; }
+    if(activeAudio && btn.classList.contains("on")){
+      stopActiveAudio();
+      return;
+    }
+    stopActiveAudio();
+    var audio = new Audio(rec.url);
+    activeAudio = audio;
     btn.classList.add("on");
-    rec.onresult = function(e){
-      var text = e.results[0][0].transcript;
-      var out = $("said-" + key);
-      if(out){ out.style.display="block"; out.textContent = "🎤 قلت: " + text; }
-    };
-    rec.onerror = function(){ showToast("مقدرش أسمعك، جرب تاني"); };
-    rec.onend = function(){ btn.classList.remove("on"); };
-    try{ rec.start(); }catch(e){ btn.classList.remove("on"); }
+    audio.onended = function(){ btn.classList.remove("on"); activeAudio = null; };
+    audio.onerror = function(){ btn.classList.remove("on"); showToast("مقدرش أشغّل التسجيل"); };
+    audio.play().catch(function(){ btn.classList.remove("on"); showToast("اضغط تاني للتشغيل"); });
   }
 
   /* ---------- Review list modal ---------- */
@@ -1723,13 +1840,26 @@
     keys.forEach(function(k){
       var item = document.createElement("div");
       item.className = "review-item";
-      item.innerHTML = '<div class="txt">'+escapeHtml(map[k].text)+'</div><button data-key="'+k+'">✓ خلصت</button>';
-      item.querySelector("button").addEventListener("click", function(){
+      var has = hasVoiceRec(k);
+      item.innerHTML =
+        '<div class="txt">'+escapeHtml(map[k].text)+'</div>'+
+        '<span class="voice-btns">'+
+          '<button type="button" class="mic-mini" data-key="'+k+'" title="سجّل">🎤</button>'+
+          '<button type="button" class="spk-mini" data-key="'+k+'" title="اسمع" '+(has?"":"disabled")+'>🔊</button>'+
+        '</span>'+
+        '<button type="button" class="done-rev" data-key="'+k+'">✓ خلصت</button>';
+      item.querySelector(".done-rev").addEventListener("click", function(){
         var m = loadReviewMap(state.malzamaKey);
         delete m[k];
         saveReviewMap(state.malzamaKey, m);
         updateReviewBadge();
         renderReviewModal();
+      });
+      item.querySelector(".mic-mini").addEventListener("click", function(){
+        toggleVoiceRec(k, item.querySelector(".mic-mini"));
+      });
+      item.querySelector(".spk-mini").addEventListener("click", function(){
+        playVoiceRec(k, item.querySelector(".spk-mini"));
       });
       wrap.appendChild(item);
     });
@@ -2214,26 +2344,60 @@
     }
   }
 
-  function downloadLibraryJson(){
-    // Attach latest hides for each official ملزمة so students get them ready
-    var items = pendingSharedBatch.map(function(it){
-      var sels = collectAllModeSelections(it.key);
-      // prefer in-memory batch selections if richer
-      if(it.selections){
-        ["headings","sentences","custom"].forEach(function(m){
-          var a = Object.keys(sels[m]||{}).length;
-          var b = Object.keys(it.selections[m]||{}).length;
-          if(b > a) sels[m] = it.selections[m];
-        });
-      }
-      return {
+  function buildLibraryItemsForExport(){
+    seedPendingFromShared();
+    // ابدأ من القائمة الرسمية المعلّقة
+    var byKey = {};
+    pendingSharedBatch.forEach(function(it){
+      byKey[it.key] = {
         key: it.key,
         title: it.title,
         subtitle: it.subtitle,
         rawPages: it.rawPages || SHARED_CONTENT[it.key] || getMalzamaContent(it.key),
-        selections: sels
+        selections: it.selections || collectAllModeSelections(it.key)
       };
     });
+    // أضف أي ملزمة محلية فيها إخفاء محفوظ (حتى لو مش معلّمة رسمية)
+    getLibraryIndex().forEach(function(entry){
+      var sels = collectAllModeSelections(entry.key);
+      var has = ["headings","sentences","custom"].some(function(m){ return Object.keys(sels[m]||{}).length > 0; });
+      var raw = getMalzamaContent(entry.key);
+      if(!raw) return;
+      if(byKey[entry.key]){
+        byKey[entry.key].selections = sels;
+        byKey[entry.key].rawPages = raw;
+        return;
+      }
+      if(has || entry.shared){
+        byKey[entry.key] = {
+          key: entry.key,
+          title: entry.title,
+          subtitle: entry.subtitle,
+          rawPages: raw,
+          selections: sels
+        };
+      }
+    });
+    // الملزمة المفتوحة حاليًا لو فيها إخفاء
+    if(state.malzamaKey && RAW_PAGES){
+      var selsNow = collectAllModeSelections(state.malzamaKey);
+      byKey[state.malzamaKey] = {
+        key: state.malzamaKey,
+        title: state.malzamaTitle || state.malzamaKey,
+        subtitle: state.malzamaSub || "",
+        rawPages: RAW_PAGES,
+        selections: selsNow
+      };
+    }
+    return Object.keys(byKey).map(function(k){ return byKey[k]; });
+  }
+
+  function downloadLibraryJson(){
+    var items = buildLibraryItemsForExport();
+    if(!items.length){
+      showToast("مفيش ملازم للتصدير — ارفع ملزمة وحدد إخفاء الأول");
+      return;
+    }
     var payload = { items: items };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
     var url = URL.createObjectURL(blob);
@@ -2241,7 +2405,7 @@
     a.href = url; a.download = "library.json";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    showToast("اتنزل library.json مع الإخفاءات — ارفعه مع الموقع");
+    showToast("اتنزل library.json ("+ar(items.length)+" ملزمة) — ارفعه على GitHub جنب index.html");
   }
 
   function resetApp(){
@@ -2293,6 +2457,18 @@
     e.target.value = "";
   });
   $("downloadLibrary").addEventListener("click", downloadLibraryJson);
+  function bindExport(id){
+    var el = $(id);
+    if(el) el.addEventListener("click", function(){
+      downloadLibraryJson();
+      var m = $("modalExportDone");
+      if(m) m.classList.remove("show");
+    });
+  }
+  bindExport("btnExportStudents");
+  bindExport("btnExportFromSettings");
+  bindExport("btnExportTop");
+  bindExport("btnDownloadFromModal");
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
 
@@ -2413,8 +2589,12 @@
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     $("customSelectCount").textContent = "محفوظ: " + ar(count) + " جزء";
-    showToast("اتحفظ " + ar(count) + " جزء — جاهز لـ «ابدأ الاختبار»");
+    var exp = $("btnExportStudents");
+    if(exp) exp.classList.remove("hidden");
+    showToast("اتحفظ "+ar(count)+" جزء");
     renderPage();
+    // نافذة واضحة للتنزيل — مستحيل تتخطّاها
+    $("modalExportDone").classList.add("show");
   });
   $("btnClearCustom").addEventListener("click", function(){
     if(!confirm("تمسح كل التحديد الحالي؟")) return;
