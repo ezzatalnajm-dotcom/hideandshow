@@ -93,8 +93,9 @@
   .doc-heading .star{color:var(--gold-400);font-size:13px;}
   .doc-subheading{color:var(--navy-700);font-weight:800;font-size:13.5px;padding:14px 16px 2px;}
   :root:not([data-theme="light"]) .doc-subheading{color:var(--gold-400);}
-  .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
-  .doc-block b{font-weight:800;}
+  .doc-block{padding:8px 16px 2px;font-size:14.5px;line-height:2.15;color:var(--ink);word-spacing:0.02em;}
+  .doc-block b, .doc-block strong{font-weight:800;}
+  .doc-block span[style*="font-size"]{line-height:1.9;}
 
   .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
   .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
@@ -1854,17 +1855,60 @@
   }
 
   function groupIntoLines(items){
-    var lines = [];
+    // Collect items with geometry + font (needed for Arabic order + bold)
+    var raw = [];
     items.forEach(function(it){
-      var y = Math.round(it.transform[5]);
-      var size = Math.abs(it.transform[3]) || Math.abs(it.transform[0]) || 10;
-      var line = lines.find(function(l){ return Math.abs(l.y - y) <= 2; });
-      if(!line){ line = { y:y, size:size, text:"" }; lines.push(line); }
-      line.text += (line.text ? " " : "") + it.str;
-      line.size = Math.max(line.size, size);
+      var str = (it.str || "").replace(/\s+/g, " ");
+      if(!str || !str.trim()) return;
+      var tr = it.transform || [1,0,0,1,0,0];
+      var size = Math.abs(tr[3]) || Math.abs(tr[0]) || 10;
+      var x = tr[4] || 0;
+      var y = Math.round(tr[5] || 0);
+      var font = (it.fontName || it.font || "") + "";
+      var bold = /bold|black|heavy|semibold|demibold|extrabold/i.test(font) || (it.fontWeight >= 600);
+      raw.push({ str: str, x: x, y: y, size: size, bold: bold, w: Math.abs(tr[0]) * (str.length || 1) });
     });
-    lines.sort(function(a,b){ return b.y - a.y; }); // top to bottom (PDF y grows upward)
-    return lines.filter(function(l){ return l.text.trim(); });
+    // Group into lines by Y (slightly looser for Arabic fonts)
+    var lines = [];
+    raw.forEach(function(it){
+      var line = null;
+      for(var i=0;i<lines.length;i++){
+        if(Math.abs(lines[i].y - it.y) <= 3.5){ line = lines[i]; break; }
+      }
+      if(!line){ line = { y: it.y, size: it.size, items: [], boldVotes: 0, total: 0 }; lines.push(line); }
+      line.items.push(it);
+      line.size = Math.max(line.size, it.size);
+      line.total++;
+      if(it.bold) line.boldVotes++;
+    });
+    lines.sort(function(a,b){ return b.y - a.y; }); // top → bottom
+    return lines.map(function(line){
+      var its = line.items.slice();
+      // Detect if line is mostly Arabic → read right-to-left (sort x descending)
+      var sample = its.map(function(t){ return t.str; }).join("");
+      var arChars = (sample.match(/[\u0600-\u06FF]/g) || []).length;
+      var enChars = (sample.match(/[A-Za-z]/g) || []).length;
+      var rtl = arChars >= enChars;
+      its.sort(function(a,b){ return rtl ? (b.x - a.x) : (a.x - b.x); });
+      // Join with space only when gap is real (avoid breaking Arabic words)
+      var parts = [];
+      for(var i=0;i<its.length;i++){
+        var cur = its[i];
+        if(i === 0){ parts.push(cur.str); continue; }
+        var prev = its[i-1];
+        var gap = rtl ? (prev.x - (cur.x + (cur.w || 0))) : (cur.x - (prev.x + (prev.w || 0)));
+        // small/negative gap → same word; larger → space
+        if(gap > Math.max(1.2, prev.size * 0.15)) parts.push(" ");
+        parts.push(cur.str);
+      }
+      var text = parts.join("").replace(/\s+/g, " ").trim();
+      return {
+        y: line.y,
+        size: line.size,
+        text: text,
+        bold: line.total > 0 && (line.boldVotes / line.total) >= 0.45
+      };
+    }).filter(function(l){ return l.text; });
   }
 
   /* Drop lines that are clearly page furniture, not real content:
@@ -1910,7 +1954,8 @@
     var baseline = 12;
     var best = 0;
     Object.keys(freq).forEach(function(s){ if(freq[s]>best){ best=freq[s]; baseline=+s; } });
-    var headingMin = baseline * 1.15;
+    var headingMin = baseline * 1.12;
+    var largeMin = baseline * 1.08;
 
     var rawPages = [];
     var docHeading = null;
@@ -1918,32 +1963,76 @@
 
     function newPage(h){ curPage = { heading:h, sections:[] }; rawPages.push(curPage); }
     function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
-    function pushParagraph(text){
-      if(!text.trim()) return;
+    function ensureSection(){
       if(!curPage) newPage(fallbackTitle);
       if(!curSection) newSection(null);
-      curSection.blocks.push(escapeHtml(text.trim()));
+    }
+    // Preserve formatting: bold + relative font size as HTML
+    function lineToHtml(l){
+      var t = escapeHtml((l.text || "").trim());
+      if(!t) return "";
+      var html = t;
+      if(l.bold || l.size >= largeMin) html = "<b>" + html + "</b>";
+      // keep larger titles visually bigger (relative to body)
+      if(l.size >= headingMin){
+        var scale = Math.min(1.35, Math.max(1.05, l.size / baseline));
+        html = '<span style="font-size:' + scale.toFixed(2) + 'em">' + html + "</span>";
+      }
+      return html;
+    }
+    function pushBlock(html){
+      if(!html || !stripHtml(html).trim()) return;
+      ensureSection();
+      curSection.blocks.push(html);
     }
 
     pageLinesList.forEach(function(lines, pageIdx){
-      var buffer = "";
+      var bufferHtml = [];
+      var bufferPlainLen = 0;
       var sawHeadingThisPage = false;
+
+      function flushBuffer(){
+        if(!bufferHtml.length) return;
+        pushBlock(bufferHtml.join(" "));
+        bufferHtml = [];
+        bufferPlainLen = 0;
+      }
+
       lines.forEach(function(l){
-        var txt = l.text.trim();
-        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 70 && !/^[0-9\s.\-–|]+$/.test(txt);
+        var txt = (l.text || "").trim();
+        if(!txt) return;
+        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 80 && !/^[0-9\s.\-–|]+$/.test(txt);
+        var isTitleLike = (l.bold || l.size >= largeMin) && txt.length <= 90 && !/[.!?؟]{2,}/.test(txt);
+
         if(isHeading){
-          pushParagraph(buffer); buffer = "";
+          flushBuffer();
           if(!docHeading) docHeading = txt;
-          if(!curPage || (!sawHeadingThisPage && pageIdx>0)) newPage(txt);
+          if(!curPage || (!sawHeadingThisPage && pageIdx > 0)) newPage(txt);
           else if(!curPage) newPage(txt);
           newSection(txt);
           sawHeadingThisPage = true;
-        } else {
-          buffer += (buffer ? " " : "") + txt;
-          if(buffer.length > 260){ pushParagraph(buffer); buffer=""; }
+          // also keep heading as a bold block so formatting is visible in the card
+          pushBlock(lineToHtml(l));
+          return;
         }
+        if(isTitleLike){
+          flushBuffer();
+          pushBlock(lineToHtml(l));
+          return;
+        }
+        // body line — keep separate if starts new idea (colon end / short) else merge lightly
+        var html = lineToHtml(l);
+        if(txt.length <= 55 && /[:：]$/.test(txt)){
+          flushBuffer();
+          pushBlock(html);
+          return;
+        }
+        bufferHtml.push(html);
+        bufferPlainLen += txt.length + 1;
+        // shorter chunks preserve more of original line structure
+        if(bufferPlainLen > 180) flushBuffer();
       });
-      pushParagraph(buffer);
+      flushBuffer();
     });
 
     if(rawPages.length === 0){ newPage(fallbackTitle); newSection(null); }
