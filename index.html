@@ -452,6 +452,8 @@
   var LIB_INDEX_KEY = "najm_lib_index_v2";
   var SHARED_INDEX = [];   // [{key,title,subtitle}]
   var SHARED_CONTENT = {}; // key -> rawPages
+  // Pre-baked hides from official library.json (so students start testing immediately)
+  var SHARED_SELECTIONS = {}; // key -> { headings:{}, sentences:{}, custom:{} }
 
   function fetchSharedLibrary(){
     return fetch("./library.json").then(function(res){
@@ -460,7 +462,12 @@
     }).then(function(data){
       if(data && Array.isArray(data.items)){
         SHARED_INDEX = data.items.map(function(it){ return { key:it.key, title:it.title, subtitle:it.subtitle }; });
-        data.items.forEach(function(it){ SHARED_CONTENT[it.key] = it.rawPages; });
+        data.items.forEach(function(it){
+          SHARED_CONTENT[it.key] = it.rawPages;
+          if(it.selections && typeof it.selections === "object"){
+            SHARED_SELECTIONS[it.key] = it.selections;
+          }
+        });
       }
     }).catch(function(){ /* no shared library deployed yet — that's fine */ });
   }
@@ -885,15 +892,28 @@
     return "najm_sel_" + mode + "_" + malzamaKey;
   }
   function loadCustomSelection(malzamaKey, mode){
-    try{ var raw = localStorage.getItem(selectionStorageKey(malzamaKey, mode || "custom")); if(raw) return JSON.parse(raw); }catch(e){}
-    // legacy fallback for custom only
-    if(!mode || mode === "custom"){
+    mode = mode || "custom";
+    // 1) Student/teacher local edits always win
+    try{ var raw = localStorage.getItem(selectionStorageKey(malzamaKey, mode)); if(raw) return JSON.parse(raw); }catch(e){}
+    // 2) Official library pre-baked hides (from library.json)
+    if(SHARED_SELECTIONS[malzamaKey] && SHARED_SELECTIONS[malzamaKey][mode]){
+      return Object.assign({}, SHARED_SELECTIONS[malzamaKey][mode]);
+    }
+    // 3) legacy custom key
+    if(mode === "custom"){
       try{ var leg = localStorage.getItem("najm_custom_" + malzamaKey); if(leg) return JSON.parse(leg); }catch(e2){}
     }
     return {};
   }
   function saveCustomSelection(malzamaKey, sel, mode){
     try{ localStorage.setItem(selectionStorageKey(malzamaKey, mode || "custom"), JSON.stringify(sel || {})); }catch(e){}
+  }
+  function collectAllModeSelections(malzamaKey){
+    return {
+      headings: loadCustomSelection(malzamaKey, "headings"),
+      sentences: loadCustomSelection(malzamaKey, "sentences"),
+      custom: loadCustomSelection(malzamaKey, "custom")
+    };
   }
   // Expand a word-index range so Arabic word + its English translation stay together
   function expandBilingualRange(words, lo, hi){
@@ -1157,9 +1177,9 @@
     $("btnClearCustom").classList.add("hidden");
     $("customSelectCount").textContent = "";
     $("customGuide").innerHTML =
-      '<div style="margin-bottom:2px;">① <b>ابدأ التحديد</b>: نقرة = كلمة · سحب = عدة كلمات</div>'+
-      '<div style="margin-bottom:2px;">② <b>احفظ</b> — الإخفاء يتسجّل على الملزمة دي فقط</div>'+
-      '<div>③ ✕ مرة = شيل من المخفي · ✕ مرتين = مش هيرجع للمخفيات</div>';
+      '<div style="margin-bottom:2px;">① <b>ابدأ التحديد</b> · تنقّل بين الصفحات · نقرة/سحب</div>'+
+      '<div style="margin-bottom:2px;">② <b>احفظ مرة واحدة</b> في الآخر — للملازم الرسمية يدخل مع library.json</div>'+
+      '<div>③ ✕ مرة = شيل · ✕ مرتين = مش هيرجع · ثم «ابدأ الاختبار»</div>';
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -1604,10 +1624,10 @@
     return null;
   }
   function updateNavButtons(){
-    $("btnPrevPage").disabled = state.page===0 || state.selecting;
-    $("btnNextPage").disabled = state.page===MODEL.pages.length-1 || state.selecting;
+    // أثناء التحديد: التنقل بين الصفحات مسموح (احفظ مرة واحدة في الآخر)
+    $("btnPrevPage").disabled = state.page===0;
+    $("btnNextPage").disabled = !MODEL || state.page===MODEL.pages.length-1;
     var next = nextUnrevealedOnPage();
-    // Also look globally if nothing on current page (student may not see it)
     if(!next) next = firstUnrevealedGlobal();
     $("btnReveal").disabled = !next || state.selecting;
     $("btnReveal").onclick = function(){
@@ -2025,8 +2045,7 @@
           else if(!curPage) newPage(txt);
           newSection(txt);
           sawHeadingThisPage = true;
-          // also keep heading as a bold block so formatting is visible in the card
-          pushBlock(lineToHtml(l));
+          // لا نكرر العنوان كفقرة — يظهر مرة واحدة في subheading
           return;
         }
         if(isTitleLike){
@@ -2075,7 +2094,13 @@
     if(pendingSeeded) return;
     pendingSeeded = true;
     pendingSharedBatch = SHARED_INDEX.map(function(it){
-      return { key:it.key, title:it.title, subtitle:it.subtitle, rawPages: SHARED_CONTENT[it.key] };
+      return {
+        key: it.key,
+        title: it.title,
+        subtitle: it.subtitle,
+        rawPages: SHARED_CONTENT[it.key],
+        selections: SHARED_SELECTIONS[it.key] || collectAllModeSelections(it.key)
+      };
     });
   }
   function upsertPendingShared(item){
@@ -2149,13 +2174,33 @@
   }
 
   function downloadLibraryJson(){
-    var payload = { items: pendingSharedBatch };
+    // Attach latest hides for each official ملزمة so students get them ready
+    var items = pendingSharedBatch.map(function(it){
+      var sels = collectAllModeSelections(it.key);
+      // prefer in-memory batch selections if richer
+      if(it.selections){
+        ["headings","sentences","custom"].forEach(function(m){
+          var a = Object.keys(sels[m]||{}).length;
+          var b = Object.keys(it.selections[m]||{}).length;
+          if(b > a) sels[m] = it.selections[m];
+        });
+      }
+      return {
+        key: it.key,
+        title: it.title,
+        subtitle: it.subtitle,
+        rawPages: it.rawPages || SHARED_CONTENT[it.key] || getMalzamaContent(it.key),
+        selections: sels
+      };
+    });
+    var payload = { items: items };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url; a.download = "library.json";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    showToast("اتنزل library.json مع الإخفاءات — ارفعه مع الموقع");
   }
 
   function resetApp(){
@@ -2291,14 +2336,13 @@
   $("btnStartSelect").addEventListener("click", function(){
     if(state.mode !== "custom" && state.mode !== "sentences" && state.mode !== "headings") return;
     state.selecting = true;
-    // Load THIS mode's saved hides so user can edit them
     state.customSelected = loadCustomSelection(state.malzamaKey, state.mode);
     $("btnStartSelect").classList.add("hidden");
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
     var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جزء محفوظ — عدّل أو زوّد" : "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
-    showToast("حدّد ما يُخفى ثم اضغط حفظ");
+    $("customSelectCount").textContent = count ? ar(count) + " جزء — كمّل التحديد في كل الصفحات ثم احفظ مرة" : "تنقّل بين الصفحات · حدّد · احفظ مرة واحدة";
+    showToast("تنقّل بين الصفحات وحدد ما تشاء — احفظ مرة واحدة في الآخر");
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
@@ -2308,8 +2352,14 @@
       showToast("مفيش حاجة محددة — ظلّل كلمة أو اسحب ثم احفظ");
       return;
     }
-    // Save hides for THIS mode + THIS ملزمة only
     saveCustomSelection(state.malzamaKey, state.customSelected, state.mode);
+    // Keep official batch in sync so library.json export includes hides
+    if(state.isShared || pendingSharedBatch.some(function(x){ return x.key===state.malzamaKey; })){
+      var idx = pendingSharedBatch.findIndex(function(x){ return x.key===state.malzamaKey; });
+      if(idx >= 0){
+        pendingSharedBatch[idx].selections = collectAllModeSelections(state.malzamaKey);
+      }
+    }
     state.selecting = false;
     state.revealedIds = {};
     state.blockRatings = {};
@@ -2322,7 +2372,7 @@
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     $("customSelectCount").textContent = "محفوظ: " + ar(count) + " جزء";
-    showToast("اتحفظ " + ar(count) + " جزء في مود " + (MODE_LABELS[state.mode] || state.mode));
+    showToast("اتحفظ " + ar(count) + " جزء — جاهز لـ «ابدأ الاختبار»");
     renderPage();
   });
   $("btnClearCustom").addEventListener("click", function(){
