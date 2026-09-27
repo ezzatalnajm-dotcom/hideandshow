@@ -853,16 +853,27 @@
     var pages = rawPages.map(function(page, pi){
       var sections = page.sections.map(function(sec, si){
         var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
-        var blocks = sec.blocks.map(function(html, bi){
+        var blocks = [];
+        var prevPlain = "";
+        sec.blocks.forEach(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
           var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [] };
-          // Skip poetry / promo blocks entirely in every mode
-          if(isPromoOrVerse(stripHtml(html))){
-            return null;
-          }
-          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html };
-        }).filter(Boolean);
-        return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, subBlankId: subBlankId, blocks: blocks };
+          if(isPromoOrVerse(stripHtml(html))) return;
+          var plain = stripHtml(html).replace(/\s+/g," ").trim().toLowerCase();
+          // إسقاط فقرة مكررة متتالية (PDF يكرر السطر أحيانًا)
+          if(plain && plain === prevPlain) return;
+          prevPlain = plain;
+          blocks.push({ key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html });
+        });
+        var sub = sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null;
+        // لا تكرر sub لو مطابق لعنوان الصفحة أو أول فقرة
+        if(sub){
+          var sn = String(sub).replace(/\s+/g," ").trim().toLowerCase();
+          var hn = String(page.heading||"").replace(/\s+/g," ").trim().toLowerCase();
+          if(sn === hn) sub = null;
+          if(sub && blocks[0] && sn === String(blocks[0].plainText||"").replace(/\s+/g," ").trim().toLowerCase()) sub = null;
+        }
+        return { sub: sub, subBlankId: sub ? subBlankId : null, blocks: blocks };
       }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
       return { heading: page.heading, sections: sections };
     }).filter(function(p){ return p.sections.length > 0; });
@@ -1149,8 +1160,16 @@
     updateReviewBadge();
     // الترتيب الافتراضي: العناوين أولاً
     setMode("headings", true);
-    // ملزمة غير رسمية (رفعها مستخدم) → توجيه لبدء التحديد
-    if(!state.isShared){
+    // هل في إخفاء جاهز؟ (رسمي من library.json أو محفوظ محليًا)
+    var readySel = loadCustomSelection(key, "headings");
+    var hasHides = readySel && Object.keys(readySel).length > 0;
+    if(hasHides){
+      // جاهز للاختبار — لا تطلب تحديد
+      setTimeout(function(){
+        showToast("الإخفاء جاهز — اضغط «▶️ ابدأ الاختبار»");
+      }, 300);
+    } else if(!state.isShared){
+      // ملزمة شخصية بدون تحديد بعد
       setTimeout(function(){
         var btn = $("btnStartSelect");
         if(btn && !btn.classList.contains("hidden")){
@@ -1158,7 +1177,7 @@
           btn.scrollIntoView({ behavior:"smooth", block:"nearest" });
           setTimeout(function(){ btn.style.boxShadow = ""; }, 3500);
         }
-        showToast("ملزمة غير رسمية — اضغط «① ابدأ التحديد» عشان تختار اللي يتخفي");
+        showToast("اضغط «① ابدأ التحديد» عشان تختار اللي يتخفي");
       }, 350);
     }
   }
@@ -1453,12 +1472,16 @@
         }
         docCard.appendChild(sh);
       }
+      var lastRenderPlain = "";
       sec.blocks.forEach(function(block){
+        var pNorm = String(block.plainText||"").replace(/\s+/g," ").trim().toLowerCase();
+        // لا تعرض فقرتين متتاليتين بنفس النص (إصلاح التكرار الظاهر للطالب)
+        if(pNorm && pNorm === lastRenderPlain) return;
+        lastRenderPlain = pNorm;
         var bd = document.createElement("div");
         bd.className = "doc-block";
         bd.dataset.blockKey = block.key;
         if(useClean){
-          // Word-level selection with bold preserved from original HTML
           renderSelectableBlock(bd, block);
         } else {
           bd.innerHTML = block.html;
@@ -1924,14 +1947,20 @@
       var enChars = (sample.match(/[A-Za-z]/g) || []).length;
       var rtl = arChars >= enChars;
       its.sort(function(a,b){ return rtl ? (b.x - a.x) : (a.x - b.x); });
-      // Join with space only when gap is real (avoid breaking Arabic words)
+      // إزالة عناصر مكررة بنفس الموضع تقريبًا (PDF أحيانًا يرسم النص مرتين)
+      var deduped = [];
+      its.forEach(function(cur){
+        var prev = deduped[deduped.length-1];
+        if(prev && Math.abs(prev.x - cur.x) < 1.5 && prev.str === cur.str) return;
+        deduped.push(cur);
+      });
+      its = deduped;
       var parts = [];
       for(var i=0;i<its.length;i++){
         var cur = its[i];
         if(i === 0){ parts.push(cur.str); continue; }
         var prev = its[i-1];
         var gap = rtl ? (prev.x - (cur.x + (cur.w || 0))) : (cur.x - (prev.x + (prev.w || 0)));
-        // small/negative gap → same word; larger → space
         if(gap > Math.max(1.2, prev.size * 0.15)) parts.push(" ");
         parts.push(cur.str);
       }
@@ -2014,8 +2043,14 @@
       }
       return html;
     }
+    var lastPushedPlain = "";
+    function normLine(t){ return String(t||"").replace(/\s+/g," ").trim().toLowerCase(); }
     function pushBlock(html){
       if(!html || !stripHtml(html).trim()) return;
+      var plain = normLine(stripHtml(html));
+      // منع تكرار نفس السطر مرتين متتاليتين (مشكلة شائعة في PDF)
+      if(plain && plain === lastPushedPlain) return;
+      lastPushedPlain = plain;
       ensureSection();
       curSection.blocks.push(html);
     }
@@ -2024,6 +2059,7 @@
       var bufferHtml = [];
       var bufferPlainLen = 0;
       var sawHeadingThisPage = false;
+      var lastLinePlain = "";
 
       function flushBuffer(){
         if(!bufferHtml.length) return;
@@ -2035,6 +2071,11 @@
       lines.forEach(function(l){
         var txt = (l.text || "").trim();
         if(!txt) return;
+        var nrm = normLine(txt);
+        // تخطّي سطر مكرر حرفيًا من السطر السابق في نفس الصفحة
+        if(nrm && nrm === lastLinePlain) return;
+        lastLinePlain = nrm;
+
         var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 80 && !/^[0-9\s.\-–|]+$/.test(txt);
         var isTitleLike = (l.bold || l.size >= largeMin) && txt.length <= 90 && !/[.!?؟]{2,}/.test(txt);
 
@@ -2043,9 +2084,11 @@
           if(!docHeading) docHeading = txt;
           if(!curPage || (!sawHeadingThisPage && pageIdx > 0)) newPage(txt);
           else if(!curPage) newPage(txt);
-          newSection(txt);
+          // لا نضع sub لو هو نفس عنوان الصفحة (يمنع التكرار في العرض)
+          var sub = (normLine(txt) === normLine(curPage.heading)) ? null : txt;
+          newSection(sub);
+          lastPushedPlain = normLine(txt);
           sawHeadingThisPage = true;
-          // لا نكرر العنوان كفقرة — يظهر مرة واحدة في subheading
           return;
         }
         if(isTitleLike){
@@ -2053,7 +2096,6 @@
           pushBlock(lineToHtml(l));
           return;
         }
-        // body line — keep separate if starts new idea (colon end / short) else merge lightly
         var html = lineToHtml(l);
         if(txt.length <= 55 && /[:：]$/.test(txt)){
           flushBuffer();
@@ -2062,7 +2104,6 @@
         }
         bufferHtml.push(html);
         bufferPlainLen += txt.length + 1;
-        // shorter chunks preserve more of original line structure
         if(bufferPlainLen > 180) flushBuffer();
       });
       flushBuffer();
