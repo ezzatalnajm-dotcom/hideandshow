@@ -12,12 +12,13 @@
     --navy-950:#0a1b2e; --navy-900:#0f2740; --navy-850:#122d4a; --navy-800:#153351; --navy-700:#1c4266;
     --gold-400:#f0c948; --gold-500:#e0b62f; --gold-600:#c79a1f;
     --ink:#0a1b2e; --paper:#f4f1ea; --card:#ffffff; --muted:#5c6b7a;
-    --ok:#2e9e5b; --warn:#d9822b; --danger:#c94b4b; --preview:#7c3aed;
+    --ok:#2e9e5b; --warn:#d9822b; --danger:#c94b4b;
     --radius-lg:20px; --radius-md:13px; --radius-sm:9px;
     --shadow:0 10px 30px rgba(10,27,46,.18);
     box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
   html,body{height:100%;}
   body{margin:0;font-family:'Cairo','Tajawal',sans-serif;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent;}
   :root:not([data-theme="light"]){--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
@@ -27,14 +28,14 @@
 
   .app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
   .topbar{background:linear-gradient(160deg,var(--navy-900),var(--navy-950));padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25);}
-  .topbar.preview-mode{background:linear-gradient(160deg,#5b21b6,#4c1d95);}
   .topbar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .brand{display:flex;align-items:center;gap:8px;}
   .brand .star{font-size:20px;filter:drop-shadow(0 0 6px rgba(240,201,72,.7));}
   .brand h1{font-size:14px;margin:0;font-weight:800;line-height:1.3;}
   .brand h1 small{display:block;font-weight:400;font-size:10px;opacity:.75;}
-  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;position:relative;}
   .icon-btn:active{background:rgba(255,255,255,.2);}
+  .icon-btn .dot{position:absolute;top:-2px;left:-2px;background:var(--danger);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
   .topbar-actions{display:flex;gap:7px;}
 
   .home-hero{padding:22px 18px 6px;text-align:center;}
@@ -42,7 +43,7 @@
   .home-hero h2{font-size:20px;margin:14px 0 4px;font-weight:800;}
   .home-hero p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7;}
   .contact-strip{display:flex;gap:8px;padding:14px 18px 4px;}
-  .contact-strip a{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .contact-strip a,.contact-strip button{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
   .cs-wa{background:#25D366;color:#fff;}
   .cs-call{background:var(--navy-900);color:#fff;}
   .cs-tg{background:#229ED9;color:#fff;}
@@ -53,21 +54,18 @@
   .malzama-card{background:var(--card);border-radius:var(--radius-md);padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(10,27,46,.10);border:1px solid rgba(10,27,46,.06);}
   .malzama-main{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer;}
   .malzama-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-  .malzama-num.shared{background:linear-gradient(150deg,#7c3aed,#5b21b6);color:#fff;}
   .malzama-info{flex:1;min-width:0;}
   .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .malzama-badge{font-size:9px;background:rgba(124,58,237,.15);color:#7c3aed;padding:2px 6px;border-radius:999px;font-weight:800;margin-inline-start:4px;}
   .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
+  .malzama-del:active{color:var(--danger);}
   .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
+  .upload-hint b{color:var(--ink);}
 
   .unit-topinfo{padding:14px 18px 2px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   .unit-title{font-size:17px;font-weight:800;margin:0 0 2px;}
   .unit-sub{color:var(--muted);font-size:12px;margin:0;}
   .review-pill{background:rgba(217,130,43,.14);color:var(--warn);border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
-  .preview-pill{background:linear-gradient(150deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;box-shadow:0 3px 10px rgba(124,58,237,.35);}
-  .preview-pill.active{background:linear-gradient(150deg,#5b21b6,#4c1d95);}
-  .preview-pill.exit{background:#ef4444;color:#fff;}
 
   .mode-row{display:flex;gap:7px;padding:12px 18px 2px;overflow-x:auto;}
   .mode-btn{flex:0 0 auto;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:normal;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:140px;}
@@ -76,8 +74,6 @@
   .mode-btn .mtime{font-size:9.5px;font-weight:600;color:var(--muted);}
   .mode-btn.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
   .mode-btn.active .mtime{color:var(--gold-400);}
-  .mode-btn.locked{opacity:.55;cursor:not-allowed;}
-  .mode-btn.locked::after{content:"🔒";font-size:10px;position:absolute;}
 
   .shuffle-note{margin:8px 18px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
 
@@ -86,80 +82,25 @@
   .progress-track{height:7px;border-radius:999px;background:rgba(10,27,46,.08);overflow:hidden;}
   :root:not([data-theme="light"]) .progress-track{background:rgba(255,255,255,.10);}
   .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-500),var(--gold-400));border-radius:999px;transition:width .35s ease;}
-  .progress-fill.preview{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
 
   .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
-  .hint-banner.preview{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.35);color:#7c3aed;}
-  :root:not([data-theme="light"]) .hint-banner.preview{color:#c4b5fd;}
+  :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
 
   .doc-wrap{padding:8px 18px 16px;flex:1;}
   .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
-  .doc-card.preview-border{border:2px solid rgba(124,58,237,.4);}
   .doc-heading{background:var(--navy-900);color:#fff;padding:11px 16px;font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px;}
-  .doc-heading.preview{background:linear-gradient(150deg,#5b21b6,#4c1d95);}
   .doc-heading .star{color:var(--gold-400);font-size:13px;}
   .doc-subheading{color:var(--navy-700);font-weight:800;font-size:13.5px;padding:14px 16px 2px;}
   :root:not([data-theme="light"]) .doc-subheading{color:var(--gold-400);}
   .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
   .doc-block b{font-weight:800;}
 
-  .blank{border-radius:5px;padding:0 3px;cursor:pointer;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);}
   .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
   .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
   :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
   :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
-  .blank.preview-blank{background:rgba(124,58,237,.18);filter:none;cursor:default;}
-  .blank.preview-blank.revealed{background:rgba(124,58,237,.30);}
-  .blank.preview-blank.auto{background:rgba(59,130,246,.18);}
-  .blank.preview-blank.auto.revealed{background:rgba(59,130,246,.30);}
-
-  .blank-x{
-    display:inline-flex;align-items:center;justify-content:center;
-    width:16px;height:16px;border-radius:50%;border:none;
-    background:rgba(201,75,75,.25);color:#c94b4b;
-    font-size:9px;font-weight:800;line-height:1;cursor:pointer;
-    padding:0;margin:0 1px;vertical-align:super;
-    flex:0 0 auto;
-  }
-  .blank-x:hover{background:rgba(201,75,75,.5);color:#fff;}
-  :root:not([data-theme="light"]) .blank-x{background:rgba(201,75,75,.35);color:#ff8a8a;}
-
-  /* Preview labels */
-  .preview-label{
-    display:inline-block;font-size:9px;font-weight:800;
-    padding:1px 6px;border-radius:999px;margin-inline-start:4px;
-    vertical-align:super;line-height:1.4;
-  }
-  .preview-label.auto{background:rgba(59,130,246,.15);color:#2563eb;}
-  .preview-label.manual{background:rgba(124,58,237,.15);color:#7c3aed;}
-
-  .title-pickable{cursor:pointer;transition:background .15s, outline .15s;border-radius:6px;position:relative;}
-  .title-pickable:hover{background:rgba(224,182,47,.10);outline:1px dashed rgba(224,182,47,.6);}
-  .title-pickable::before{
-    content:"⊕";position:absolute;inset-inline-start:6px;top:50%;transform:translateY(-50%);
-    color:rgba(224,182,47,.85);font-size:14px;font-weight:800;opacity:0;transition:opacity .15s;
-    pointer-events:none;
-  }
-  .title-pickable:hover::before{opacity:1;}
-
-  #sentencesToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
-  #sentencesToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
-  :root:not([data-theme="light"]) #sentencesToolbar .btn-ghost{background:rgba(255,255,255,.08);}
-
-  .selectable-word{
-    cursor:pointer;border-radius:4px;padding:1px 2px;
-    transition:background .12s ease;display:inline;
-    -webkit-user-select:none;user-select:none;
-    touch-action:none;
-  }
-  .selectable-word:hover{background:rgba(224,182,47,.18);}
-  .selectable-word.selected{background:rgba(224,182,47,.5);outline:1.5px solid var(--gold-500);}
-  .selecting-mode{user-select:none;-webkit-user-select:none;}
-  .selecting-mode .doc-block{line-height:2.4;}
-
-  #customToolbar .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
-  #customToolbar .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
-  :root:not([data-theme="light"]) #customToolbar .btn-ghost{background:rgba(255,255,255,.08);}
+  .doc-subheading .blank{font-weight:800;}
 
   .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
   .block-rate.show{display:flex;}
@@ -169,6 +110,9 @@
   .rate-know.active{background:var(--ok);color:#fff;}
   .rate-review{background:rgba(217,130,43,.14);color:var(--warn);}
   .rate-review.active{background:var(--warn);color:#fff;}
+  .mic-mini{border:none;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;}
+  .mic-mini.on{color:var(--danger);}
+  .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
 
   .bottombar{position:sticky;bottom:0;background:var(--card);border-top:1px solid rgba(10,27,46,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 -6px 16px rgba(10,27,46,.08);}
   :root:not([data-theme="light"]) .bottombar{border-top-color:rgba(255,255,255,.08);}
@@ -177,11 +121,11 @@
   .nav-btn:disabled{opacity:.4;cursor:not-allowed;}
   .reveal-btn{flex:1.5;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:800;font-size:13px;cursor:pointer;}
   .reveal-btn:disabled{opacity:.45;cursor:not-allowed;}
-  .reveal-btn.preview{background:linear-gradient(150deg,#7c3aed,#5b21b6);color:#fff;}
 
   .done-screen{padding:36px 22px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
   .done-screen .emoji{font-size:48px;margin-bottom:8px;}
   .done-screen h2{font-size:19px;margin:6px 0;}
+  .done-screen p{color:var(--muted);font-size:13px;line-height:1.8;max-width:320px;}
   .done-stats{display:flex;gap:14px;margin:16px 0;}
   .done-stat{background:var(--card);border-radius:var(--radius-md);padding:12px 16px;box-shadow:var(--shadow);min-width:80px;}
   .done-stat .n{font-size:20px;font-weight:800;}
@@ -189,11 +133,12 @@
   .done-stat.warn .n{color:var(--warn);}
   .done-stat .l{font-size:10.5px;color:var(--muted);margin-top:2px;}
   .done-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
-  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-size:12.5px;font-weight:700;cursor:pointer;}
+  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-weight:700;font-size:12.5px;cursor:pointer;}
   .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
   .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) .btn-ghost{background:rgba(255,255,255,.08);}
 
-  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
   .modal-overlay.show{display:flex;}
   .modal{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto;}
   .modal h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;justify-content:space-between;}
@@ -219,15 +164,15 @@
 <body>
 <div class="app" id="app">
 
-  <div class="topbar" id="topbar">
+  <div class="topbar">
     <div class="topbar-row">
       <div class="brand">
         <span class="star">⭐</span>
-        <h1 id="brandTitle">ذاكر بالإخفاء<small id="brandSub">من نجم الأحياء</small></h1>
+        <h1>ذاكر بالإخفاء<small>من نجم الأحياء</small></h1>
       </div>
       <div class="topbar-actions">
         <button class="icon-btn" id="btnTheme" title="الوضع الفاتح/الداكن">🌓</button>
-        <button class="icon-btn" id="btnInfo" title="تعليمات">؟</button>
+        <button class="icon-btn" id="btnInfo" title="تعليمات الاستخدام">؟</button>
         <button class="icon-btn" id="btnSettings" title="الإعدادات">⚙️</button>
         <button class="icon-btn hidden" id="btnHome" title="الرئيسية">🏠</button>
       </div>
@@ -243,64 +188,33 @@
     <div class="contact-strip">
       <a class="cs-wa" href="https://wa.me/97477107247" target="_blank">💬 واتساب</a>
       <a class="cs-call" href="tel:+97477107247">📞 اتصال</a>
-      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 تليجرام</a>
+      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 قناة التليجرام</a>
     </div>
-    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة">+</button></div>
+    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة جديدة">+</button></div>
     <div class="malzama-list" id="malzamaList"></div>
-    <div class="upload-hint">تقدر ترفع ملزمة أي مادة — <b>Word</b> أو <b>PDF</b>.</div>
+    <div class="upload-hint">تقدر ترفع ملزمة أي مادة (مش بس الأحياء) — <b>Word</b> أو <b>PDF</b> — وهتتحول تلقائيًا لنفس أسلوب المراجعة دي.</div>
   </div>
 
   <div id="viewUnit" class="hidden" style="display:flex;flex-direction:column;flex:1;">
     <div class="unit-topinfo">
       <div>
         <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
-        <p class="unit-sub" id="unitSub"></p>
+        <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnRestartUnit">🔀 إعادة</button>
-        <button class="review-pill" id="btnOpenReview">📋 مراجعة (<span id="reviewCount">٠</span>)</button>
-        <button class="preview-pill hidden" id="btnPreview" title="معاينة صاحب الملزمة">👁️ معاينة</button>
-        <button class="preview-pill exit hidden" id="btnExitPreview" title="خروج من المعاينة">✕ خروج</button>
-      </div>
+      <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime" id="sentTime">إخفاء عشوائي + مفتاح ظاهر</span></button>
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime" id="headTime">إخفاء تلقائي + إضافة يدوية</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
     </div>
-
-    <!-- Sentence toolbar -->
-    <div id="sentencesToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnStartSelectSent" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;">✏️ إضافة جمل</button>
-      <button id="btnSaveSent" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ</button>
-      <button id="btnClearSent" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
-      <span id="sentSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
-    </div>
-    <div id="sentencesGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
-      اختر الجمل التي تريد إخفاءها (بما فيها جمل التطبيق ألغها بـ ✕)<br>
-      اضغط كلمة · مرّر لجزء · ضغطتين للجملة كاملة
-    </div>
-
-    <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
-      ① حدّد ② احفظ ③ اختبر
-    </div>
-    <div id="headingsGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(34,158,217,.12);border:1px solid rgba(34,158,217,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:#1b7eb0;">
-      🏷️ التطبيق أخفى العناوين تلقائياً — اضغط على أي عنوان لإخفائه — ✕ لإلغاء إخفاء خاطئ
-    </div>
-
-    <div id="customToolbar" class="hidden" style="margin:8px 18px 0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;">① ابدأ التحديد</button>
-      <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ</button>
-      <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
-      <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
-    </div>
+    <div class="shuffle-note">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
 
     <div class="progress-wrap">
       <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
     </div>
-    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر قبل ما تكشف</div>
+    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر أو تقول الإجابة بصوت عالٍ الأول، وبعدين اكشفها</div>
     <div class="doc-wrap" id="docWrap"></div>
 
     <div class="bottombar">
@@ -312,14 +226,15 @@
 
   <div id="viewDone" class="hidden done-screen">
     <div class="emoji">🎉</div>
-    <h2>أحسنت! خلّصت</h2>
+    <h2>أحسنت! خلّصت المحاولة دي</h2>
+    <p>كده تكون راجعت كل حاجة في الملزمة دي بالمود اللي اخترته.</p>
     <div class="done-stats">
       <div class="done-stat ok"><div class="n" id="statKnow">0</div><div class="l">عرفتها</div></div>
       <div class="done-stat warn"><div class="n" id="statReview">0</div><div class="l">محتاج مراجعة</div></div>
     </div>
     <div class="done-actions">
       <button class="btn-gold" id="btnReviewNeeded">📋 راجع اللي محتاج مراجعة</button>
-      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة</button>
+      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة (تجديد عشوائي)</button>
       <button class="btn-ghost" id="btnBackHome">الرئيسية</button>
     </div>
   </div>
@@ -327,47 +242,63 @@
 
 <div class="modal-overlay" id="modalInfo">
   <div class="modal">
-    <h3>كيف تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
+    <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
     <ol>
-      <li><b>مود الجمل:</b> التطبيق يخفي جمل عشوائية مع بقاء مفتاح الجملة ظاهراً.</li>
-      <li><b>مود التخصيص:</b> حدّد ما تريد إخفاءه بالسحب والإفلات (لك فقط).</li>
-      <li><b>مود العناوين:</b> التطبيق يخفي العناوين تلقائياً + إضافات يدوية.</li>
-      <li><b>✕</b> على أي جزء مخفي يلغي إخفاءه.</li>
-      <li><b>👁️ معاينة</b> (لصاحب الملزمة فقط): يظهر كل الاختيارات مع تسميات [تلقائي] و[يدوي].</li>
+      <li>اختار مود المراجعة: العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
+      <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
+      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف.</li>
+      <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
+      <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
+      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق، من كل المودات مع بعض.</li>
+      <li>كل مود بيختار أجزاء مختلفة عشوائيًا في كل محاولة جديدة — مش نفس الأماكن كل مرة.</li>
     </ol>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalContact">
+  <div class="modal">
+    <h3>راسلنا <span class="close-x" data-close="modalContact">✕</span></h3>
+    <p>لأي استفسار أو اقتراح، تواصل مباشرة مع أ. عزت شعبان.</p>
+    <div class="contact-row">
+      <a class="wa" href="https://wa.me/97477107247" target="_blank">واتساب</a>
+      <a class="tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">تليجرام</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal">
+    <h3>ارفع ملزمة جديدة <span class="close-x" data-close="modalUpload">✕</span></h3>
+    <p>اختار ملف أو أكتر (Word أو PDF) من جهازك. لو عندك الملف على Google Drive، حمّله على جهازك الأول من تطبيق درايف وبعدين ارفعه من هنا.</p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
+      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (هتتضاف لملف المكتبة المشتركة اللي بترفعه مع الموقع)
+    </label>
+    <div class="file-choice">
+      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز (Word أو PDF)</button>
+    </div>
+    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
+    <p id="uploadStatus" style="display:none;"></p>
+    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
+      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية الحالية (اللي هتتصدّر في library.json) — <span id="pendingCount">٠</span> ملزمة. شيل أي واحدة قبل ما تنزّل لو محتاجة تتغيّر.</p>
+      <div id="pendingListWrap"></div>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
+    </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalReview">
   <div class="modal">
     <h3>محتاج مراجعة <span class="close-x" data-close="modalReview">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">القائمة دي مجمّعة من كل المودات — أي فقرة قيّمتها "محتاج مراجعة" في أي مود هتلاقيها هنا.</p>
     <div id="reviewListWrap"></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalUpload">
-  <div class="modal">
-    <h3>ارفع ملزمة <span class="close-x" data-close="modalUpload">✕</span></h3>
-    <p>اختار ملف أو أكتر (Word أو PDF).</p>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
-      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (للمكتبة المشتركة)
-    </label>
-    <div class="file-choice"><button id="pickFile">📄 اختيار ملف/ملفات</button></div>
-    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
-    <p id="uploadStatus" style="display:none;"></p>
-    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
-      <p style="font-size:12.5px;color:var(--muted);">المكتبة الرسمية — <span id="pendingCount">٠</span> ملزمة.</p>
-      <div id="pendingListWrap"></div>
-      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل مكتبة (library.json)</button></div>
-    </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalSettings">
   <div class="modal">
     <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
-    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية والتقدم.</p>
-    <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج</button></div>
+    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها. مش بيأثر على الملازم الرسمية اللي جايه من library.json.</p>
+    <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج (حذف كل حاجة محلية)</button></div>
   </div>
 </div>
 
@@ -382,45 +313,24 @@
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
   }
 
-  var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
+  var MODE_LABELS = { headings:"العناوين والفقرات", sentences:"الجمل" };
   var MODE_HINTS = {
-    sentences: "✂️ جمل مفرّقة — المفتاح يظل ظاهراً — لا جملتين متتاليتين",
-    custom: "✏️ ① حدّد ② احفظ ③ اختبر",
-    headings: "🏷️ التطبيق يخفي العناوين — أضف نسيها بالضغط — ✕ لإلغاء غلط"
-  };
-  var MODE_HINTS_PREVIEW = {
-    sentences: "👁️ معاينة: أزرق = تلقائي | بنفسجي = يدوي — أضف جمل نسيها التطبيق",
-    custom: "✏️ ① حدّد ② احفظ ③ اختبر",
-    headings: "👁️ معاينة: أزرق = تلقائي | بنفسجي = يدوي — أضف عناوين بالضغط أو بالسحب"
+    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا. الفقرة اللي من غير عنوان، هتتخفي منها جمل بس مش كلها",
+    sentences: "✂️ جمل مفرّقة من كل الملزمة مموّهة عشوائيًا — بيتغيّر مكانها كل محاولة جديدة"
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
   function ar(n){ return String(n).split("").map(function(ch){ return /[0-9]/.test(ch)?ARABIC_DIGITS[+ch]:ch; }).join(""); }
   function stripHtml(html){ var d=document.createElement("div"); d.innerHTML=html; return (d.textContent||"").trim(); }
   function slugify(str){
-    return "m_" + String(str).trim().toLowerCase().replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
+    return "m_" + String(str).trim().toLowerCase()
+      .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
-  function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-
-  function splitIntoWords(text){
-    if(!text || !text.trim()) return [];
-    var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
-    return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
-  }
-
+  function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
   function splitSentences(text){
-    if(!text || !text.trim()) return [];
-    var rough = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
-    var parts = [];
-    rough.forEach(function(chunk){
-      var sub = chunk.split(/(?<=[:：])\s+|(?<=[،,;؛])\s+/).map(function(s){return s.trim();}).filter(Boolean);
-      if(sub.length > 1) sub.forEach(function(s){ if(s) parts.push(s); });
-      else parts.push(chunk);
-    });
+    var parts = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
     return parts.length ? parts : (text.trim()?[text.trim()]:[]);
   }
-
   function shuffleWith(arr, rnd){
     var a = arr.slice();
     for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
@@ -431,10 +341,17 @@
     return function(){ s = s*16807 % 2147483647; return (s-1)/2147483646; };
   }
 
-  /* ---------- Library ---------- */
+  /* ---------- Library ----------
+     Two sources merged together:
+     - SHARED (library.json, fetched once at boot if present next to
+       index.html on the deployed site) — same for every visitor,
+       no upload needed. Read-only, never written by this browser.
+     - PERSONAL (localStorage) — whatever this one visitor uploaded
+       themselves (e.g. a student adding a different subject).
+  ------------------------------------------------- */
   var LIB_INDEX_KEY = "najm_lib_index_v2";
-  var SHARED_INDEX = [];
-  var SHARED_CONTENT = {};
+  var SHARED_INDEX = [];   // [{key,title,subtitle}]
+  var SHARED_CONTENT = {}; // key -> rawPages
 
   function fetchSharedLibrary(){
     return fetch("./library.json").then(function(res){
@@ -445,18 +362,20 @@
         SHARED_INDEX = data.items.map(function(it){ return { key:it.key, title:it.title, subtitle:it.subtitle }; });
         data.items.forEach(function(it){ SHARED_CONTENT[it.key] = it.rawPages; });
       }
-    }).catch(function(){ });
+    }).catch(function(){ /* no shared library deployed yet — that's fine */ });
   }
 
   function getLibraryIndex(){
     var personal = [];
     try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
+    // also drop any leftover reference to the old built-in seed ملزمة ١
     personal = personal.filter(function(x){ return x.key !== "seed_u1l1"; });
     var sharedTagged = SHARED_INDEX.map(function(x){ return Object.assign({shared:true}, x); });
     var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
     return sharedTagged.concat(personalTagged);
   }
   function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
+  function saveLibraryIndex(list){ savePersonalIndex(list); } // back-compat name used below
   function getMalzamaContent(key){
     if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
     try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
@@ -464,7 +383,7 @@
   }
   function saveMalzamaContent(key, rawPages){ try{ localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages)); }catch(e){} }
 
-  /* ---------- Review ---------- */
+  /* ---------- Cross-mode aggregated review list ---------- */
   function reviewKey(malzamaKey){ return "najm_review_" + malzamaKey; }
   function loadReviewMap(malzamaKey){
     try{ var raw = localStorage.getItem(reviewKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
@@ -481,387 +400,136 @@
   function updateReviewBadge(){
     if(!state.malzamaKey) return;
     var map = loadReviewMap(state.malzamaKey);
+    var count = Object.keys(map).length;
     var el = $("reviewCount");
-    if(el) el.textContent = ar(Object.keys(map).length);
+    if(el) el.textContent = ar(count);
   }
 
-  /* ---------- Text helpers ---------- */
-  var VERSE_RE = /\*\*\*/;
-  var LIST_MARKER_RE = /^(أولا|أولًا|اولا|ثانيًا|ثانيا|ثالثا|ثالثًا|رابعا|رابعًا|خامسا|خامسًا|سادسا|سادسًا|سابعا|سابعًا|ثامنا|ثامنًا|تاسعا|تاسعًا|عاشرا|عاشرًا)([.:：\s]|$)/i;
-  var BARE_ENUM_RE = /^([أ-ي]|[a-zA-Z]|[0-9٠-٩]{1,3}|ال|الل|القط|لاحظ|\?|؟|💡)\s*[.)\:：]?\s*$/;
-  var NOT_TITLE_RE = /^(الل|القط|لاحظ|ملاحظة|تنبيه|مهم|مثال|مثل|انظر|انظري)[:：]?\s*$/i;
-
+  /* ---------- Reveal-engine model builder ----------
+     Two modes, both operating at sentence/paragraph granularity,
+     built per SECTION so we can coordinate rules across sibling
+     blocks (never hide a section's heading and its paragraphs at
+     the same time; alternate heading/detail across a run of
+     inline-labeled paragraphs; never hide two adjacent sentences).
+     - 'headings': if a section has a sub-heading, ONE coin-flip
+       decides whether to hide that heading (in which case every
+       block under it stays fully visible this round) or show it
+       (in which case blocks are processed individually: a block
+       with its own inline "<b>label:</b>" lead-in alternates
+       hide-label/hide-detail across a run of such blocks; a block
+       with neither gets some of its sentences hidden).
+     - 'sentences': every block keeps any leading bold label
+       visible, and individual sentences are hidden at random
+       across the whole document, never two in a row.
+     Random selection is stored per (malzama, mode) "attempt" and
+     only reshuffled when the student starts a fresh attempt.
+  ------------------------------------------------- */
+  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
+  var VERSE_RE = /\*\*\*/; // poetry/proverb separator seen in his ملازم
   function isTrivialFragment(s){
-    var t = String(s||"").trim();
+    var t = s.trim();
     if(t.length < 2) return true;
-    if(/^[\u0621-\u064A]\s*[-.)]?\s*$/.test(t)) return true;
-    if(/^\(?[0-9٠-٩]+\)?[-.]?\s*$/.test(t)) return true;
-    if(/^[\u0621-\u064A0-9٠-٩]{1,2}\s*[-–—.]?\s*$/.test(t)) return true;
-    if(LIST_MARKER_RE.test(t)) return true;
-    if(NOT_TITLE_RE.test(t)) return true;
-    if(/^[:：.?؟!\-–—•●▪💡]+$/.test(t)) return true;
-    if(BARE_ENUM_RE.test(t)) return true;
+    if(/^[\u0621-\u064A]\s*[-.):]?\s*$/.test(t)) return true; // a bare enumeration letter: أ  ب  ج
+    if(/^\(?[0-9]+\)?[-.:]?\s*$/.test(t)) return true; // a bare number/list marker
     return false;
   }
-
-  function isPromoOrVerse(text){
-    if(!text) return false;
-    var t = String(text).trim();
-    if(/\*\*\*/.test(t)) return true;
-    if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(t)) return true;
-    if(/https?:\/\/|t\.me\/|youtube\.com|youtu\.be|wixsite/i.test(t) && t.length > 40) return true;
-    return false;
+  // Pick a hidden subset of sentence indices: no two adjacent, never
+  // all of them, never none of them (when 2+ real candidates exist).
+  function pickSentenceHides(sentences, ratio, rnd){
+    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){ return !isTrivialFragment(sentences[i]); });
+    if(candidates.length === 0) return {};
+    var order = shuffleWith(candidates, rnd);
+    var target = Math.max(1, Math.min(candidates.length - (candidates.length>1?1:0), Math.round(candidates.length*ratio)));
+    var hideSet = {};
+    order.forEach(function(i){
+      if(Object.keys(hideSet).length >= target) return;
+      if(hideSet[i-1] || hideSet[i+1]) return; // keep no-two-adjacent
+      hideSet[i] = true;
+    });
+    return hideSet;
   }
 
-  function looksLikeHeading(html, plain){
-    var t = String(plain||"").trim();
-    if(!t) return false;
-    if(t.length > 80) return false;
-    if(isTrivialFragment(t)) return true;
-    if(LIST_MARKER_RE.test(t)) return true;
-    if(BARE_ENUM_RE.test(t)) return true;
-    if(NOT_TITLE_RE.test(t)) return true;
-    if(/^[:：.?؟!\-–—•●▪]+$/.test(t)) return true;
-    if(!/[\u0600-\u06FFa-zA-Z]{2,}/.test(t)) return true;
-
-    var h = String(html||"").trim();
-    var words = t.split(/\s+/).filter(Boolean);
-
-    if(t.length <= 60 && /[:：]$/.test(t) && words.length <= 8) return true;
-    if(/^<b>[\s\S]+<\/b>\s*$/i.test(h) && t.length >= 3) return true;
-    var boldLen = 0;
-    h.replace(/<b>([^<]*)<\/b>/gi, function(_, x){ boldLen += (x||"").length; });
-    if(t.length <= 70 && boldLen >= Math.max(3, t.length * 0.55)) return true;
-    if(t.length <= 50 && words.length <= 7 && !/[.!?؟]/.test(t)) return true;
-    return false;
+  function flattenBlocks(rawPages){
+    var flat = [];
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        sec.blocks.forEach(function(html, bi){
+          flat.push({ pageIdx:pi, secIdx:si, blockIdx:bi, html:html, sectionSub:sec.sub, isFirstInSection: bi===0 });
+        });
+      });
+    });
+    return flat;
   }
 
-  /* ---------- Exclude / Manual sets ---------- */
-  function excludeKey(malzamaKey){ return "najm_exclude_" + malzamaKey; }
-  function normKey(t){ return String(t||"").replace(/\s+/g," ").trim().slice(0,300); }
-  function loadExcludeSet(malzamaKey){
-    try{ var raw=localStorage.getItem(excludeKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveExcludeSet(malzamaKey, set){ try{ localStorage.setItem(excludeKey(malzamaKey), JSON.stringify(set)); }catch(e){} }
-
-  // Manual adds (by owner preview) — extra hides that app missed
-  function manualAddKey(malzamaKey, mode){ return "najm_manual_" + malzamaKey + "_" + mode; }
-  function loadManualAddSet(malzamaKey, mode){
-    try{ var raw = localStorage.getItem(manualAddKey(malzamaKey, mode)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveManualAddSet(malzamaKey, mode, set){
-    try{ localStorage.setItem(manualAddKey(malzamaKey, mode), JSON.stringify(set)); }catch(e){}
-  }
-
-  // Custom selections (used by custom mode + sentences manual + headings manual word-level)
-  function customSelKey(malzamaKey, mode){ return "najm_custom_" + malzamaKey + "_" + mode; }
-  function loadCustomSelection(malzamaKey, mode){
-    mode = mode || "custom";
-    try{ var raw = localStorage.getItem(customSelKey(malzamaKey, mode)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveCustomSelection(malzamaKey, mode, sel){
-    try{ localStorage.setItem(customSelKey(malzamaKey, mode), JSON.stringify(sel)); }catch(e){}
-  }
-
-  // Owner lock marker — set when owner has previewed and locked their settings
-  // Stored in localStorage; exporter includes it in library.json
-  function ownerLockKey(malzamaKey){ return "najm_owner_ready_" + malzamaKey; }
-  function isOwnerReady(malzamaKey){
-    try{ return localStorage.getItem(ownerLockKey(malzamaKey)) === "1"; }catch(e){}
-    return false;
-  }
-  function markOwnerReady(malzamaKey){
-    try{ localStorage.setItem(ownerLockKey(malzamaKey), "1"); }catch(e){}
-  }
-
-  // Is the current user the owner of this malzama?
-  // Owner = personal malzama OR (shared malzama AND user has unlocked preview)
-  function isOwner(){
-    if(!state.malzamaKey) return false;
-    var entry = getLibraryIndex().find(function(x){ return x.key === state.malzamaKey; });
-    if(!entry) return false;
-    if(!entry.shared) return true; // personal = always owner
-    return state.previewMode; // shared = owner only in preview mode
-  }
-
-  /* ---------- Bilingual expansion ---------- */
-  function expandPhraseBilingual(fullText, phrase){
-    if(!fullText || !phrase) return phrase;
-    var idx = fullText.indexOf(phrase);
-    if(idx < 0) return phrase;
-    var start = idx, end = idx + phrase.length;
-    while(end < fullText.length){
-      var ch = fullText[end];
-      if(ch === " "){
-        var rest = fullText.slice(end+1);
-        var m = rest.match(/^(\([^)]{1,40}\)|[A-Za-z][A-Za-z0-9\-]{0,30})/);
-        if(m){ end = end + 1 + m[1].length; continue; }
-      }
-      break;
-    }
-    if(/^[A-Za-z]/.test(phrase)){
-      var before = fullText.slice(0, start).trimEnd();
-      var m2 = before.match(/([\u0600-\u06FF]+[\u0600-\u06FF\s]*?)\s*$/);
-      if(m2 && m2[1].length <= 30) start = before.length - m2[1].length;
-    }
-    return fullText.slice(start, end).trim();
-  }
-
-  function mergeBilingualIndices(words){
-    var groups = [];
-    var i = 0;
-    while(i < words.length){
-      var cur = words[i];
-      var next = words[i+1];
-      var group = { start:i, end:i };
-      if(/[\u0600-\u06FF]/.test(cur) && !/[A-Za-z]/.test(cur) && next && /^\(?[A-Za-z][A-Za-z0-9\-)]*$/.test(next) && next.length <= 40){
-        group.end = i+1;
-        if(next.indexOf("(") >= 0 && next.indexOf(")") < 0 && words[i+2] && /\)$/.test(words[i+2])){
-          group.end = i+2;
-        }
-      } else if(/^[A-Za-z]/.test(cur) && next && /[\u0600-\u06FF]/.test(next) && cur.length <= 40){
-        group.end = i+1;
-      }
-      groups.push(group);
-      i = group.end + 1;
-    }
-    return groups;
-  }
-
-  /* ---------- Model builder ---------- */
-  function buildModel(rawPages, mode, seed, customSelected, excludeSet, opts){
-    opts = opts || {};
-    var previewMode = !!opts.previewMode;
-    var isShared = !!opts.isShared;
-    customSelected = customSelected || {};
+  function buildModel(rawPages, mode, seed){
     var rnd = seededRandom(seed || 1);
     var globalId = 0, allIds = [];
     var unitByBlockKey = {};
-    var excludeSetLocal = excludeSet || {};
-    var manualAdds = (state && state.malzamaKey) ? loadManualAddSet(state.malzamaKey, mode) : {};
-
-    function isExcluded(text){ return !!excludeSetLocal[normKey(text)]; }
+    var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
 
     rawPages.forEach(function(page, pi){
       page.sections.forEach(function(sec, si){
         var secKeyPrefix = pi+"_"+si+"_";
-        sec.blocks.forEach(function(blockObj, bi){
-          var blockKey = secKeyPrefix + bi;
-          var html = (typeof blockObj === "string") ? blockObj : (blockObj.html || "");
-          var plain = stripHtml(html);
+        var blocksInfo = sec.blocks.map(function(html, bi){
+          var m = html.match(LEAD_RE);
+          return { key: secKeyPrefix+bi, html: html, label: m?m[2]:null, restHtml: m?html.slice(m[0].length):html };
+        });
 
-          if(isPromoOrVerse(plain)){
-            unitByBlockKey[blockKey] = { renderHtml: "", blankIds: [], originalHtml: html, plainText: plain };
-            return;
+        if(mode === "headings" && sec.sub){
+          var hideSectionHeading = rnd() < 0.5;
+          if(hideSectionHeading){
+            globalId++; var shid = globalId; allIds.push(shid);
+            sectionHeadingBlankByKey[pi+"_"+si] = shid;
+            // whole section stays fully visible this round so the
+            // heading is still guessable from context
+            blocksInfo.forEach(function(bi2){ unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; });
+            return; // section done
           }
+        }
 
-          var isHeadingBlock = looksLikeHeading(html, plain);
-
+        var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
+        blocksInfo.forEach(function(bi2){
           if(mode === "headings"){
-            var autoHide = isHeadingBlock && plain.length > 2;
-            var userWantsHide = !!manualAdds[blockKey];
-            var userExcluded = isExcluded(plain);
-            var shouldHide = (autoHide || userWantsHide) && !userExcluded;
-            var hideSource = userWantsHide ? "manual" : "auto";
-
-            if(shouldHide && plain.length <= 250){
-              globalId++; allIds.push(globalId);
-              var cls = previewMode ? (" preview-blank " + (hideSource === "manual" ? "manual" : "auto")) : "";
-              var label = "";
-              if(previewMode){
-                label = '<span class="preview-label ' + (hideSource === "manual" ? "manual" : "auto") + '">' + (hideSource === "manual" ? "يدوي" : "تلقائي") + '</span>';
+            if(bi2.label){
+              var hideHeading;
+              if(lastInlineHid === null) hideHeading = rnd() < 0.5;
+              else hideHeading = !lastInlineHid;
+              lastInlineHid = hideHeading;
+              if(hideHeading){
+                globalId++; var idL=globalId; allIds.push(idL);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
+              } else {
+                globalId++; var idD=globalId; allIds.push(idD);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+bi2.label+':</b> <span class="blank" data-id="'+idD+'">'+stripHtml(bi2.restHtml)+'</span>', blankIds:[idD] };
               }
-              unitByBlockKey[blockKey] = {
-                renderHtml: '<span class="blank'+cls+'" data-id="'+globalId+'" data-hide-text="'+attrEsc(plain)+'">'+html+'</span>' + label,
-                blankIds: [globalId],
-                originalHtml: html,
-                plainText: plain
-              };
             } else {
-              unitByBlockKey[blockKey] = {
-                renderHtml: html,
-                blankIds: [],
-                originalHtml: html,
-                plainText: plain,
-                pickable: true,
-                hideText: plain
-              };
-            }
-          } else if(mode === "custom"){
-            var wordMeta = extractWordMeta(html);
-            var wordsC = wordMeta.map(function(w){ return w.text; });
-            if(wordsC.length !== splitIntoWords(plain).length){
-              wordsC = splitIntoWords(plain);
-              wordMeta = wordsC.map(function(w){ return { text:w, bold:false, size:null }; });
-            }
-            var ranges = [];
-            Object.keys(customSelected).forEach(function(k){
-              if(k.indexOf(blockKey + "|w|") === 0){
-                var parts = k.split("|");
-                var a = +parts[2], b = +parts[3];
-                if(!isNaN(a) && !isNaN(b)){
-                  var biGroups = mergeBilingualIndices(wordsC);
-                  var lo = Math.min(a,b), hi = Math.max(a,b);
-                  biGroups.forEach(function(g){
-                    if(!(g.end < lo || g.start > hi)){
-                      lo = Math.min(lo, g.start);
-                      hi = Math.max(hi, g.end);
-                    }
-                  });
-                  ranges.push([lo, hi]);
-                }
+              lastInlineHid = null;
+              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+              if(sentences.length <= 1){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; // too short to safely blank — stays visible
+              } else {
+                var hideSet = pickSentenceHides(sentences, 0.5, rnd);
+                var ids = [];
+                var html2 = sentences.map(function(s,i){
+                  if(hideSet[i]){ globalId++; ids.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+                  return s;
+                }).join(" ");
+                unitByBlockKey[bi2.key] = { renderHtml: html2, blankIds: ids };
               }
-            });
-            ranges.sort(function(x,y){ return x[0]-y[0]; });
-            var merged = [];
-            ranges.forEach(function(r){
-              if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
-              else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
-            });
-            if(wordsC.length === 0 || merged.length === 0){
-              unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
+            }
+          } else { // 'sentences' mode
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+            if(sents.length === 0){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
             } else {
-              var htmlParts = [];
-              var wi = 0;
-              var ids = [];
-              merged.forEach(function(r){
-                while(wi < r[0] && wi < wordMeta.length){ htmlParts.push(wrapWord(wordMeta[wi])); wi++; }
-                if(wi <= r[1] && wi < wordMeta.length){
-                  globalId++; ids.push(globalId); allIds.push(globalId);
-                  var hidden = [];
-                  var boldAll = true, sizeAll = wordMeta[wi].size;
-                  while(wi <= r[1] && wi < wordMeta.length){
-                    hidden.push(wordMeta[wi].text);
-                    if(!wordMeta[wi].bold) boldAll = false;
-                    if(wordMeta[wi].size !== sizeAll) sizeAll = null;
-                    wi++;
-                  }
-                  var styleAttr = sizeAll ? ' style="font-size:'+sizeAll+'px;"' : "";
-                  var hiddenHtml = escapeHtml(hidden.join(" "));
-                  if(boldAll) hiddenHtml = "<b>"+hiddenHtml+"</b>";
-                  htmlParts.push('<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(hidden.join(" "))+'"'+styleAttr+'>'+hiddenHtml+'</span>');
-                }
-              });
-              while(wi < wordMeta.length){ htmlParts.push(wrapWord(wordMeta[wi])); wi++; }
-              unitByBlockKey[blockKey] = { renderHtml: htmlParts.join(" "), blankIds: ids, originalHtml: html, plainText: plain };
+              var hSet = pickSentenceHides(sents, 0.5, rnd);
+              var ids2 = [];
+              var html3 = sents.map(function(s,i){
+                if(hSet[i]){ globalId++; ids2.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+                return s;
+              }).join(" ");
+              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + html3, blankIds: ids2 };
             }
-          } else if(mode === "sentences"){
-            // Auto-hide sentences + manual additions
-            var wordMeta = extractWordMeta(html);
-            var wordsC = wordMeta.map(function(w){ return w.text; });
-            if(wordsC.length !== splitIntoWords(plain).length){
-              wordsC = splitIntoWords(plain);
-              wordMeta = wordsC.map(function(w){ return { text:w, bold:false, size:null }; });
-            }
-            var ranges = [];
-
-            // 1) Auto-hide sentences (skip headings, skip short sentences)
-            if(!isHeadingBlock){
-              var sents = splitSentences(plain).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
-              var sentRanges = [];
-              var searchFrom = 0;
-              sents.forEach(function(s){
-                var sw = splitIntoWords(s);
-                if(sw.length === 0){ sentRanges.push(null); return; }
-                var idx = -1;
-                for(var wi = 0; wi <= wordsC.length - sw.length; wi++){
-                  var ok = true;
-                  for(var k = 0; k < sw.length; k++){
-                    if(wordsC[wi+k] !== sw[k]){ ok = false; break; }
-                  }
-                  if(ok){ idx = wi; break; }
-                }
-                if(idx < 0) sentRanges.push(null);
-                else { sentRanges.push({ start:idx, end:idx+sw.length-1, len:sw.length }); searchFrom = idx + sw.length; }
-              });
-              var hideSet = pickSentenceHides(sents, 0.55, rnd);
-              Object.keys(hideSet).forEach(function(ix){
-                if(sentRanges[ix]){
-                  var sr = sentRanges[ix];
-                  if(sr.len < 3) return;
-                  if(isExcluded(sents[ix])) return;
-                  // Skip if this sentence is a bilingual + short? Keep as is.
-                  // Also apply bilingual expansion to auto-hides
-                  var biGroups = mergeBilingualIndices(wordsC);
-                  var lo = sr.start, hi = sr.end;
-                  biGroups.forEach(function(g){
-                    if(!(g.end < lo || g.start > hi)){
-                      lo = Math.min(lo, g.start);
-                      hi = Math.max(hi, g.end);
-                    }
-                  });
-                  ranges.push([lo, hi, "auto"]);
-                }
-              });
-            }
-
-            // 2) Manual additions from owner (or user's own manual)
-            Object.keys(customSelected).forEach(function(k){
-              if(k.indexOf(blockKey + "|w|") === 0){
-                var parts = k.split("|");
-                var a = +parts[2], b = +parts[3];
-                if(!isNaN(a) && !isNaN(b)){
-                  var biGroups2 = mergeBilingualIndices(wordsC);
-                  var lo2 = Math.min(a,b), hi2 = Math.max(a,b);
-                  biGroups2.forEach(function(g){
-                    if(!(g.end < lo2 || g.start > hi2)){
-                      lo2 = Math.min(lo2, g.start);
-                      hi2 = Math.max(hi2, g.end);
-                    }
-                  });
-                  ranges.push([lo2, hi2, "manual"]);
-                }
-              }
-            });
-
-            ranges.sort(function(x,y){ return x[0]-y[0]; });
-            var merged = [];
-            ranges.forEach(function(r){
-              // Deduplicate overlapping — keep leftmost
-              if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
-              else {
-                merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
-                // manual tag takes precedence
-                if(r[2] === "manual") merged[merged.length-1][2] = "manual";
-              }
-            });
-
-            if(wordsC.length === 0 || merged.length === 0){
-              unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
-            } else {
-              var htmlParts = [];
-              var wi = 0;
-              var ids = [];
-              merged.forEach(function(r){
-                while(wi < r[0] && wi < wordMeta.length){ htmlParts.push(wrapWord(wordMeta[wi])); wi++; }
-                if(wi <= r[1] && wi < wordMeta.length){
-                  globalId++; ids.push(globalId); allIds.push(globalId);
-                  var hidden = [];
-                  var boldAll = true, sizeAll = wordMeta[wi].size;
-                  while(wi <= r[1] && wi < wordMeta.length){
-                    hidden.push(wordMeta[wi].text);
-                    if(!wordMeta[wi].bold) boldAll = false;
-                    if(wordMeta[wi].size !== sizeAll) sizeAll = null;
-                    wi++;
-                  }
-                  var styleAttr = sizeAll ? ' style="font-size:'+sizeAll+'px;"' : "";
-                  var hiddenHtml = escapeHtml(hidden.join(" "));
-                  if(boldAll) hiddenHtml = "<b>"+hiddenHtml+"</b>";
-                  var cls = previewMode ? (" preview-blank " + (r[2] === "manual" ? "manual" : "auto")) : "";
-                  htmlParts.push('<span class="blank'+cls+'" data-id="'+globalId+'" data-hide-text="'+attrEsc(hidden.join(" "))+'"'+styleAttr+'>'+hiddenHtml+'</span>');
-                  if(previewMode){
-                    htmlParts.push('<span class="preview-label ' + (r[2] === "manual" ? "manual" : "auto") + '">' + (r[2] === "manual" ? "يدوي" : "تلقائي") + '</span>');
-                  }
-                }
-              });
-              while(wi < wordMeta.length){ htmlParts.push(wrapWord(wordMeta[wi])); wi++; }
-              unitByBlockKey[blockKey] = { renderHtml: htmlParts.join(" "), blankIds: ids, originalHtml: html, plainText: plain };
-            }
-          } else {
-            unitByBlockKey[blockKey] = { renderHtml: html, blankIds: [], originalHtml: html, plainText: plain };
           }
         });
       });
@@ -869,110 +537,25 @@
 
     var pages = rawPages.map(function(page, pi){
       var sections = page.sections.map(function(sec, si){
-        var blocks = sec.blocks.map(function(blockObj, bi){
+        var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
+        var blocks = sec.blocks.map(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
-          var html = (typeof blockObj === "string") ? blockObj : (blockObj.html || "");
-          var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [], originalHtml: html, plainText: stripHtml(html) };
-          if(isPromoOrVerse(stripHtml(html))) return null;
-          return {
-            key: key,
-            html: unit.renderHtml,
-            blankIds: unit.blankIds || [],
-            plainText: unit.plainText || stripHtml(html),
-            originalHtml: unit.originalHtml || html,
-            pickable: !!unit.pickable,
-            hideText: unit.hideText || stripHtml(html)
-          };
-        }).filter(Boolean);
-        return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, blocks: blocks };
-      }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
+          var unit = unitByBlockKey[key];
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html) };
+        });
+        return { sub: sec.sub, subBlankId: subBlankId, blocks: blocks };
+      });
       return { heading: page.heading, sections: sections };
-    }).filter(function(p){ return p.sections.length > 0; });
+    });
 
     return { pages: pages, allIds: allIds };
   }
 
-  function extractWordMeta(html){
-    var tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    var wordMeta = [];
-    function walk(node, bold, size){
-      if(node.nodeType === 3){
-        var text = node.textContent;
-        if(!text) return;
-        text.split(/(\s+)/).forEach(function(p){
-          if(!p || /^\s+$/.test(p)) return;
-          wordMeta.push({ text: p, bold: !!bold, size: size || null });
-        });
-      } else if(node.nodeType === 1){
-        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
-        var sz = size;
-        if(node.style && node.style.fontSize){
-          var m = /([\d.]+)px/.exec(node.style.fontSize);
-          if(m) sz = parseFloat(m[1]);
-        }
-        var szAttr = node.getAttribute && node.getAttribute("data-sz");
-        if(szAttr) sz = parseFloat(szAttr);
-        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB, sz); });
-      }
-    }
-    walk(tmp, false, null);
-    return wordMeta;
-  }
-
-  function wrapWord(w){
-    var s = escapeHtml(w.text);
-    if(w.bold) s = "<b>"+s+"</b>";
-    if(w.size) s = '<span style="font-size:'+w.size+'px;" data-sz="'+w.size+'">'+s+'</span>';
-    return s;
-  }
-
-  function pickSentenceHides(sentences, ratio, rnd){
-    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){
-      var s = sentences[i];
-      if(isTrivialFragment(s)) return false;
-      if(splitIntoWords(s).length < 3) return false;
-      return true;
-    });
-    if(candidates.length === 0) return {};
-    var order = shuffleWith(candidates, rnd);
-    var target = Math.max(1, Math.min(candidates.length - (candidates.length>1?1:0), Math.round(candidates.length*ratio)));
-    var hideSet = {};
-    order.forEach(function(i){
-      if(Object.keys(hideSet).length >= target) return;
-      if(hideSet[i-1] || hideSet[i+1]) return;
-      hideSet[i] = true;
-    });
-    return hideSet;
-  }
-
   /* ---------- State ---------- */
-  var state = {
-    malzamaKey:null, malzamaTitle:"", malzamaSub:"",
-    isShared:false,
-    mode:"sentences", page:0, revealedIds:{}, blockRatings:{},
-    freeMode:false, seed:null, stuckTaps:0,
-    selecting:false, customSelected:{},
-    previewMode:false // owner preview only for shared malzama
-  };
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0 };
   var MODEL = null, RAW_PAGES = null;
 
-  function progressKey(malzamaKey, mode){ return "najm_prog4_" + malzamaKey + "_" + mode; }
-
-  function excludeFromHide(text, fullText){
-    if(!text) return;
-    // Only owner can exclude
-    if(!isOwner() && state.mode !== "custom"){ showToast("التعديل متاح لصاحب الملزمة فقط"); return; }
-    var expanded = fullText ? expandPhraseBilingual(fullText, text) : text;
-    var set = loadExcludeSet(state.malzamaKey);
-    set[normKey(expanded)] = true;
-    set[normKey(text)] = true;
-    saveExcludeSet(state.malzamaKey, set);
-    loadProgress(false);
-    showToast("تم إلغاء الإخفاء ✕");
-    renderPage();
-  }
-
+  function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
   function loadProgress(reshuffle){
     var pk = progressKey(state.malzamaKey, state.mode);
     var seed = null;
@@ -980,35 +563,18 @@
       var raw = localStorage.getItem(pk);
       if(raw && !reshuffle){
         var d = JSON.parse(raw);
-        state.revealedIds = d.revealedIds || {};
-        state.blockRatings = d.blockRatings || {};
-        state.page = d.page || 0;
+        state.revealedIds = d.revealedIds || {}; state.blockRatings = d.blockRatings || {}; state.page = d.page || 0;
         seed = d.seed;
       }
     }catch(e){}
-    if(state.mode === "headings"){
-      seed = 1;
-      if(reshuffle){ state.revealedIds={}; state.blockRatings={}; state.page=0; }
-    } else if(!seed){
-      seed = Math.floor(Math.random()*1e9)+1;
-      state.revealedIds={}; state.blockRatings={}; state.page=0;
-    }
+    if(!seed){ seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0; }
     state.seed = seed;
-    state.customSelected = loadCustomSelection(state.malzamaKey, state.mode === "custom" ? "custom" : state.mode);
-    MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, loadExcludeSet(state.malzamaKey), {
-      previewMode: state.previewMode,
-      isShared: state.isShared
-    });
+    MODEL = buildModel(RAW_PAGES, state.mode, seed);
     saveProgress();
   }
   function saveProgress(){
-    try{
-      localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({
-        revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed
-      }));
-    }catch(e){}
+    try{ localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({ revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed })); }catch(e){}
   }
-
   function loadTheme(){ try{ var t = localStorage.getItem("najm_theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} }
   function toggleTheme(){
     var cur = document.documentElement.getAttribute("data-theme");
@@ -1036,8 +602,7 @@
     var revealed = {}, seed = null;
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
-    var customSel = loadCustomSelection(malzamaKey, mode === "custom" ? "custom" : mode);
-    var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey), {});
+    var model = buildModel(raw, mode, seed);
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
   }
@@ -1047,29 +612,28 @@
     var list = $("malzamaList"); list.innerHTML="";
     var index = getLibraryIndex();
     if(index.length === 0){
-      list.innerHTML = '<div class="empty-note">لسه مفيش ملازم — دوس على + فوق</div>';
+      list.innerHTML = '<div class="empty-note">لسه مفيش ملازم — دوس على + فوق وابدأ ارفع أول ملزمة</div>';
       return;
     }
     index.forEach(function(entry, i){
-      var comp = completionFor(entry.key, "sentences");
+      var comp = completionFor(entry.key, "headings");
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
-      var badge = entry.shared ? '<span class="malzama-badge">رسمية</span>' : '';
       var delBtn = entry.shared
-        ? '<button class="malzama-del" disabled style="opacity:.35;">📌</button>'
-        : '<button class="malzama-del" data-key="'+entry.key+'">🗑️</button>';
+        ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
+        : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
       card.innerHTML =
         '<div class="malzama-main" data-key="'+entry.key+'">' +
-          '<div class="malzama-num'+(entry.shared?' shared':'')+'">'+ar(i+1)+'</div>' +
-          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+badge+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
+          '<div class="malzama-num">'+ar(i+1)+'</div>' +
+          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
         '</div>' + delBtn;
-      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle, entry.shared); });
+      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
       var delEl = card.querySelector(".malzama-del");
       if(delEl && !entry.shared){
         delEl.addEventListener("click", function(e){
           e.stopPropagation();
-          if(confirm('تحذف "'+entry.title+'"؟')){
+          if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
             savePersonalIndex(getLibraryIndex().filter(function(x){ return !x.shared; }).filter(function(x){ return x.key!==entry.key; }));
             renderHome();
           }
@@ -1079,73 +643,23 @@
     });
   }
 
-  function openUnit(key, title, subtitle, isShared){
+  function openUnit(key, title, subtitle){
     var raw = getMalzamaContent(key);
-    if(!raw){ showToast("مقدرش ألاقي محتوى"); return; }
+    if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة دي"); return; }
     state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
-    state.isShared = !!isShared;
-    state.previewMode = false;
     RAW_PAGES = raw;
     $("unitTitle").textContent = title;
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    updateOwnerUI();
-    setMode(state.mode || "sentences", true);
-  }
-
-  function updateOwnerUI(){
-    var isShared = state.isShared;
-    var previewBtn = $("btnPreview");
-    var exitBtn = $("btnExitPreview");
-    var topbar = $("topbar");
-
-    if(state.previewMode){
-      previewBtn.classList.add("hidden");
-      exitBtn.classList.remove("hidden");
-      topbar.classList.add("preview-mode");
-      $("brandTitle").innerHTML = 'وضع المعاينة<small>👁️ صاحب الملزمة</small>';
-    } else {
-      if(isShared){
-        previewBtn.classList.remove("hidden");
-      } else {
-        previewBtn.classList.add("hidden");
-      }
-      exitBtn.classList.add("hidden");
-      topbar.classList.remove("preview-mode");
-      $("brandTitle").innerHTML = 'ذاكر بالإخفاء<small id="brandSub">من نجم الأحياء</small>';
-    }
-    updateReviewBadge();
+    setMode(state.mode || "headings", true);
   }
 
   function setMode(mode, skipToast, reshuffle){
-    state.mode = mode; state.freeMode = false; state.selecting = false;
+    state.mode = mode; state.freeMode = false;
     loadProgress(reshuffle);
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
-    var hints = state.previewMode ? MODE_HINTS_PREVIEW : MODE_HINTS;
-    $("hintBanner").textContent = hints[mode] || "";
-    $("hintBanner").classList.toggle("preview", state.previewMode);
-    var isCustom = mode === "custom";
-    var isHeadings = mode === "headings";
-    var isSentences = mode === "sentences";
-
-    // Owner preview available for sentences + headings; custom is always student's
-    var canPreview = isOwner() || (!state.isShared);
-    var showSentencesToolbar = isSentences && (isOwner());
-    var showHeadingsPickable = isHeadings && (isOwner());
-
-    $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
-    $("sentencesToolbar").classList.toggle("hidden", !showSentencesToolbar);
-    $("sentencesGuide").classList.toggle("hidden", !showSentencesToolbar);
-    $("customGuide").classList.toggle("hidden", !isCustom);
-    $("headingsGuide").classList.toggle("hidden", !isHeadings);
-    $("customToolbar").classList.toggle("hidden", !isCustom);
-    ["btnStartSelectSent","btnStartSelect"].forEach(function(id){ $(id).classList.remove("hidden"); });
-    ["btnSaveSent","btnSaveCustom"].forEach(function(id){ $(id).classList.add("hidden"); });
-    ["btnClearSent","btnClearCustom"].forEach(function(id){ $(id).classList.add("hidden"); });
-    $("sentSelectCount").textContent = "";
-    $("customSelectCount").textContent = "";
-
+    $("hintBanner").textContent = MODE_HINTS[mode];
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -1153,7 +667,6 @@
   function blankIndex(id){ return MODEL.allIds.indexOf(id); }
   function isUnlocked(id){
     if(state.freeMode) return true;
-    if(state.previewMode) return true; // preview shows everything unlocked for editing
     var idx = blankIndex(id);
     if(idx===0) return true;
     return !!state.revealedIds[MODEL.allIds[idx-1]];
@@ -1166,288 +679,7 @@
     var comp = computeCompletion();
     $("progressText").textContent = ar(comp.done) + " من " + ar(comp.total);
     $("progressFill").style.width = comp.pct + "%";
-    $("progressFill").classList.toggle("preview", state.previewMode);
     $("pageText").textContent = "صفحة " + ar(state.page+1) + " من " + ar(MODEL.pages.length);
-  }
-
-  function renderSelectableBlock(bd, block){
-    var src = block.originalHtml || block.html || escapeHtml(block.plainText || "");
-    var tmp = document.createElement("div");
-    tmp.innerHTML = src;
-    var runs = [];
-    function walk(node, bold, size){
-      if(node.nodeType === 3){
-        var t = node.textContent;
-        if(t) runs.push({ text: t, bold: !!bold, size: size || null });
-      } else if(node.nodeType === 1){
-        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
-        var sz = size;
-        if(node.style && node.style.fontSize){
-          var m = /([\d.]+)px/.exec(node.style.fontSize);
-          if(m) sz = parseFloat(m[1]);
-        }
-        var szAttr = node.getAttribute && node.getAttribute("data-sz");
-        if(szAttr) sz = parseFloat(szAttr);
-        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB, sz); });
-      }
-    }
-    walk(tmp, false, null);
-
-    var wordList = [];
-    runs.forEach(function(run){
-      run.text.split(/(\s+)/).forEach(function(p){
-        if(!p) return;
-        if(!/^\s+$/.test(p)) wordList.push({ text: p, bold: run.bold, size: run.size });
-      });
-    });
-
-    if(wordList.length === 0){
-      bd.textContent = block.plainText || "";
-      bd.dataset.wordCount = 0;
-      return;
-    }
-
-    var selectedIdx = {};
-    Object.keys(state.customSelected).forEach(function(k){
-      if(k.indexOf(block.key + "|w|") === 0){
-        var parts = k.split("|");
-        var a = +parts[2], b = +parts[3];
-        if(!isNaN(a) && !isNaN(b)){
-          for(var i=Math.min(a,b); i<=Math.max(a,b); i++) selectedIdx[i] = true;
-        }
-      }
-    });
-
-    wordList.forEach(function(w, idx){
-      var span = document.createElement("span");
-      span.className = "selectable-word";
-      span.dataset.blockKey = block.key;
-      span.dataset.wordIdx = idx;
-      span.textContent = w.text;
-      if(w.bold) span.style.fontWeight = "800";
-      if(w.size) span.style.fontSize = w.size + "px";
-      if(selectedIdx[idx]) span.classList.add("selected");
-      bd.appendChild(span);
-      bd.appendChild(document.createTextNode(" "));
-    });
-    bd.dataset.wordCount = wordList.length;
-  }
-
-  /* ---------- Word selection ---------- */
-  var _selDrag = {
-    active:false, moved:false, blockKey:null,
-    anchorIdx:-1, curIdx:-1,
-    lastTap:0, lastTapIdx:-1, lastTapKey:null,
-    pointerId:null, captured:false
-  };
-
-  function bindWordSelection(wrap, countElId){
-    function updateCount(){
-      var count = Object.keys(state.customSelected).length;
-      var el = $(countElId);
-      if(el) el.textContent = count ? ar(count) + " جزء محدد" : "اضغط كلمة · مرّر · ضغطتين للجملة";
-    }
-    function isIdxSelected(blockKey, idx){
-      var keys = Object.keys(state.customSelected);
-      for(var i=0;i<keys.length;i++){
-        var k = keys[i];
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) return true;
-        }
-      }
-      return false;
-    }
-    function clearOverlapping(blockKey, lo, hi){
-      Object.keys(state.customSelected).forEach(function(k){
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          if(y >= lo && x <= hi) delete state.customSelected[k];
-        }
-      });
-    }
-    function repaintBlock(blockKey){
-      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
-      if(!blockEl) return;
-      var selectedIdx = {};
-      Object.keys(state.customSelected).forEach(function(k){
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          for(var i=Math.min(x,y);i<=Math.max(x,y);i++) selectedIdx[i]=true;
-        }
-      });
-      blockEl.querySelectorAll(".selectable-word").forEach(function(sp){
-        sp.classList.toggle("selected", !!selectedIdx[+sp.dataset.wordIdx]);
-      });
-      updateCount();
-    }
-    function expandWithBilingual(blockKey, a, b){
-      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(blockKey)+'"]');
-      if(!blockEl) return [a, b];
-      var wordEls = blockEl.querySelectorAll(".selectable-word");
-      var words = [];
-      for(var i=0;i<wordEls.length;i++) words.push(wordEls[i].textContent);
-      var groups = mergeBilingualIndices(words);
-      var lo = Math.min(a,b), hi = Math.max(a,b);
-      groups.forEach(function(g){
-        if(!(g.end < lo || g.start > hi)){
-          lo = Math.min(lo, g.start);
-          hi = Math.max(hi, g.end);
-        }
-      });
-      return [lo, hi];
-    }
-    function applyRange(blockKey, a, b){
-      var exp = expandWithBilingual(blockKey, a, b);
-      var lo = exp[0], hi = exp[1];
-      clearOverlapping(blockKey, lo, hi);
-      state.customSelected[blockKey + "|w|" + lo + "|" + hi] = true;
-      repaintBlock(blockKey);
-    }
-    function removeRangeCovering(blockKey, idx){
-      Object.keys(state.customSelected).forEach(function(k){
-        if(k.indexOf(blockKey + "|w|") === 0){
-          var p = k.split("|");
-          var x = +p[2], y = +p[3];
-          if(idx >= Math.min(x,y) && idx <= Math.max(x,y)) delete state.customSelected[k];
-        }
-      });
-      repaintBlock(blockKey);
-    }
-    function sentenceRangeForWord(blockEl, idx){
-      var words = blockEl.querySelectorAll(".selectable-word");
-      var n = words.length;
-      if(n === 0) return [idx, idx];
-      var start = idx, end = idx;
-      while(start > 0){
-        var prev = (words[start-1].textContent || "").trim();
-        if(/[.!؟?:：،,;؛]$/.test(prev)) break;
-        start--;
-      }
-      while(end < n-1){
-        var cur = (words[end].textContent || "").trim();
-        if(/[.!؟?:：，,;；]$/.test(cur)) break;
-        end++;
-      }
-      return [start, end];
-    }
-    function nearestWordInBlock(blockEl, x, y){
-      if(!blockEl) return null;
-      var words = blockEl.querySelectorAll(".selectable-word");
-      var best = null, bestD = Infinity;
-      for(var i=0;i<words.length;i++){
-        var r = words[i].getBoundingClientRect();
-        var cy = Math.max(r.top, Math.min(y, r.bottom));
-        var cx = Math.max(r.left, Math.min(x, r.right));
-        var dx = cx - x, dy = cy - y;
-        var d = dx*dx + dy*dy;
-        if(d < bestD){ bestD = d; best = words[i]; }
-      }
-      return best;
-    }
-    function wordFromEvent(e){
-      var t = e.target;
-      if(t && t.classList && t.classList.contains("selectable-word")) return t;
-      var pt = null;
-      if(e.touches && e.touches[0]) pt = e.touches[0];
-      else if(e.changedTouches && e.changedTouches[0]) pt = e.changedTouches[0];
-      else if(typeof e.clientX === "number") pt = { clientX:e.clientX, clientY:e.clientY };
-      if(!pt) return null;
-      var el = document.elementFromPoint(pt.clientX, pt.clientY);
-      if(el){
-        var cur = el;
-        while(cur && cur !== wrap){
-          if(cur.classList && cur.classList.contains("selectable-word")) return cur;
-          cur = cur.parentNode;
-        }
-        var block = el.closest ? el.closest(".doc-block") : null;
-        if(block){
-          var w = nearestWordInBlock(block, pt.clientX, pt.clientY);
-          if(w) return w;
-        }
-      }
-      return null;
-    }
-    function endDrag(){
-      if(_selDrag.captured && _selDrag.pointerId != null){
-        try{ wrap.releasePointerCapture(_selDrag.pointerId); }catch(e){}
-      }
-      _selDrag.active = false;
-      _selDrag.moved = false;
-      _selDrag.captured = false;
-      _selDrag.pointerId = null;
-    }
-    function onStart(e){
-      if(e.button && e.button !== 0) return;
-      var w = wordFromEvent(e);
-      if(!w) return;
-      var blockKey = w.dataset.blockKey;
-      var idx = +w.dataset.wordIdx;
-      var now = Date.now();
-      if(_selDrag.lastTapKey === blockKey && _selDrag.lastTapIdx === idx && (now - _selDrag.lastTap) < 450){
-        var blockEl = w.parentElement;
-        var range = sentenceRangeForWord(blockEl, idx);
-        var allOn = true;
-        for(var i=range[0];i<=range[1];i++){ if(!isIdxSelected(blockKey, i)){ allOn=false; break; } }
-        if(allOn) removeRangeCovering(blockKey, idx);
-        else applyRange(blockKey, range[0], range[1]);
-        _selDrag.lastTap = 0;
-        _selDrag.lastTapKey = null;
-        _selDrag.lastTapIdx = -1;
-        if(e.cancelable) e.preventDefault();
-        return;
-      }
-      _selDrag.lastTap = now;
-      _selDrag.lastTapKey = blockKey;
-      _selDrag.lastTapIdx = idx;
-      _selDrag.active = true;
-      _selDrag.moved = false;
-      _selDrag.blockKey = blockKey;
-      _selDrag.anchorIdx = idx;
-      _selDrag.curIdx = idx;
-      _selDrag.pointerId = (e.pointerId != null) ? e.pointerId : null;
-      if(e.pointerId != null){
-        try{ wrap.setPointerCapture(e.pointerId); _selDrag.captured = true; }catch(err){}
-      }
-      if(e.cancelable) e.preventDefault();
-    }
-    function onMove(e){
-      if(!_selDrag.active) return;
-      var w = wordFromEvent(e);
-      if(!w) return;
-      if(w.dataset.blockKey !== _selDrag.blockKey) return;
-      var idx = +w.dataset.wordIdx;
-      if(idx === _selDrag.curIdx) return;
-      _selDrag.moved = true;
-      _selDrag.curIdx = idx;
-      applyRange(_selDrag.blockKey, _selDrag.anchorIdx, _selDrag.curIdx);
-      if(e.cancelable) e.preventDefault();
-    }
-    function onEnd(e){
-      if(!_selDrag.active) return;
-      var blockKey = _selDrag.blockKey;
-      var a = _selDrag.anchorIdx;
-      var b = _selDrag.curIdx;
-      if(!_selDrag.moved){
-        if(isIdxSelected(blockKey, a)) removeRangeCovering(blockKey, a);
-        else applyRange(blockKey, a, a);
-      }
-      endDrag();
-    }
-    wrap.addEventListener("pointerdown", onStart);
-    wrap.addEventListener("pointermove", onMove);
-    wrap.addEventListener("pointerup", onEnd);
-    wrap.addEventListener("pointercancel", onEnd);
-    wrap.addEventListener("touchstart", function(e){
-      if(_selDrag.active && e.cancelable) e.preventDefault();
-    }, {passive:false});
-    wrap.addEventListener("touchmove", function(e){
-      if(_selDrag.active && e.cancelable) e.preventDefault();
-    }, {passive:false});
-    updateCount();
   }
 
   function renderPage(){
@@ -1455,62 +687,25 @@
     var wrap = $("docWrap");
     wrap.innerHTML = "";
     var page = MODEL.pages[state.page];
-    if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
-
-    var isCustom = state.mode === "custom";
-    var isSentences = state.mode === "sentences";
-    var isHeadings = state.mode === "headings";
-    var owner = isOwner();
-
-    if(isCustom && !state.selecting && MODEL.allIds.length === 0){
-      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ثم احفظ.</div>';
-      updateNavButtons();
-      return;
-    }
-
     var docCard = document.createElement("div");
-    docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "") + (state.previewMode ? " preview-border" : "");
-    var headingCls = state.previewMode ? " preview" : "";
-    docCard.innerHTML = '<div class="doc-heading'+headingCls+'"><span class="star">⭐</span>' + page.heading + '</div>';
-
-    var useClean = state.selecting && (isCustom || isSentences);
+    docCard.className = "doc-card";
+    docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
 
     page.sections.forEach(function(sec){
       if(sec.sub){
         var sh = document.createElement("div");
         sh.className = "doc-subheading";
-        sh.textContent = sec.sub;
+        sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
         docCard.appendChild(sh);
       }
       sec.blocks.forEach(function(block){
         var bd = document.createElement("div");
         bd.className = "doc-block";
         bd.dataset.blockKey = block.key;
-        if(useClean){
-          renderSelectableBlock(bd, block);
-        } else {
-          bd.innerHTML = block.html;
-        }
-
-        // Headings mode: mark pickable blocks (owner only)
-        if(isHeadings && owner && !state.selecting && block.pickable && !block.blankIds.length){
-          bd.classList.add("title-pickable");
-          bd.title = "اضغط لإخفاء هذا الجزء";
-          bd.addEventListener("click", function(ev){
-            if(ev.target.closest(".blank-x, .blank, .rate-btn")) return;
-            ev.preventDefault();
-            var set = loadManualAddSet(state.malzamaKey, "headings");
-            set[block.key] = block.hideText || block.plainText;
-            saveManualAddSet(state.malzamaKey, "headings", set);
-            showToast("تم الإخفاء — اضغط ✕ لإلغائه");
-            loadProgress(false);
-            renderPage();
-          });
-        }
-
+        bd.innerHTML = block.html;
         docCard.appendChild(bd);
 
-        if(!useClean && block.blankIds.length > 0 && !state.previewMode){
+        if(block.blankIds.length > 0){
           var rateRow = document.createElement("div");
           rateRow.className = "block-rate";
           rateRow.dataset.blockKey = block.key;
@@ -1518,93 +713,59 @@
           rateRow.innerHTML =
             '<span class="lbl">قيّم نفسك:</span>' +
             '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
-            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>';
+            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>' +
+            '<button class="mic-mini" data-key="'+block.key+'" title="قول إجابتك بصوتك">🎤</button>';
           docCard.appendChild(rateRow);
+          var saidEl = document.createElement("div");
+          saidEl.className = "said-inline";
+          saidEl.id = "said-" + block.key;
+          docCard.appendChild(saidEl);
         }
       });
     });
     wrap.appendChild(docCard);
 
-    if(useClean){
-      bindWordSelection(wrap, isCustom ? "customSelectCount" : "sentSelectCount");
-    } else {
-      // Attach ✕ to blanks (owner only, not in preview)
-      if(owner && !state.previewMode){
-        wrap.querySelectorAll(".blank").forEach(function(span){
-          var id = +span.dataset.id;
-          var revealed = !!state.revealedIds[id];
-          var unlocked = isUnlocked(id);
-          span.classList.toggle("revealed", revealed);
-          span.classList.toggle("locked", !revealed && !unlocked);
-          if(!span.dataset.xAttached){
-            span.dataset.xAttached = "1";
-            var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
-            var blockEl = span.closest(".doc-block");
-            var fullText = blockEl ? (blockEl.dataset.fullPlain || blockEl.textContent) : hideText;
-
-            var xBtn = document.createElement("button");
-            xBtn.type = "button";
-            xBtn.className = "blank-x";
-            xBtn.title = "إلغاء الإخفاء";
-            xBtn.textContent = "✕";
-            xBtn.addEventListener("click", function(ev){
-              ev.preventDefault(); ev.stopPropagation();
-              excludeFromHide(hideText, fullText);
-            });
-            if(span.parentNode){
-              span.parentNode.insertBefore(xBtn, span.nextSibling);
-            }
-          }
-        });
-      } else {
-        // Reader mode: normal reveal + no ✕
-        wrap.querySelectorAll(".blank").forEach(function(span){
-          var id = +span.dataset.id;
-          var revealed = !!state.revealedIds[id];
-          var unlocked = isUnlocked(id);
-          span.classList.toggle("revealed", revealed);
-          span.classList.toggle("locked", !revealed && !unlocked);
-        });
-      }
-
-      if(!state.previewMode){
-        wrap.querySelectorAll(".block-rate").forEach(function(row){
-          var key = row.dataset.blockKey;
-          var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
-          if(!blockEl) return;
-          var blanksInBlock = blockEl.querySelectorAll(".blank");
-          var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
-          row.classList.toggle("show", allRevealed);
-        });
-
-        wrap.querySelectorAll(".blank").forEach(function(span){
-          span.addEventListener("click", function(ev){
-            if(ev.target.classList.contains("blank-x")) return;
-            var id = +span.dataset.id;
-            if(state.revealedIds[id]) return;
-            if(!isUnlocked(id)){
-              state.stuckTaps = (state.stuckTaps||0) + 1;
-              if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
-              else showToast("خلّص الجزء اللي قبل ده الأول");
-              return;
-            }
-            state.stuckTaps = 0;
-            revealBlank(id);
-          });
-        });
-
-        wrap.querySelectorAll(".rate-btn").forEach(function(btn){
-          btn.addEventListener("click", function(){
-            var key = btn.dataset.key;
-            state.blockRatings[key] = btn.dataset.rate;
-            saveProgress();
-            var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
-            setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
-            renderPage();
-          });
-        });
-      }
-    }
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      var id = +span.dataset.id;
+      var revealed = !!state.revealedIds[id];
+      var unlocked = isUnlocked(id);
+      span.classList.toggle("revealed", revealed);
+      span.classList.toggle("locked", !revealed && !unlocked);
+    });
+    wrap.querySelectorAll(".block-rate").forEach(function(row){
+      var key = row.dataset.blockKey;
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+      var blanksInBlock = blockEl.querySelectorAll(".blank");
+      var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
+      row.classList.toggle("show", allRevealed);
+    });
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      span.addEventListener("click", function(){
+        var id = +span.dataset.id;
+        if(state.revealedIds[id]) return;
+        if(!isUnlocked(id)){
+          state.stuckTaps = (state.stuckTaps||0) + 1;
+          if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
+          else showToast("خلّص الجزء اللي قبل ده الأول");
+          return;
+        }
+        state.stuckTaps = 0;
+        revealBlank(id);
+      });
+    });
+    wrap.querySelectorAll(".rate-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var key = btn.dataset.key;
+        state.blockRatings[key] = btn.dataset.rate;
+        saveProgress();
+        var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+        setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
+        renderPage();
+      });
+    });
+    wrap.querySelectorAll(".mic-mini").forEach(function(btn){
+      btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+    });
 
     updateNavButtons();
   }
@@ -1621,18 +782,37 @@
     for(var i=0;i<MODEL.allIds.length;i++){ var id=MODEL.allIds[i]; if(!state.revealedIds[id]) return id; }
     return null;
   }
+  /* Safety valve: if the student taps a locked item 3 times (most
+     likely they're stuck on whatever is actually blocking, even if
+     it's off-screen), auto-reveal that blocking item, flag it as
+     "needs review", and let them continue instead of getting stuck. */
   function handleStuckSkip(){
     var blockId = firstUnrevealedGlobal();
     if(!blockId) return;
     state.revealedIds[blockId] = true;
     saveProgress();
     renderPage();
-    showToast("تخطينا الجزء ده — كمّل");
+    var el = document.querySelector('.blank[data-id="'+blockId+'"]');
+    if(el){
+      var blockEl = el.closest(".doc-block");
+      if(blockEl){
+        var key = blockEl.dataset.blockKey;
+        state.blockRatings[key] = "review";
+        saveProgress();
+        setReviewStatus(state.malzamaKey, key, "review", blockEl.textContent.trim());
+      } else {
+        var subEl = el.closest(".doc-subheading");
+        if(subEl) setReviewStatus(state.malzamaKey, "sec_"+blockId, "review", subEl.textContent.trim());
+      }
+    }
+    renderPage();
+    showToast("تخطينا الجزء ده وحطيناه في «محتاج مراجعة» — كمّل عادي");
   }
   function nextUnrevealedOnPage(){
     var page = MODEL.pages[state.page];
     for(var s=0;s<page.sections.length;s++){
       var sec = page.sections[s];
+      if(sec.subBlankId && !state.revealedIds[sec.subBlankId] && isUnlocked(sec.subBlankId)) return sec.subBlankId;
       for(var b=0;b<sec.blocks.length;b++){
         var ids = sec.blocks[b].blankIds;
         for(var i=0;i<ids.length;i++){
@@ -1643,20 +823,11 @@
     return null;
   }
   function updateNavButtons(){
-    $("btnPrevPage").disabled = state.page===0 || state.selecting;
-    $("btnNextPage").disabled = state.page===MODEL.pages.length-1 || state.selecting;
+    $("btnPrevPage").disabled = state.page===0;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1;
     var next = nextUnrevealedOnPage();
-    if(!next) next = firstUnrevealedGlobal();
-    $("btnReveal").disabled = !next || state.selecting || state.previewMode;
-    $("btnReveal").classList.toggle("preview", state.previewMode);
-    $("btnReveal").onclick = function(){
-      if(state.selecting || state.previewMode) return;
-      var onPage = nextUnrevealedOnPage();
-      if(onPage){ state.stuckTaps = 0; revealBlank(onPage); return; }
-      state.stuckTaps = (state.stuckTaps||0) + 1;
-      if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
-      else showToast("مفيش جزء ظاهر هنا — اضغط تاني (" + ar(state.stuckTaps) + "/٣)");
-    };
+    $("btnReveal").disabled = !next;
+    $("btnReveal").onclick = function(){ if(next) revealBlank(next); };
   }
   function finishUnit(){
     var know=0, review=0;
@@ -1668,12 +839,28 @@
     switchView("done");
   }
 
+  function startSpeech(key, btn){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ showToast("المتصفح ده مش بيدعم التعرف على الصوت"); return; }
+    var rec = new SR(); rec.lang="ar-SA"; rec.interimResults=false;
+    btn.classList.add("on");
+    rec.onresult = function(e){
+      var text = e.results[0][0].transcript;
+      var out = $("said-" + key);
+      if(out){ out.style.display="block"; out.textContent = "🎤 قلت: " + text; }
+    };
+    rec.onerror = function(){ showToast("مقدرش أسمعك، جرب تاني"); };
+    rec.onend = function(){ btn.classList.remove("on"); };
+    try{ rec.start(); }catch(e){ btn.classList.remove("on"); }
+  }
+
+  /* ---------- Review list modal ---------- */
   function renderReviewModal(){
     var map = loadReviewMap(state.malzamaKey);
     var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
     var wrap = $("reviewListWrap");
     if(keys.length === 0){
-      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة 🎉</div>';
+      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة دلوقتي 🎉</div>';
       return;
     }
     wrap.innerHTML = "";
@@ -1692,7 +879,11 @@
     });
   }
 
-  /* ---------- DOCX parse ---------- */
+  /* ---------- Upload pipeline: Word (.docx) ----------
+     Parsed directly from the raw docx XML (via JSZip) instead of a
+     generic HTML converter, specifically so struck-through runs can
+     be detected and dropped — a plain HTML conversion doesn't expose
+     that formatting, so a library that hides it wouldn't work. */
   var WNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
   function wEls(node, tag){ return Array.prototype.slice.call(node.getElementsByTagNameNS(WNS, tag)); }
   function wAttrVal(el){
@@ -1701,82 +892,65 @@
     if(v === null || v === "") v = el.getAttribute("w:val");
     return v;
   }
-  function isFlagOn(el){
+  function isFlagOn(el){ // OOXML boolean run property: present + no val, or val is 1/true/on
     if(!el) return false;
     var v = wAttrVal(el);
     return v === null || v === "" || v === "1" || v === "true" || v === "on";
   }
-  function extractRunProps(rEl){
-    var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
-    var bold = false, italic = false, size = null;
-    if(rPr){
-      bold = isFlagOn(rPr.getElementsByTagNameNS(WNS,"b")[0] || null);
-      italic = isFlagOn(rPr.getElementsByTagNameNS(WNS,"i")[0] || null);
-      var szEl = rPr.getElementsByTagNameNS(WNS,"sz")[0];
-      if(szEl){
-        var szVal = wAttrVal(szEl);
-        if(szVal) size = parseInt(szVal, 10) / 2;
-      }
-    }
-    return { bold:bold, italic:italic, size:size };
+
+  function loadHeadingStyleLevels(stylesXmlText){
+    var levels = {}; // styleId -> level (1,2,3...) or 0 for Title
+    if(!stylesXmlText) return levels;
+    var doc = new DOMParser().parseFromString(stylesXmlText, "application/xml");
+    wEls(doc, "style").forEach(function(styleEl){
+      var id = styleEl.getAttributeNS(WNS,"styleId") || styleEl.getAttribute("w:styleId");
+      var nameEl = wEls(styleEl, "name")[0];
+      var name = nameEl ? (wAttrVal(nameEl)||"") : "";
+      var m = name.match(/^heading\s*([1-9])$/i);
+      if(m) levels[id] = +m[1];
+      else if(/^title$/i.test(name)) levels[id] = 1;
+    });
+    return levels;
   }
+
   function paragraphToRuns(pEl){
     var runs = [];
     wEls(pEl, "r").forEach(function(rEl){
-      var props = extractRunProps(rEl);
-      var struck = false;
-      var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
-      if(rPr){
-        struck = isFlagOn(rPr.getElementsByTagNameNS(WNS,"strike")[0] || null) ||
-                 isFlagOn(rPr.getElementsByTagNameNS(WNS,"dstrike")[0] || null);
+      if(rEl.parentNode.tagName && rEl.parentNode !== pEl && rEl.parentNode.namespaceURI===WNS && rEl.parentNode.localName!=="p"){
+        // skip runs that live inside nested structures we don't render (rare)
       }
-      if(struck) return;
+      var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
+      var struck = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"strike")[0] || null) : false;
+      if(!struck && rPr){
+        var dstrike = rEl.getElementsByTagNameNS(WNS,"dstrike")[0];
+        if(dstrike) struck = isFlagOn(dstrike);
+      }
+      if(struck) return; // never use struck-through text
+      var bold = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"b")[0] || null) : false;
       var text = "";
       Array.prototype.forEach.call(rEl.childNodes, function(child){
         if(child.namespaceURI===WNS && child.localName==="t") text += child.textContent;
         else if(child.namespaceURI===WNS && child.localName==="tab") text += " ";
         else if(child.namespaceURI===WNS && (child.localName==="br"||child.localName==="cr")) text += " ";
       });
-      if(text) runs.push({ text:text, bold:props.bold, italic:props.italic, size:props.size });
+      if(text) runs.push({ text:text, bold:bold });
     });
     return runs;
   }
+
   function runsToHtml(runs){
-    return runs.map(function(r){
-      var s = escapeHtml(r.text);
-      if(r.italic) s = "<i>"+s+"</i>";
-      if(r.bold) s = "<b>"+s+"</b>";
-      if(r.size) s = '<span style="font-size:'+r.size+'px;" data-sz="'+r.size+'">'+s+'</span>';
-      return s;
-    }).join("");
+    return runs.map(function(r){ return r.bold ? "<b>"+escapeHtml(r.text)+"</b>" : escapeHtml(r.text); }).join("");
   }
   function runsToPlainText(runs){ return runs.map(function(r){ return r.text; }).join(""); }
 
-  function loadHeadingStyleLevels(stylesXmlText){
-    var levels = {};
-    if(!stylesXmlText) return levels;
-    try{
-      var doc = new DOMParser().parseFromString(stylesXmlText, "application/xml");
-      wEls(doc, "style").forEach(function(styleEl){
-        var id = styleEl.getAttributeNS(WNS,"styleId") || styleEl.getAttribute("w:styleId");
-        var nameEl = wEls(styleEl, "name")[0];
-        var name = nameEl ? (wAttrVal(nameEl)||"") : "";
-        var m = name.match(/^heading\s*([1-9])$/i);
-        if(m) levels[id] = +m[1];
-        else if(/^title$/i.test(name)) levels[id] = 1;
-      });
-    }catch(e){}
-    return levels;
-  }
-
   function docxParagraphsToRawPages(paragraphs, fallbackTitle){
+    // paragraphs: [{ level:0|1|2|.. (0=Title/H1, 1=H2-ish sub, null=body), html, text }]
     var pages = [], docHeading = null, curPage = null, curSection = null;
     function newPage(h){ curPage = { heading:h, sections:[] }; pages.push(curPage); }
     function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
 
     paragraphs.forEach(function(p){
       if(!p.text.trim()) return;
-      if(isPromoOrVerse(p.text)) return;
       if(p.level === 1){
         if(!docHeading) docHeading = p.text.trim();
         newPage(p.text.trim()); newSection(null);
@@ -1786,7 +960,7 @@
       } else {
         if(!curPage) newPage(docHeading || fallbackTitle);
         if(!curSection) newSection(null);
-        curSection.blocks.push({ html: p.html });
+        curSection.blocks.push(p.html);
       }
     });
     if(pages.length === 0){ newPage(fallbackTitle); newSection(null); }
@@ -1824,29 +998,22 @@
             var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
             var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
             var runs = paragraphToRuns(pEl);
-            var html = runsToHtml(runs);
-            var text = runsToPlainText(runs);
-            if(!level && text.trim().length > 0 && text.trim().length <= 80){
-              var tTrim = text.trim();
-              var isMarker = isTrivialFragment(tTrim) || LIST_MARKER_RE.test(tTrim) || BARE_ENUM_RE.test(tTrim);
-              if(!isMarker){
-                var allBold = runs.length > 0 && runs.every(function(r){ return r.bold || !r.text.trim(); });
-                var hasBold = runs.some(function(r){ return r.bold && r.text.trim(); });
-                if(allBold && hasBold && /[\u0600-\u06FFa-zA-Z]{3,}/.test(tTrim)) level = 2;
-              }
-            }
-            return { level: level, html: html, text: text };
+            return { level: level, html: runsToHtml(runs), text: runsToPlainText(runs) };
           });
           var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
-        }).catch(function(err){ reject("مقدرش أقرا الوورد: " + (err&&err.message?err.message:err)); });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
       };
-      reader.onerror = function(){ reject("مقدرش أفتح الملف"); };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
       reader.readAsArrayBuffer(file);
     });
   }
 
-  /* ---------- PDF parse ---------- */
+  /* PDF structuring: purely client-side heuristic (works the same
+     whether the page is hosted on claude.ai, GitHub Pages, or Vercel —
+     no AI call, no backend). Groups text items into lines by their
+     vertical position, then classifies a short line in a larger-than-
+     usual font as a heading; everything else merges into paragraphs. */
   function handlePdf(file){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
@@ -1867,9 +1034,9 @@
           var cleaned = filterNoiseLines(pageLinesList);
           var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.pdf$/i,""), heading: parsed.heading });
-        }).catch(function(err){ reject("مقدرش أقرا الـ PDF: " + err.message); });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
       };
-      reader.onerror = function(){ reject("مقدرش أفتح الملف"); };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
       reader.readAsArrayBuffer(file);
     });
   }
@@ -1879,18 +1046,21 @@
     items.forEach(function(it){
       var y = Math.round(it.transform[5]);
       var size = Math.abs(it.transform[3]) || Math.abs(it.transform[0]) || 10;
-      var fontName = it.fontName || "";
-      var isBold = /bold|black|heavy|semibold/i.test(fontName);
       var line = lines.find(function(l){ return Math.abs(l.y - y) <= 2; });
-      if(!line){ line = { y:y, size:size, text:"", bold:isBold }; lines.push(line); }
+      if(!line){ line = { y:y, size:size, text:"" }; lines.push(line); }
       line.text += (line.text ? " " : "") + it.str;
       line.size = Math.max(line.size, size);
-      line.bold = line.bold || isBold;
     });
-    lines.sort(function(a,b){ return b.y - a.y; });
+    lines.sort(function(a,b){ return b.y - a.y; }); // top to bottom (PDF y grows upward)
     return lines.filter(function(l){ return l.text.trim(); });
   }
 
+  /* Drop lines that are clearly page furniture, not real content:
+     - a line whose exact text repeats across most pages (a running
+       header/footer — teacher's name, phone number, brand line,
+       "النجم" watermark, etc.) — generic, works for any teacher/brand
+     - a line containing a web link or Telegram/website URL
+     - a short line that's mostly a phone number */
   function filterNoiseLines(pageLinesList){
     if(pageLinesList.length <= 1) return pageLinesList;
     var freq = {};
@@ -1909,11 +1079,9 @@
         var norm = l.text.trim().replace(/\s+/g," ");
         if(!norm) return false;
         if(freq[norm] >= repeatThreshold) return false;
-        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b|youtube\.com|youtu\.be/i.test(norm)) return false;
+        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b/i.test(norm)) return false;
         if(/\d{7,}/.test(norm) && norm.length < 40) return false;
-        if(/\*\*\*/.test(norm)) return false;
-        if(/انضم إلى قناة|لمتابعة فيديوهات|قناة النجم|النجم في الأحياء|thanwiaqatarbioadvanced|ezzatalnajm|ta3leemonline/i.test(norm)) return false;
-        if(norm.length > 60 && /تليجرام|يوتيوب|واتساب|قناة/.test(norm) && /رابط|انضم|تابع|تحميل/.test(norm)) return false;
+        if(/\*\*\*/.test(norm)) return false; // poetry/proverb line
         return true;
       });
     });
@@ -1934,44 +1102,37 @@
 
     function newPage(h){ curPage = { heading:h, sections:[] }; rawPages.push(curPage); }
     function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
-    function lineToHtml(l){
-      var sizePx = Math.round(l.size);
-      var s = escapeHtml(l.text.trim());
-      if(l.bold) s = "<b>"+s+"</b>";
-      s = '<span style="font-size:'+sizePx+'px;" data-sz="'+sizePx+'">'+s+'</span>';
-      return s;
+    function pushParagraph(text){
+      if(!text.trim()) return;
+      if(!curPage) newPage(fallbackTitle);
+      if(!curSection) newSection(null);
+      curSection.blocks.push(escapeHtml(text.trim()));
     }
 
     pageLinesList.forEach(function(lines, pageIdx){
-      var buffer = [];
+      var buffer = "";
       var sawHeadingThisPage = false;
       lines.forEach(function(l){
         var txt = l.text.trim();
         var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 70 && !/^[0-9\s.\-–|]+$/.test(txt);
         if(isHeading){
-          if(buffer.length){
-            if(!curSection) newSection(null);
-            curSection.blocks.push({ html: buffer.join(" ") });
-            buffer = [];
-          }
+          pushParagraph(buffer); buffer = "";
           if(!docHeading) docHeading = txt;
           if(!curPage || (!sawHeadingThisPage && pageIdx>0)) newPage(txt);
           else if(!curPage) newPage(txt);
           newSection(txt);
           sawHeadingThisPage = true;
         } else {
-          buffer.push(lineToHtml(l));
+          buffer += (buffer ? " " : "") + txt;
+          if(buffer.length > 260){ pushParagraph(buffer); buffer=""; }
         }
       });
-      if(buffer.length){
-        if(!curPage) newPage(fallbackTitle);
-        if(!curSection) newSection(null);
-        curSection.blocks.push({ html: buffer.join(" ") });
-      }
+      pushParagraph(buffer);
     });
 
     if(rawPages.length === 0){ newPage(fallbackTitle); newSection(null); }
 
+    // re-chunk to a manageable number of blocks per page (max ~6)
     var flat = [];
     rawPages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
     var rechunked = [], curBlocks = 0, curP = null, curH = null;
@@ -1986,10 +1147,10 @@
     return { rawPages: rechunked.length?rechunked:rawPages, heading: docHeading || fallbackTitle };
   }
 
-  /* ---------- Upload pipeline ---------- */
   function setUploadStatus(msg){ var el=$("uploadStatus"); el.style.display="block"; el.textContent=msg; }
+  function uploadFailed(msg){ setUploadStatus("⚠️ " + msg); }
 
-  var pendingSharedBatch = [];
+  var pendingSharedBatch = []; // starts as a copy of the currently-deployed shared library, then gains/loses items this session
   var pendingSeeded = false;
   function seedPendingFromShared(){
     if(pendingSeeded) return;
@@ -2010,7 +1171,7 @@
     pendingSharedBatch.forEach(function(item){
       var row = document.createElement("div");
       row.className = "review-item";
-      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button>🗑️ شيل</button>';
+      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button data-key="'+item.key+'">🗑️ شيل</button>';
       row.querySelector("button").addEventListener("click", function(){
         pendingSharedBatch = pendingSharedBatch.filter(function(x){ return x.key!==item.key; });
         renderPendingList();
@@ -2028,9 +1189,9 @@
         setUploadStatus("بيتقرا: " + file.name + "...");
         var task = /\.docx$/i.test(file.name) ? handleDocx(file)
                   : /\.pdf$/i.test(file.name) ? handlePdf(file)
-                  : Promise.reject("صيغة مش مدعومة: " + file.name);
+                  : Promise.reject("الصيغة دي مش مدعومة: " + file.name);
         return task.then(function(r){ results.push(r); })
-          .catch(function(err){ showToast(typeof err==="string"?err:"خطأ في: "+file.name); });
+          .catch(function(err){ showToast(typeof err==="string"?err:"حصل خطأ في: "+file.name); });
       });
     });
     return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
@@ -2058,36 +1219,18 @@
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
       renderPendingList();
-      showToast("اترفع "+results.length+" ملزمة رسمية");
+      showToast("اترفع "+results.length+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة");
       renderHome();
     } else {
       $("modalUpload").classList.remove("show");
       renderHome();
-      showToast('اتضافت "'+lastTitle+'"');
-      openUnit(lastKey, lastTitle, lastSub, false);
+      showToast('اتضافت "'+lastTitle+'" للملازم');
+      openUnit(lastKey, lastTitle, lastSub);
     }
   }
 
   function downloadLibraryJson(){
-    // Include current owner settings for all shared items
-    var itemsWithSettings = pendingSharedBatch.map(function(item){
-      return {
-        key: item.key,
-        title: item.title,
-        subtitle: item.subtitle,
-        rawPages: item.rawPages,
-        ownerSettings: {
-          manualAdds: {
-            sentences: loadManualAddSet(item.key, "sentences"),
-            headings: loadManualAddSet(item.key, "headings"),
-            custom: loadManualAddSet(item.key, "custom")
-          },
-          exclude: loadExcludeSet(item.key),
-          customSentences: loadCustomSelection(item.key, "sentences")
-        }
-      };
-    });
-    var payload = { items: itemsWithSettings };
+    var payload = { items: pendingSharedBatch };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -2097,7 +1240,7 @@
   }
 
   function resetApp(){
-    if(!confirm("متأكد؟ هيتمسح كل الملازم والتقدم.")) return;
+    if(!confirm("متأكد؟ هيتمسح كل الملازم الشخصية وتقدمك المحفوظ فيها من الجهاز ده، ومينفعش يترجع.")) return;
     try{
       var toRemove = [];
       for(var i=0;i<localStorage.length;i++){
@@ -2106,7 +1249,7 @@
       }
       toRemove.forEach(function(k){ localStorage.removeItem(k); });
     }catch(e){}
-    showToast("اترفع — بيعيد التحميل...");
+    showToast("اترفع البرنامج — بيعيد التحميل...");
     setTimeout(function(){ location.reload(); }, 600);
   }
 
@@ -2123,24 +1266,12 @@
 
   $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
   $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
-  $("btnRestart").addEventListener("click", function(){ switchView("unit"); setMode(state.mode, true, true); showToast("محاولة جديدة"); });
-  $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
-
-  // Preview button (owner)
-  $("btnPreview").addEventListener("click", function(){
-    state.previewMode = true;
-    updateOwnerUI();
+  $("btnRestart").addEventListener("click", function(){
+    switchView("unit");
     setMode(state.mode, true, true);
-    showToast("👁️ وضع المعاينة — أضف أو ألغِ الإخفاءات");
+    showToast("محاولة جديدة — أجزاء مختلفة اتخفت هالمرة");
   });
-  $("btnExitPreview").addEventListener("click", function(){
-    if(!confirm("خروج من المعاينة؟ كل الإضافات والإلغاءات هتتحفظ.")) return;
-    markOwnerReady(state.malzamaKey);
-    state.previewMode = false;
-    updateOwnerUI();
-    setMode(state.mode, true, false);
-    showToast("تم الحفظ — استخدم زر التنزيل من المكتبة لتحديث library.json");
-  });
+  $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
 
   $("btnAdd").addEventListener("click", function(){
     seedPendingFromShared();
@@ -2159,91 +1290,6 @@
   $("downloadLibrary").addEventListener("click", downloadLibraryJson);
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
-
-  // Custom mode buttons
-  $("btnStartSelect").addEventListener("click", function(){
-    if(state.mode !== "custom") return;
-    state.selecting = true;
-    state.customSelected = loadCustomSelection(state.malzamaKey, "custom");
-    $("btnStartSelect").classList.add("hidden");
-    $("btnSaveCustom").classList.remove("hidden");
-    $("btnClearCustom").classList.remove("hidden");
-    renderPage();
-  });
-  $("btnSaveCustom").addEventListener("click", function(){
-    if(state.mode !== "custom") return;
-    saveCustomSelection(state.malzamaKey, "custom", state.customSelected);
-    state.selecting = false;
-    state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
-    state.seed = Math.floor(Math.random()*1e9)+1;
-    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey), {});
-    saveProgress();
-    $("btnStartSelect").classList.remove("hidden");
-    $("btnSaveCustom").classList.add("hidden");
-    $("btnClearCustom").classList.add("hidden");
-    showToast("تم الحفظ");
-    renderPage();
-  });
-  $("btnClearCustom").addEventListener("click", function(){
-    if(!confirm("تمسح كل التحديد؟")) return;
-    state.customSelected = {};
-    saveCustomSelection(state.malzamaKey, "custom", {});
-    document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
-    showToast("تم المسح");
-  });
-
-  // Sentences manual buttons
-  $("btnStartSelectSent").addEventListener("click", function(){
-    if(state.mode !== "sentences") return;
-    state.selecting = true;
-    state.customSelected = loadCustomSelection(state.malzamaKey, "sentences");
-    $("btnStartSelectSent").classList.add("hidden");
-    $("btnSaveSent").classList.remove("hidden");
-    $("btnClearSent").classList.remove("hidden");
-    renderPage();
-  });
-  $("btnSaveSent").addEventListener("click", function(){
-    if(state.mode !== "sentences") return;
-    saveCustomSelection(state.malzamaKey, "sentences", state.customSelected);
-    // Also mirror into manual adds so it persists in library.json export
-    var ms = loadManualAddSet(state.malzamaKey, "sentences");
-    Object.keys(state.customSelected).forEach(function(k){ ms[k] = true; });
-    saveManualAddSet(state.malzamaKey, "sentences", ms);
-    state.selecting = false;
-    MODEL = buildModel(RAW_PAGES, "sentences", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey), {
-      previewMode: state.previewMode
-    });
-    saveProgress();
-    $("btnStartSelectSent").classList.remove("hidden");
-    $("btnSaveSent").classList.add("hidden");
-    $("btnClearSent").classList.add("hidden");
-    showToast("تم الحفظ");
-    renderPage();
-  });
-  $("btnClearSent").addEventListener("click", function(){
-    if(!confirm("تمسح كل التحديد اليدوي؟")) return;
-    state.customSelected = {};
-    saveCustomSelection(state.malzamaKey, "sentences", {});
-    document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
-    showToast("تم المسح");
-  });
-
-  $("btnRestartUnit").addEventListener("click", function(){
-    if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
-    if(state.mode === "headings"){
-      if(!confirm("إعادة من جديد؟ هيمسح الإخفاءات اليدوية.")) return;
-      saveManualAddSet(state.malzamaKey, "headings", {});
-      saveExcludeSet(state.malzamaKey, {});
-      state.revealedIds={}; state.blockRatings={}; state.page=0;
-      loadProgress(false);
-      renderPage();
-      showToast("تم المسح");
-      return;
-    }
-    if(!confirm("إعادة من جديد؟")) return;
-    setMode(state.mode, true, true);
-    showToast("محاولة جديدة");
-  });
 
   loadTheme();
   renderHome();
