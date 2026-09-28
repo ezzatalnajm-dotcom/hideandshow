@@ -67,6 +67,10 @@
   .ready-modes span.off{opacity:.55;}
   .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
   .malzama-del:active{color:var(--danger);}
+  .malzama-order{display:flex;flex-direction:column;gap:2px;flex:0 0 auto;}
+  .malzama-order button{background:rgba(10,27,46,.06);border:none;color:var(--ink);width:28px;height:24px;border-radius:6px;font-size:12px;cursor:pointer;padding:0;line-height:1;}
+  .malzama-order button:active{background:var(--gold-400);}
+  .malzama-order button:disabled{opacity:.3;cursor:default;}
   .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
   .upload-hint b{color:var(--ink);}
 
@@ -610,10 +614,53 @@
     sharedTagged.forEach(function(x){ seen[x.key] = true; });
     // شخصية فقط لو مش موجودة كرسمية (منع التكرار)
     var personalTagged = personal.filter(function(x){ return !seen[x.key]; }).map(function(x){ return Object.assign({shared:false}, x); });
-    return sharedTagged.concat(personalTagged);
+    return applyListOrder(sharedTagged.concat(personalTagged));
   }
   function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
   function saveLibraryIndex(list){ savePersonalIndex(list); } // back-compat name used below
+  var ORDER_KEY = "najm_list_order_v1";
+  function loadListOrder(){
+    try{ var a = JSON.parse(localStorage.getItem(ORDER_KEY)||"[]"); return Array.isArray(a)?a:[]; }catch(e){ return []; }
+  }
+  function saveListOrder(keys){ try{ localStorage.setItem(ORDER_KEY, JSON.stringify(keys)); }catch(e){} }
+  function applyListOrder(index){
+    var order = loadListOrder();
+    if(!order.length) return index;
+    var map = {};
+    index.forEach(function(e){ map[e.key]=e; });
+    var out = [];
+    order.forEach(function(k){ if(map[k]){ out.push(map[k]); delete map[k]; } });
+    index.forEach(function(e){ if(map[e.key]) out.push(e); });
+    return out;
+  }
+  function moveMalzamaInList(key, dir){
+    var index = applyListOrder(getLibraryIndex());
+    var keys = index.map(function(e){ return e.key; });
+    var i = keys.indexOf(key);
+    if(i < 0) return;
+    var j = i + dir;
+    if(j < 0 || j >= keys.length) return;
+    var t = keys[i]; keys[i] = keys[j]; keys[j] = t;
+    saveListOrder(keys);
+    // حدّث ترتيب الشخصية أيضاً
+    var pers = getLibraryIndex().filter(function(x){ return !x.shared; });
+    var persMap = {};
+    pers.forEach(function(e){ persMap[e.key]=e; });
+    var newPers = [];
+    keys.forEach(function(k){ if(persMap[k]) newPers.push(persMap[k]); });
+    pers.forEach(function(e){ if(keys.indexOf(e.key)<0) newPers.push(e); });
+    if(newPers.length) savePersonalIndex(newPers);
+    // ترتيب دفعة التصدير
+    if(typeof pendingSharedBatch !== "undefined" && pendingSharedBatch.length){
+      var pmap = {};
+      pendingSharedBatch.forEach(function(it){ pmap[it.key]=it; });
+      var np = [];
+      keys.forEach(function(k){ if(pmap[k]) np.push(pmap[k]); });
+      pendingSharedBatch.forEach(function(it){ if(keys.indexOf(it.key)<0) np.push(it); });
+      pendingSharedBatch = np;
+    }
+    renderHome();
+  }
   var CONTENT_CACHE = {};
   var IDB_NAME = "najm_hide_db", IDB_STORE = "content";
   function idbOpen(){
@@ -1381,7 +1428,13 @@
           '<span class="'+(ready.sentences?"on":"off")+'">'+(ready.sentences?"✅":"⚪")+' جمل</span>' +
           '<span class="'+(ready.custom?"on":"off")+'">'+(ready.custom?"✅":"⚪")+' تخصيص</span>' +
         '</div>';
+      var orderBtns =
+        '<div class="malzama-order">' +
+          '<button type="button" class="ord-up" data-key="'+entry.key+'" title="لأعلى" '+(i===0?"disabled":"")+'>▲</button>' +
+          '<button type="button" class="ord-down" data-key="'+entry.key+'" title="لأسفل" '+(i===index.length-1?"disabled":"")+'>▼</button>' +
+        '</div>';
       card.innerHTML =
+        orderBtns +
         '<div class="malzama-main" data-key="'+entry.key+'">' +
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
           '<div class="malzama-info">' +
@@ -1391,6 +1444,8 @@
           '</div>' +
         '</div>' + delBtn;
       card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle, !!entry.shared); });
+      card.querySelector(".ord-up").addEventListener("click", function(e){ e.stopPropagation(); moveMalzamaInList(entry.key, -1); });
+      card.querySelector(".ord-down").addEventListener("click", function(e){ e.stopPropagation(); moveMalzamaInList(entry.key, 1); });
       var delEl = card.querySelector(".malzama-del");
       if(delEl){
         delEl.addEventListener("click", function(e){
@@ -2584,12 +2639,13 @@
             }
             return { level: level, html: html, text: text };
           });
-          // صور media ما ارتبطتش بفقرة → كل صورة فقرة منفصلة في النهاية (مش جاليري واحد)
+                    // كل الصور المضمّنة في الملف (حتى لو مش مربوطة بفقرة) — فقرة منفصلة لكل صورة
           var extraImgs = 0;
+          var seenSrc = {};
           Object.keys(mediaByPath).forEach(function(k){
-            if(!/^media\//i.test(k)) return;
             var src = mediaByPath[k];
-            if(!src || usedSrc[src]) return;
+            if(!src || seenSrc[src] || usedSrc[src]) return;
+            seenSrc[src] = true;
             usedSrc[src] = true;
             extraImgs++;
             paragraphs.push({ level:null, html: imgHtmlFromSrc(src), text: "" });
@@ -2633,22 +2689,75 @@
      no AI call, no backend). Groups text items into lines by their
      vertical position, then classifies a short line in a larger-than-
      usual font as a heading; everything else merges into paragraphs. */
-  function renderPdfPageToDataUrl(page, maxW){
-    maxW = maxW || 640;
-    var base = page.getViewport({ scale: 1 });
-    var scale = Math.min(1.25, maxW / (base.width || maxW));
-    var viewport = page.getViewport({ scale: scale });
-    var canvas = document.createElement("canvas");
-    canvas.width = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
-    var ctx = canvas.getContext("2d");
-    return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function(){
-      try{
-        var url = canvas.toDataURL("image/jpeg", 0.55);
-        if(url && url.length > 500) return url;
-        return canvas.toDataURL("image/png");
-      } catch(e){ return null; }
-    }).catch(function(){ return null; });
+  function pdfImageObjToDataUrl(imgObj, maxW){
+    maxW = maxW || 900;
+    try{
+      if(!imgObj) return null;
+      var w = imgObj.width || 0, h = imgObj.height || 0;
+      if(!w || !h) return null;
+      var canvas = document.createElement("canvas");
+      var tw = w, th = h;
+      if(tw > maxW){ th = Math.round(th * maxW / tw); tw = maxW; }
+      canvas.width = tw; canvas.height = th;
+      var ctx = canvas.getContext("2d");
+      if(imgObj.bitmap){
+        ctx.drawImage(imgObj.bitmap, 0, 0, tw, th);
+      } else if(imgObj.data){
+        var c2 = document.createElement("canvas");
+        c2.width = w; c2.height = h;
+        var ctx2 = c2.getContext("2d");
+        var imageData = ctx2.createImageData(w, h);
+        // pdf.js may give RGB or RGBA
+        var src = imgObj.data;
+        if(src.length === w*h*4){
+          imageData.data.set(src);
+        } else if(src.length === w*h*3){
+          for(var i=0,j=0;i<src.length;i+=3,j+=4){
+            imageData.data[j]=src[i]; imageData.data[j+1]=src[i+1]; imageData.data[j+2]=src[i+2]; imageData.data[j+3]=255;
+          }
+        } else {
+          try{ imageData.data.set(src); }catch(e){ return null; }
+        }
+        ctx2.putImageData(imageData, 0, 0);
+        ctx.drawImage(c2, 0, 0, tw, th);
+      } else {
+        return null;
+      }
+      return canvas.toDataURL("image/jpeg", 0.88);
+    }catch(e){ return null; }
+  }
+
+  function extractEmbeddedImagesFromPage(page){
+    return page.getOperatorList().then(function(ops){
+      var names = [];
+      var seen = {};
+      for(var i=0;i<ops.fnArray.length;i++){
+        var fn = ops.fnArray[i];
+        if(fn === pdfjsLib.OPS.paintImageXObject || fn === pdfjsLib.OPS.paintJpegXObject || fn === pdfjsLib.OPS.paintImageMaskXObject){
+          var nm = ops.argsArray[i] && ops.argsArray[i][0];
+          if(nm && !seen[nm]){ seen[nm]=true; names.push(nm); }
+        }
+      }
+      var out = [];
+      var chain = Promise.resolve();
+      names.forEach(function(nm){
+        chain = chain.then(function(){
+          return new Promise(function(resolve){
+            try{
+              page.objs.get(nm, function(obj){
+                var url = pdfImageObjToDataUrl(obj, 1000);
+                // تجاهل الصور الصغيرة جدًا (أيقونات/نقاط)
+                if(url && obj && (obj.width||0) >= 40 && (obj.height||0) >= 40){
+                  out.push(url);
+                }
+                resolve();
+              });
+            }catch(e){ resolve(); }
+          });
+        });
+      });
+      return chain.then(function(){ return out; });
+    }).catch(function(){ return []; });
   }
 
   function handlePdf(file){
@@ -2657,46 +2766,49 @@
       reader.onload = function(e){
         var typedarray = new Uint8Array(e.target.result);
         pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
-          var pageLinesList = [], pageImages = [], pending = Promise.resolve();
+          var pageLinesList = [], pageImgsList = [], pending = Promise.resolve();
           for(var i=1;i<=pdf.numPages;i++){
             (function(pageNum){
               pending = pending.then(function(){
                 return pdf.getPage(pageNum).then(function(page){
                   return page.getTextContent().then(function(tc){
                     pageLinesList.push(groupIntoLines(tc.items));
-                    return renderPdfPageToDataUrl(page, 640).then(function(dataUrl){
-                      pageImages.push(dataUrl);
+                    return extractEmbeddedImagesFromPage(page).then(function(imgs){
+                      pageImgsList.push(imgs || []);
                     });
                   });
                 });
               });
             })(i);
           }
-          return pending.then(function(){ return { pageLinesList: pageLinesList, pageImages: pageImages }; });
+          return pending.then(function(){ return { pageLinesList: pageLinesList, pageImgsList: pageImgsList }; });
         }).then(function(pack){
           var cleaned = filterNoiseLines(pack.pageLinesList);
           var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
-          // إدراج صورة كل صفحة PDF كفقرة منفصلة في أول محتوى الصفحة (الرسم في مكانه)
           var rawPages = parsed.rawPages || [];
-          pack.pageImages.forEach(function(src, idx){
-            if(!src) return;
+          var totalImgs = 0;
+          // ضع الرسوم المضمّنة في آخر كل صفحة (في مكان منطقي مع المحتوى)
+          pack.pageImgsList.forEach(function(imgs, idx){
+            if(!imgs || !imgs.length) return;
             if(!rawPages[idx]){
               rawPages[idx] = { heading: file.name.replace(/\.pdf$/i,"") + " — " + (idx+1), sections: [{ sub:null, blocks:[] }] };
             }
             if(!rawPages[idx].sections || !rawPages[idx].sections.length){
               rawPages[idx].sections = [{ sub:null, blocks:[] }];
             }
-            var fig = '<div class="doc-fig"><img src="'+src+'" alt="رسم صفحة '+ (idx+1) +'"></div>';
-            // أول بلوك في أول سكشن = الرسم
-            rawPages[idx].sections[0].blocks.unshift(fig);
+            var sec = rawPages[idx].sections[rawPages[idx].sections.length - 1];
+            imgs.forEach(function(src, ii){
+              totalImgs++;
+              sec.blocks.push('<div class="doc-fig"><img src="'+src+'" alt="رسم '+(idx+1)+'-'+(ii+1)+'"></div>');
+            });
           });
           resolve({
             rawPages: rawPages,
             fallbackTitle: file.name.replace(/\.pdf$/i,""),
             heading: parsed.heading,
-            imgCount: pack.pageImages.filter(Boolean).length
+            imgCount: totalImgs
           });
-        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + (err && err.message ? err.message : err)); });
       };
       reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
       reader.readAsArrayBuffer(file);
