@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ذاكر بالإخفاء من نجم الأحياء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0a1b2e; --navy-900:#0f2740; --navy-850:#122d4a; --navy-800:#153351; --navy-700:#1c4266;
+    --gold-400:#f0c948; --gold-500:#e0b62f; --gold-600:#c79a1f;
+    --ink:#0a1b2e; --paper:#f4f1ea; --card:#ffffff; --muted:#5c6b7a;
+    --ok:#2e9e5b; --warn:#d9822b; --danger:#c94b4b;
+    --radius-lg:20px; --radius-md:13px; --radius-sm:9px;
+    --shadow:0 10px 30px rgba(10,27,46,.18);
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  html,body{height:100%;}
+  body{margin:0;font-family:'Cairo','Tajawal',sans-serif;background:var(--paper);color:var(--ink);-webkit-tap-highlight-color:transparent;}
+  :root:not([data-theme="light"]){--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
+  @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--paper:#f4f1ea;--card:#ffffff;--ink:#0a1b2e;--muted:#5c6b7a;}}
+  :root[data-theme="light"]{--paper:#f4f1ea;--card:#ffffff;--ink:#0a1b2e;--muted:#5c6b7a;}
+  :root[data-theme="dark"]{--paper:#0d1f34;--card:#132b45;--ink:#eef2f6;--muted:#9fb0c0;}
+
+  .app{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+  .topbar{background:linear-gradient(160deg,var(--navy-900),var(--navy-950));padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+  .topbar-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .brand{display:flex;align-items:center;gap:8px;}
+  .brand .star{font-size:20px;filter:drop-shadow(0 0 6px rgba(240,201,72,.7));}
+  .brand h1{font-size:14px;margin:0;font-weight:800;line-height:1.3;}
+  .brand h1 small{display:block;font-weight:400;font-size:10px;opacity:.75;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex:0 0 auto;position:relative;}
+  .icon-btn:active{background:rgba(255,255,255,.2);}
+  .icon-btn .dot{position:absolute;top:-2px;left:-2px;background:var(--danger);color:#fff;font-size:9px;font-weight:800;min-width:16px;height:16px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+  .topbar-actions{display:flex;gap:7px;}
+
+  .home-hero{padding:22px 18px 6px;text-align:center;}
+  .home-hero .badge{display:inline-flex;align-items:center;gap:6px;background:var(--navy-900);color:var(--gold-400);padding:7px 16px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:var(--shadow);}
+  .home-hero h2{font-size:20px;margin:14px 0 4px;font-weight:800;}
+  .home-hero p{color:var(--muted);font-size:13.5px;margin:0;line-height:1.7;}
+  .contact-strip{display:flex;gap:8px;padding:14px 18px 4px;}
+  .contact-strip a,.contact-strip button{flex:1;text-align:center;padding:10px 6px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:12px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+  .cs-wa{background:#25D366;color:#fff;}
+  .cs-call{background:var(--navy-900);color:#fff;}
+  .cs-tg{background:#229ED9;color:#fff;}
+
+  .section-title{font-size:13px;color:var(--muted);font-weight:700;padding:18px 18px 8px;display:flex;justify-content:space-between;align-items:center;}
+  .add-btn{background:var(--navy-900);color:var(--gold-400);border:none;width:30px;height:30px;border-radius:50%;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .malzama-list{padding:0 16px 8px;display:flex;flex-direction:column;gap:10px;}
+  .malzama-card{background:var(--card);border-radius:var(--radius-md);padding:14px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(10,27,46,.10);border:1px solid rgba(10,27,46,.06);}
+  .malzama-main{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer;}
+  .malzama-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .malzama-info{flex:1;min-width:0;}
+  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
+  .malzama-del:active{color:var(--danger);}
+  .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
+  .upload-hint b{color:var(--ink);}
+
+  .unit-topinfo{padding:14px 18px 2px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .unit-title{font-size:17px;font-weight:800;margin:0 0 2px;}
+  .unit-sub{color:var(--muted);font-size:12px;margin:0;}
+  .review-pill{background:rgba(217,130,43,.14);color:var(--warn);border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
+
+  .mode-row{display:flex;gap:7px;padding:12px 18px 2px;overflow-x:auto;}
+  .mode-btn{flex:0 0 auto;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:normal;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:140px;}
+  :root:not([data-theme="light"]) .mode-btn{border-color:rgba(255,255,255,.14);}
+  .mode-btn .mt{display:flex;align-items:center;gap:5px;}
+  .mode-btn .mtime{font-size:9.5px;font-weight:600;color:var(--muted);}
+  .mode-btn.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
+  .mode-btn.active .mtime{color:var(--gold-400);}
+
+  .shuffle-note{margin:8px 18px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+
+  .progress-wrap{padding:10px 18px 2px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+  .progress-track{height:7px;border-radius:999px;background:rgba(10,27,46,.08);overflow:hidden;}
+  :root:not([data-theme="light"]) .progress-track{background:rgba(255,255,255,.10);}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold-500),var(--gold-400));border-radius:999px;transition:width .35s ease;}
+
+  .hint-banner{margin:12px 18px 0;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);color:var(--gold-600);border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
+  :root:not([data-theme="light"]) .hint-banner{color:var(--gold-400);}
+
+  .doc-wrap{padding:8px 18px 16px;flex:1;}
+  .doc-card{background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:4px 0 6px;margin-top:12px;overflow:hidden;border:1px solid rgba(10,27,46,.06);}
+  .doc-heading{background:var(--navy-900);color:#fff;padding:11px 16px;font-weight:800;font-size:14.5px;display:flex;align-items:center;gap:8px;}
+  .doc-heading .star{color:var(--gold-400);font-size:13px;}
+  .doc-subheading{color:var(--navy-700);font-weight:800;font-size:13.5px;padding:14px 16px 2px;}
+  :root:not([data-theme="light"]) .doc-subheading{color:var(--gold-400);}
+  .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
+  .doc-block b{font-weight:800;}
+
+  .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);}
+  .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
+  .blank.revealed{filter:none;background:rgba(46,158,91,.14);cursor:default;padding:0 4px;}
+  :root:not([data-theme="light"]) .blank{background:rgba(224,182,47,.14);}
+  :root:not([data-theme="light"]) .blank.revealed{background:rgba(46,158,91,.20);}
+  .doc-subheading .blank{font-weight:800;}
+
+  .block-rate{display:none;align-items:center;gap:8px;margin:6px 16px 14px;flex-wrap:wrap;}
+  .block-rate.show{display:flex;}
+  .block-rate .lbl{font-size:11.5px;color:var(--muted);font-weight:700;}
+  .rate-btn{border:none;border-radius:999px;padding:6px 12px;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .rate-know{background:rgba(46,158,91,.12);color:var(--ok);}
+  .rate-know.active{background:var(--ok);color:#fff;}
+  .rate-review{background:rgba(217,130,43,.14);color:var(--warn);}
+  .rate-review.active{background:var(--warn);color:#fff;}
+  .mic-mini{border:none;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;}
+  .mic-mini.on{color:var(--danger);}
+  .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
+
+  .bottombar{position:sticky;bottom:0;background:var(--card);border-top:1px solid rgba(10,27,46,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 -6px 16px rgba(10,27,46,.08);}
+  :root:not([data-theme="light"]) .bottombar{border-top-color:rgba(255,255,255,.08);}
+  .nav-btn{flex:1;background:rgba(10,27,46,.07);color:var(--ink);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  :root:not([data-theme="light"]) .nav-btn{background:rgba(255,255,255,.08);}
+  .nav-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .reveal-btn{flex:1.5;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);border:none;border-radius:var(--radius-sm);padding:11px 8px;font-weight:800;font-size:13px;cursor:pointer;}
+  .reveal-btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  .done-screen{padding:36px 22px;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .done-screen .emoji{font-size:48px;margin-bottom:8px;}
+  .done-screen h2{font-size:19px;margin:6px 0;}
+  .done-screen p{color:var(--muted);font-size:13px;line-height:1.8;max-width:320px;}
+  .done-stats{display:flex;gap:14px;margin:16px 0;}
+  .done-stat{background:var(--card);border-radius:var(--radius-md);padding:12px 16px;box-shadow:var(--shadow);min-width:80px;}
+  .done-stat .n{font-size:20px;font-weight:800;}
+  .done-stat.ok .n{color:var(--ok);}
+  .done-stat.warn .n{color:var(--warn);}
+  .done-stat .l{font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .done-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+  .done-actions button{border:none;border-radius:999px;padding:10px 16px;font-weight:700;font-size:12.5px;cursor:pointer;}
+  .btn-gold{background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);}
+  .btn-ghost{background:rgba(10,27,46,.07);color:var(--ink);}
+  :root:not([data-theme="light"]) .btn-ghost{background:rgba(255,255,255,.08);}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,27,46,.55);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(2px);}
+  .modal-overlay.show{display:flex;}
+  .modal{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0px));max-height:82vh;overflow-y:auto;}
+  .modal h3{margin:0 0 10px;font-size:16px;display:flex;align-items:center;justify-content:space-between;}
+  .modal .close-x{cursor:pointer;color:var(--muted);font-size:15px;}
+  .modal p, .modal li{font-size:13.5px;line-height:1.9;color:var(--ink);}
+  .modal ol,.modal ul{padding-inline-start:20px;margin:8px 0;}
+  .modal .contact-row{display:flex;gap:10px;margin-top:14px;}
+  .modal .contact-row a{flex:1;text-align:center;padding:11px;border-radius:var(--radius-sm);text-decoration:none;font-weight:700;font-size:13px;}
+  .wa{background:#25D366;color:#fff;}
+  .tg{background:#229ED9;color:#fff;}
+  .modal .file-choice{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+  .file-choice button{border:1px solid rgba(10,27,46,.15);background:var(--paper);color:var(--ink);border-radius:var(--radius-sm);padding:13px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:right;display:flex;align-items:center;gap:10px;}
+  .review-item{background:var(--paper);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:9px;font-size:13px;line-height:1.8;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  :root:not([data-theme="light"]) .review-item{background:rgba(255,255,255,.05);}
+  .review-item .txt{flex:1;}
+  .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .empty-note{color:var(--muted);font-size:13px;text-align:center;padding:20px 0;}
+  .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:88%;text-align:center;}
+  .toast.show{opacity:1;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <span class="star">⭐</span>
+        <h1>ذاكر بالإخفاء<small>من نجم الأحياء</small></h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="btnTheme" title="الوضع الفاتح/الداكن">🌓</button>
+        <button class="icon-btn" id="btnInfo" title="تعليمات الاستخدام">؟</button>
+        <button class="icon-btn" id="btnSettings" title="الإعدادات">⚙️</button>
+        <button class="icon-btn hidden" id="btnHome" title="الرئيسية">🏠</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewHome">
+    <div class="home-hero">
+      <span class="badge">⭐ النجم في الأحياء</span>
+      <h2>ذاكر بالإخفاء</h2>
+      <p>اقرا الملزمة زي ما هي، وحاول تفتكر الأجزاء المموّهة قبل ما تكشفها.</p>
+    </div>
+    <div class="contact-strip">
+      <a class="cs-wa" href="https://wa.me/97477107247" target="_blank">💬 واتساب</a>
+      <a class="cs-call" href="tel:+97477107247">📞 اتصال</a>
+      <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 قناة التليجرام</a>
+    </div>
+    <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة جديدة">+</button></div>
+    <div class="malzama-list" id="malzamaList"></div>
+    <div class="upload-hint">تقدر ترفع ملزمة أي مادة (مش بس الأحياء) — <b>Word</b> أو <b>PDF</b> — وهتتحول تلقائيًا لنفس أسلوب المراجعة دي.</div>
+  </div>
+
+  <div id="viewUnit" class="hidden" style="display:flex;flex-direction:column;flex:1;">
+    <div class="unit-topinfo">
+      <div>
+        <h2 class="unit-title" id="unitTitle">ملزمة ١</h2>
+        <p class="unit-sub" id="unitSub">العضلات والحركة</p>
+      </div>
+      <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
+    </div>
+
+    <div class="mode-row" id="modeRow">
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين والفقرات</span><span class="mtime">بعد الحصة مباشرة</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">بعد المذاكرة</span></button>
+    </div>
+    <div class="shuffle-note">🔀 كل محاولة جديدة بتخفي أجزاء مختلفة — مش هتلاقي نفس الأماكن</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span id="progressText">٠ من ٠</span><span id="pageText">صفحة ١ من ١</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+    </div>
+    <div class="hint-banner" id="hintBanner">🎙️ حاول تفتكر أو تقول الإجابة بصوت عالٍ الأول، وبعدين اكشفها</div>
+    <div class="doc-wrap" id="docWrap"></div>
+
+    <div class="bottombar">
+      <button class="nav-btn" id="btnPrevPage">◀ السابقة</button>
+      <button class="reveal-btn" id="btnReveal">إظهار التالي</button>
+      <button class="nav-btn" id="btnNextPage">التالية ▶</button>
+    </div>
+  </div>
+
+  <div id="viewDone" class="hidden done-screen">
+    <div class="emoji">🎉</div>
+    <h2>أحسنت! خلّصت المحاولة دي</h2>
+    <p>كده تكون راجعت كل حاجة في الملزمة دي بالمود اللي اخترته.</p>
+    <div class="done-stats">
+      <div class="done-stat ok"><div class="n" id="statKnow">0</div><div class="l">عرفتها</div></div>
+      <div class="done-stat warn"><div class="n" id="statReview">0</div><div class="l">محتاج مراجعة</div></div>
+    </div>
+    <div class="done-actions">
+      <button class="btn-gold" id="btnReviewNeeded">📋 راجع اللي محتاج مراجعة</button>
+      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة (تجديد عشوائي)</button>
+      <button class="btn-ghost" id="btnBackHome">الرئيسية</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalInfo">
+  <div class="modal">
+    <h3>إزاي تستخدم التطبيق <span class="close-x" data-close="modalInfo">✕</span></h3>
+    <ol>
+      <li>اختار مود المراجعة: العناوين والفقرات (بعد الحصة)، أو الجمل (بعد المذاكرة).</li>
+      <li>الملزمة بتتقرا زي ما هي، فقرة بعد فقرة، بنفس ترتيبها الأصلي.</li>
+      <li>الأجزاء المموّهة (Blur) هي اللي هتحاول تفتكرها قبل الكشف.</li>
+      <li>اضغط عليها أو على زرار "إظهار التالي" عشان تتكشف، بالترتيب.</li>
+      <li>بعد كل فقرة، قيّم نفسك: "عرفتها" أو "محتاج مراجعة".</li>
+      <li>اللي تقيّمه "محتاج مراجعة" بيتجمع في قائمة واحدة تقدر تفتحها من فوق، من كل المودات مع بعض.</li>
+      <li>كل مود بيختار أجزاء مختلفة عشوائيًا في كل محاولة جديدة — مش نفس الأماكن كل مرة.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalContact">
+  <div class="modal">
+    <h3>راسلنا <span class="close-x" data-close="modalContact">✕</span></h3>
+    <p>لأي استفسار أو اقتراح، تواصل مباشرة مع أ. عزت شعبان.</p>
+    <div class="contact-row">
+      <a class="wa" href="https://wa.me/97477107247" target="_blank">واتساب</a>
+      <a class="tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">تليجرام</a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalUpload">
+  <div class="modal">
+    <h3>ارفع ملزمة جديدة <span class="close-x" data-close="modalUpload">✕</span></h3>
+    <p>اختار ملف أو أكتر (Word أو PDF) من جهازك. لو عندك الملف على Google Drive، حمّله على جهازك الأول من تطبيق درايف وبعدين ارفعه من هنا.</p>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;">
+      <input type="checkbox" id="officialCheck"> دي ملازم رسمية (هتتضاف لملف المكتبة المشتركة اللي بترفعه مع الموقع)
+    </label>
+    <div class="file-choice">
+      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز (Word أو PDF)</button>
+    </div>
+    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
+    <p id="uploadStatus" style="display:none;"></p>
+    <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
+      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية الحالية (اللي هتتصدّر في library.json) — <span id="pendingCount">٠</span> ملزمة. شيل أي واحدة قبل ما تنزّل لو محتاجة تتغيّر.</p>
+      <div id="pendingListWrap"></div>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalReview">
+  <div class="modal">
+    <h3>محتاج مراجعة <span class="close-x" data-close="modalReview">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">القائمة دي مجمّعة من كل المودات — أي فقرة قيّمتها "محتاج مراجعة" في أي مود هتلاقيها هنا.</p>
+    <div id="reviewListWrap"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalSettings">
+  <div class="modal">
+    <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها. مش بيأثر على الملازم الرسمية اللي جايه من library.json.</p>
+    <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج (حذف كل حاجة محلية)</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
+  }
+
+  var MODE_LABELS = { headings:"العناوين والفقرات", sentences:"الجمل" };
+  var MODE_HINTS = {
+    headings: "🏷️ كل فقرة هتخفي إما عنوانها أو تفصيلها عشوائيًا. الفقرة اللي من غير عنوان، هتتخفي منها جمل بس مش كلها",
+    sentences: "✂️ جمل مفرّقة من كل الملزمة مموّهة عشوائيًا — بيتغيّر مكانها كل محاولة جديدة"
+  };
+
+  var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+  function ar(n){ return String(n).split("").map(function(ch){ return /[0-9]/.test(ch)?ARABIC_DIGITS[+ch]:ch; }).join(""); }
+  function stripHtml(html){ var d=document.createElement("div"); d.innerHTML=html; return (d.textContent||"").trim(); }
+  function slugify(str){
+    return "m_" + String(str).trim().toLowerCase()
+      .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
+  }
+  function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function splitSentences(text){
+    var parts = text.split(/(?<=[.!؟?])\s+/).map(function(s){return s.trim();}).filter(Boolean);
+    return parts.length ? parts : (text.trim()?[text.trim()]:[]);
+  }
+  function shuffleWith(arr, rnd){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+  function seededRandom(seed){
+    var s = seed % 2147483647; if(s<=0) s += 2147483646;
+    return function(){ s = s*16807 % 2147483647; return (s-1)/2147483646; };
+  }
+
+  /* ---------- Library ----------
+     Two sources merged together:
+     - SHARED (library.json, fetched once at boot if present next to
+       index.html on the deployed site) — same for every visitor,
+       no upload needed. Read-only, never written by this browser.
+     - PERSONAL (localStorage) — whatever this one visitor uploaded
+       themselves (e.g. a student adding a different subject).
+  ------------------------------------------------- */
+  var LIB_INDEX_KEY = "najm_lib_index_v2";
+  var SHARED_INDEX = [];   // [{key,title,subtitle}]
+  var SHARED_CONTENT = {}; // key -> rawPages
+
+  function fetchSharedLibrary(){
+    return fetch("./library.json").then(function(res){
+      if(!res.ok) throw new Error("no library.json");
+      return res.json();
+    }).then(function(data){
+      if(data && Array.isArray(data.items)){
+        SHARED_INDEX = data.items.map(function(it){ return { key:it.key, title:it.title, subtitle:it.subtitle }; });
+        data.items.forEach(function(it){ SHARED_CONTENT[it.key] = it.rawPages; });
+      }
+    }).catch(function(){ /* no shared library deployed yet — that's fine */ });
+  }
+
+  function getLibraryIndex(){
+    var personal = [];
+    try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
+    // also drop any leftover reference to the old built-in seed ملزمة ١
+    personal = personal.filter(function(x){ return x.key !== "seed_u1l1"; });
+    var sharedTagged = SHARED_INDEX.map(function(x){ return Object.assign({shared:true}, x); });
+    var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
+    return sharedTagged.concat(personalTagged);
+  }
+  function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
+  function saveLibraryIndex(list){ savePersonalIndex(list); } // back-compat name used below
+  function getMalzamaContent(key){
+    if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
+    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
+    return null;
+  }
+  function saveMalzamaContent(key, rawPages){ try{ localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages)); }catch(e){} }
+
+  /* ---------- Cross-mode aggregated review list ---------- */
+  function reviewKey(malzamaKey){ return "najm_review_" + malzamaKey; }
+  function loadReviewMap(malzamaKey){
+    try{ var raw = localStorage.getItem(reviewKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {};
+  }
+  function saveReviewMap(malzamaKey, map){ try{ localStorage.setItem(reviewKey(malzamaKey), JSON.stringify(map)); }catch(e){} }
+  function setReviewStatus(malzamaKey, blockKey, rating, text){
+    var map = loadReviewMap(malzamaKey);
+    if(rating === "review"){ map[blockKey] = { text:text, updatedAt: Date.now() }; }
+    else { delete map[blockKey]; }
+    saveReviewMap(malzamaKey, map);
+    updateReviewBadge();
+  }
+  function updateReviewBadge(){
+    if(!state.malzamaKey) return;
+    var map = loadReviewMap(state.malzamaKey);
+    var count = Object.keys(map).length;
+    var el = $("reviewCount");
+    if(el) el.textContent = ar(count);
+  }
+
+  /* ---------- Reveal-engine model builder ----------
+     Two modes, both operating at sentence/paragraph granularity,
+     built per SECTION so we can coordinate rules across sibling
+     blocks (never hide a section's heading and its paragraphs at
+     the same time; alternate heading/detail across a run of
+     inline-labeled paragraphs; never hide two adjacent sentences).
+     - 'headings': if a section has a sub-heading, ONE coin-flip
+       decides whether to hide that heading (in which case every
+       block under it stays fully visible this round) or show it
+       (in which case blocks are processed individually: a block
+       with its own inline "<b>label:</b>" lead-in alternates
+       hide-label/hide-detail across a run of such blocks; a block
+       with neither gets some of its sentences hidden).
+     - 'sentences': every block keeps any leading bold label
+       visible, and individual sentences are hidden at random
+       across the whole document, never two in a row.
+     Random selection is stored per (malzama, mode) "attempt" and
+     only reshuffled when the student starts a fresh attempt.
+  ------------------------------------------------- */
+  var LEAD_RE = /^(\s*<b>([^<]{1,40}?):<\/b>\s*)/;
+  var VERSE_RE = /\*\*\*/; // poetry/proverb separator seen in his ملازم
+  function isTrivialFragment(s){
+    var t = s.trim();
+    if(t.length < 2) return true;
+    if(/^[\u0621-\u064A]\s*[-.):]?\s*$/.test(t)) return true; // a bare enumeration letter: أ  ب  ج
+    if(/^\(?[0-9]+\)?[-.:]?\s*$/.test(t)) return true; // a bare number/list marker
+    return false;
+  }
+  // Pick a hidden subset of sentence indices: no two adjacent, never
+  // all of them, never none of them (when 2+ real candidates exist).
+  function pickSentenceHides(sentences, ratio, rnd){
+    var candidates = sentences.map(function(s,i){return i;}).filter(function(i){ return !isTrivialFragment(sentences[i]); });
+    if(candidates.length === 0) return {};
+    var order = shuffleWith(candidates, rnd);
+    var target = Math.max(1, Math.min(candidates.length - (candidates.length>1?1:0), Math.round(candidates.length*ratio)));
+    var hideSet = {};
+    order.forEach(function(i){
+      if(Object.keys(hideSet).length >= target) return;
+      if(hideSet[i-1] || hideSet[i+1]) return; // keep no-two-adjacent
+      hideSet[i] = true;
+    });
+    return hideSet;
+  }
+
+  function flattenBlocks(rawPages){
+    var flat = [];
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        sec.blocks.forEach(function(html, bi){
+          flat.push({ pageIdx:pi, secIdx:si, blockIdx:bi, html:html, sectionSub:sec.sub, isFirstInSection: bi===0 });
+        });
+      });
+    });
+    return flat;
+  }
+
+  function buildModel(rawPages, mode, seed){
+    var rnd = seededRandom(seed || 1);
+    var globalId = 0, allIds = [];
+    var unitByBlockKey = {};
+    var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
+
+    rawPages.forEach(function(page, pi){
+      page.sections.forEach(function(sec, si){
+        var secKeyPrefix = pi+"_"+si+"_";
+        var blocksInfo = sec.blocks.map(function(html, bi){
+          var m = html.match(LEAD_RE);
+          return { key: secKeyPrefix+bi, html: html, label: m?m[2]:null, restHtml: m?html.slice(m[0].length):html };
+        });
+
+        if(mode === "headings" && sec.sub){
+          var hideSectionHeading = rnd() < 0.5;
+          if(hideSectionHeading){
+            globalId++; var shid = globalId; allIds.push(shid);
+            sectionHeadingBlankByKey[pi+"_"+si] = shid;
+            // whole section stays fully visible this round so the
+            // heading is still guessable from context
+            blocksInfo.forEach(function(bi2){ unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; });
+            return; // section done
+          }
+        }
+
+        var lastInlineHid = null; // alternates hide-label/hide-detail across a run of labeled blocks
+        blocksInfo.forEach(function(bi2){
+          if(mode === "headings"){
+            if(bi2.label){
+              var hideHeading;
+              if(lastInlineHid === null) hideHeading = rnd() < 0.5;
+              else hideHeading = !lastInlineHid;
+              lastInlineHid = hideHeading;
+              if(hideHeading){
+                globalId++; var idL=globalId; allIds.push(idL);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b><span class="blank" data-id="'+idL+'">'+bi2.label+':</span></b> '+bi2.restHtml, blankIds:[idL] };
+              } else {
+                globalId++; var idD=globalId; allIds.push(idD);
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+bi2.label+':</b> <span class="blank" data-id="'+idD+'">'+stripHtml(bi2.restHtml)+'</span>', blankIds:[idD] };
+              }
+            } else {
+              lastInlineHid = null;
+              var sentences = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+              if(sentences.length <= 1){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] }; // too short to safely blank — stays visible
+              } else {
+                var hideSet = pickSentenceHides(sentences, 0.5, rnd);
+                var ids = [];
+                var html2 = sentences.map(function(s,i){
+                  if(hideSet[i]){ globalId++; ids.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+                  return s;
+                }).join(" ");
+                unitByBlockKey[bi2.key] = { renderHtml: html2, blankIds: ids };
+              }
+            }
+          } else { // 'sentences' mode
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s); });
+            if(sents.length === 0){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else {
+              var hSet = pickSentenceHides(sents, 0.5, rnd);
+              var ids2 = [];
+              var html3 = sents.map(function(s,i){
+                if(hSet[i]){ globalId++; ids2.push(globalId); allIds.push(globalId); return '<span class="blank" data-id="'+globalId+'">'+s+'</span>'; }
+                return s;
+              }).join(" ");
+              unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+bi2.label+':</b> ':'') + html3, blankIds: ids2 };
+            }
+          }
+        });
+      });
+    });
+
+    var pages = rawPages.map(function(page, pi){
+      var sections = page.sections.map(function(sec, si){
+        var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
+        var blocks = sec.blocks.map(function(html, bi){
+          var key = pi+"_"+si+"_"+bi;
+          var unit = unitByBlockKey[key];
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds, plainText: stripHtml(html) };
+        });
+        return { sub: sec.sub, subBlankId: subBlankId, blocks: blocks };
+      });
+      return { heading: page.heading, sections: sections };
+    });
+
+    return { pages: pages, allIds: allIds };
+  }
+
+  /* ---------- State ---------- */
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"headings", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0 };
+  var MODEL = null, RAW_PAGES = null;
+
+  function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
+  function loadProgress(reshuffle){
+    var pk = progressKey(state.malzamaKey, state.mode);
+    var seed = null;
+    try{
+      var raw = localStorage.getItem(pk);
+      if(raw && !reshuffle){
+        var d = JSON.parse(raw);
+        state.revealedIds = d.revealedIds || {}; state.blockRatings = d.blockRatings || {}; state.page = d.page || 0;
+        seed = d.seed;
+      }
+    }catch(e){}
+    if(!seed){ seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0; }
+    state.seed = seed;
+    MODEL = buildModel(RAW_PAGES, state.mode, seed);
+    saveProgress();
+  }
+  function saveProgress(){
+    try{ localStorage.setItem(progressKey(state.malzamaKey, state.mode), JSON.stringify({ revealedIds:state.revealedIds, blockRatings:state.blockRatings, page:state.page, seed:state.seed })); }catch(e){}
+  }
+  function loadTheme(){ try{ var t = localStorage.getItem("najm_theme"); if(t) document.documentElement.setAttribute("data-theme", t); }catch(e){} }
+  function toggleTheme(){
+    var cur = document.documentElement.getAttribute("data-theme");
+    var next = cur==="dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try{ localStorage.setItem("najm_theme", next); }catch(e){}
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var viewHome=$("viewHome"), viewUnit=$("viewUnit"), viewDone=$("viewDone"), btnHome=$("btnHome");
+
+  function showToast(msg){ var t=$("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(function(){t.classList.remove("show");},2200); }
+  function switchView(name){
+    viewHome.classList.toggle("hidden", name!=="home");
+    viewUnit.classList.toggle("hidden", name!=="unit");
+    viewDone.classList.toggle("hidden", name!=="done");
+    btnHome.classList.toggle("hidden", name==="home");
+    window.scrollTo(0,0);
+  }
+
+  function completionFor(malzamaKey, mode){
+    var raw = getMalzamaContent(malzamaKey);
+    if(!raw) return {done:0,total:0,pct:0};
+    var pk = progressKey(malzamaKey, mode);
+    var revealed = {}, seed = null;
+    try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
+    if(!seed) return {done:0,total:null,pct:0};
+    var model = buildModel(raw, mode, seed);
+    var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
+    return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
+  }
+
+  /* ---------- Home ---------- */
+  function renderHome(){
+    var list = $("malzamaList"); list.innerHTML="";
+    var index = getLibraryIndex();
+    if(index.length === 0){
+      list.innerHTML = '<div class="empty-note">لسه مفيش ملازم — دوس على + فوق وابدأ ارفع أول ملزمة</div>';
+      return;
+    }
+    index.forEach(function(entry, i){
+      var comp = completionFor(entry.key, "headings");
+      var card = document.createElement("div");
+      card.className = "malzama-card";
+      var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
+      var delBtn = entry.shared
+        ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
+        : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+      card.innerHTML =
+        '<div class="malzama-main" data-key="'+entry.key+'">' +
+          '<div class="malzama-num">'+ar(i+1)+'</div>' +
+          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
+        '</div>' + delBtn;
+      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
+      var delEl = card.querySelector(".malzama-del");
+      if(delEl && !entry.shared){
+        delEl.addEventListener("click", function(e){
+          e.stopPropagation();
+          if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
+            savePersonalIndex(getLibraryIndex().filter(function(x){ return !x.shared; }).filter(function(x){ return x.key!==entry.key; }));
+            renderHome();
+          }
+        });
+      }
+      list.appendChild(card);
+    });
+  }
+
+  function openUnit(key, title, subtitle){
+    var raw = getMalzamaContent(key);
+    if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة دي"); return; }
+    state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
+    RAW_PAGES = raw;
+    $("unitTitle").textContent = title;
+    $("unitSub").textContent = subtitle||"";
+    switchView("unit");
+    updateReviewBadge();
+    setMode(state.mode || "headings", true);
+  }
+
+  function setMode(mode, skipToast, reshuffle){
+    state.mode = mode; state.freeMode = false;
+    loadProgress(reshuffle);
+    document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
+    $("hintBanner").textContent = MODE_HINTS[mode];
+    if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
+    renderPage();
+  }
+
+  function blankIndex(id){ return MODEL.allIds.indexOf(id); }
+  function isUnlocked(id){
+    if(state.freeMode) return true;
+    var idx = blankIndex(id);
+    if(idx===0) return true;
+    return !!state.revealedIds[MODEL.allIds[idx-1]];
+  }
+  function computeCompletion(){
+    var done=0; MODEL.allIds.forEach(function(id){ if(state.revealedIds[id]) done++; });
+    return { done:done, total: MODEL.allIds.length, pct: MODEL.allIds.length? Math.round(done/MODEL.allIds.length*100):0 };
+  }
+  function renderProgress(){
+    var comp = computeCompletion();
+    $("progressText").textContent = ar(comp.done) + " من " + ar(comp.total);
+    $("progressFill").style.width = comp.pct + "%";
+    $("pageText").textContent = "صفحة " + ar(state.page+1) + " من " + ar(MODEL.pages.length);
+  }
+
+  function renderPage(){
+    renderProgress();
+    var wrap = $("docWrap");
+    wrap.innerHTML = "";
+    var page = MODEL.pages[state.page];
+    var docCard = document.createElement("div");
+    docCard.className = "doc-card";
+    docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
+
+    page.sections.forEach(function(sec){
+      if(sec.sub){
+        var sh = document.createElement("div");
+        sh.className = "doc-subheading";
+        sh.innerHTML = sec.subBlankId ? '<span class="blank" data-id="'+sec.subBlankId+'">'+sec.sub+'</span>' : sec.sub;
+        docCard.appendChild(sh);
+      }
+      sec.blocks.forEach(function(block){
+        var bd = document.createElement("div");
+        bd.className = "doc-block";
+        bd.dataset.blockKey = block.key;
+        bd.innerHTML = block.html;
+        docCard.appendChild(bd);
+
+        if(block.blankIds.length > 0){
+          var rateRow = document.createElement("div");
+          rateRow.className = "block-rate";
+          rateRow.dataset.blockKey = block.key;
+          var rating = state.blockRatings[block.key];
+          rateRow.innerHTML =
+            '<span class="lbl">قيّم نفسك:</span>' +
+            '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
+            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>' +
+            '<button class="mic-mini" data-key="'+block.key+'" title="قول إجابتك بصوتك">🎤</button>';
+          docCard.appendChild(rateRow);
+          var saidEl = document.createElement("div");
+          saidEl.className = "said-inline";
+          saidEl.id = "said-" + block.key;
+          docCard.appendChild(saidEl);
+        }
+      });
+    });
+    wrap.appendChild(docCard);
+
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      var id = +span.dataset.id;
+      var revealed = !!state.revealedIds[id];
+      var unlocked = isUnlocked(id);
+      span.classList.toggle("revealed", revealed);
+      span.classList.toggle("locked", !revealed && !unlocked);
+    });
+    wrap.querySelectorAll(".block-rate").forEach(function(row){
+      var key = row.dataset.blockKey;
+      var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+      var blanksInBlock = blockEl.querySelectorAll(".blank");
+      var allRevealed = blanksInBlock.length>0 && Array.prototype.every.call(blanksInBlock, function(b){ return state.revealedIds[+b.dataset.id]; });
+      row.classList.toggle("show", allRevealed);
+    });
+    wrap.querySelectorAll(".blank").forEach(function(span){
+      span.addEventListener("click", function(){
+        var id = +span.dataset.id;
+        if(state.revealedIds[id]) return;
+        if(!isUnlocked(id)){
+          state.stuckTaps = (state.stuckTaps||0) + 1;
+          if(state.stuckTaps >= 3){ state.stuckTaps = 0; handleStuckSkip(); }
+          else showToast("خلّص الجزء اللي قبل ده الأول");
+          return;
+        }
+        state.stuckTaps = 0;
+        revealBlank(id);
+      });
+    });
+    wrap.querySelectorAll(".rate-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var key = btn.dataset.key;
+        state.blockRatings[key] = btn.dataset.rate;
+        saveProgress();
+        var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
+        setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
+        renderPage();
+      });
+    });
+    wrap.querySelectorAll(".mic-mini").forEach(function(btn){
+      btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
+    });
+
+    updateNavButtons();
+  }
+
+  function revealBlank(id){
+    state.revealedIds[id] = true;
+    state.stuckTaps = 0;
+    saveProgress();
+    renderPage();
+    var comp = computeCompletion();
+    if(comp.total>0 && comp.done === comp.total){ setTimeout(finishUnit, 350); }
+  }
+  function firstUnrevealedGlobal(){
+    for(var i=0;i<MODEL.allIds.length;i++){ var id=MODEL.allIds[i]; if(!state.revealedIds[id]) return id; }
+    return null;
+  }
+  /* Safety valve: if the student taps a locked item 3 times (most
+     likely they're stuck on whatever is actually blocking, even if
+     it's off-screen), auto-reveal that blocking item, flag it as
+     "needs review", and let them continue instead of getting stuck. */
+  function handleStuckSkip(){
+    var blockId = firstUnrevealedGlobal();
+    if(!blockId) return;
+    state.revealedIds[blockId] = true;
+    saveProgress();
+    renderPage();
+    var el = document.querySelector('.blank[data-id="'+blockId+'"]');
+    if(el){
+      var blockEl = el.closest(".doc-block");
+      if(blockEl){
+        var key = blockEl.dataset.blockKey;
+        state.blockRatings[key] = "review";
+        saveProgress();
+        setReviewStatus(state.malzamaKey, key, "review", blockEl.textContent.trim());
+      } else {
+        var subEl = el.closest(".doc-subheading");
+        if(subEl) setReviewStatus(state.malzamaKey, "sec_"+blockId, "review", subEl.textContent.trim());
+      }
+    }
+    renderPage();
+    showToast("تخطينا الجزء ده وحطيناه في «محتاج مراجعة» — كمّل عادي");
+  }
+  function nextUnrevealedOnPage(){
+    var page = MODEL.pages[state.page];
+    for(var s=0;s<page.sections.length;s++){
+      var sec = page.sections[s];
+      if(sec.subBlankId && !state.revealedIds[sec.subBlankId] && isUnlocked(sec.subBlankId)) return sec.subBlankId;
+      for(var b=0;b<sec.blocks.length;b++){
+        var ids = sec.blocks[b].blankIds;
+        for(var i=0;i<ids.length;i++){
+          if(!state.revealedIds[ids[i]] && isUnlocked(ids[i])) return ids[i];
+        }
+      }
+    }
+    return null;
+  }
+  function updateNavButtons(){
+    $("btnPrevPage").disabled = state.page===0;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1;
+    var next = nextUnrevealedOnPage();
+    $("btnReveal").disabled = !next;
+    $("btnReveal").onclick = function(){ if(next) revealBlank(next); };
+  }
+  function finishUnit(){
+    var know=0, review=0;
+    Object.keys(state.blockRatings).forEach(function(k){
+      if(state.blockRatings[k]==="know") know++; else if(state.blockRatings[k]==="review") review++;
+    });
+    $("statKnow").textContent = ar(know);
+    $("statReview").textContent = ar(review);
+    switchView("done");
+  }
+
+  function startSpeech(key, btn){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ showToast("المتصفح ده مش بيدعم التعرف على الصوت"); return; }
+    var rec = new SR(); rec.lang="ar-SA"; rec.interimResults=false;
+    btn.classList.add("on");
+    rec.onresult = function(e){
+      var text = e.results[0][0].transcript;
+      var out = $("said-" + key);
+      if(out){ out.style.display="block"; out.textContent = "🎤 قلت: " + text; }
+    };
+    rec.onerror = function(){ showToast("مقدرش أسمعك، جرب تاني"); };
+    rec.onend = function(){ btn.classList.remove("on"); };
+    try{ rec.start(); }catch(e){ btn.classList.remove("on"); }
+  }
+
+  /* ---------- Review list modal ---------- */
+  function renderReviewModal(){
+    var map = loadReviewMap(state.malzamaKey);
+    var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
+    var wrap = $("reviewListWrap");
+    if(keys.length === 0){
+      wrap.innerHTML = '<div class="empty-note">مفيش حاجة محتاجة مراجعة دلوقتي 🎉</div>';
+      return;
+    }
+    wrap.innerHTML = "";
+    keys.forEach(function(k){
+      var item = document.createElement("div");
+      item.className = "review-item";
+      item.innerHTML = '<div class="txt">'+escapeHtml(map[k].text)+'</div><button data-key="'+k+'">✓ خلصت</button>';
+      item.querySelector("button").addEventListener("click", function(){
+        var m = loadReviewMap(state.malzamaKey);
+        delete m[k];
+        saveReviewMap(state.malzamaKey, m);
+        updateReviewBadge();
+        renderReviewModal();
+      });
+      wrap.appendChild(item);
+    });
+  }
+
+  /* ---------- Upload pipeline: Word (.docx) ----------
+     Parsed directly from the raw docx XML (via JSZip) instead of a
+     generic HTML converter, specifically so struck-through runs can
+     be detected and dropped — a plain HTML conversion doesn't expose
+     that formatting, so a library that hides it wouldn't work. */
+  var WNS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+  function wEls(node, tag){ return Array.prototype.slice.call(node.getElementsByTagNameNS(WNS, tag)); }
+  function wAttrVal(el){
+    if(!el) return null;
+    var v = el.getAttributeNS(WNS, "val");
+    if(v === null || v === "") v = el.getAttribute("w:val");
+    return v;
+  }
+  function isFlagOn(el){ // OOXML boolean run property: present + no val, or val is 1/true/on
+    if(!el) return false;
+    var v = wAttrVal(el);
+    return v === null || v === "" || v === "1" || v === "true" || v === "on";
+  }
+
+  function loadHeadingStyleLevels(stylesXmlText){
+    var levels = {}; // styleId -> level (1,2,3...) or 0 for Title
+    if(!stylesXmlText) return levels;
+    var doc = new DOMParser().parseFromString(stylesXmlText, "application/xml");
+    wEls(doc, "style").forEach(function(styleEl){
+      var id = styleEl.getAttributeNS(WNS,"styleId") || styleEl.getAttribute("w:styleId");
+      var nameEl = wEls(styleEl, "name")[0];
+      var name = nameEl ? (wAttrVal(nameEl)||"") : "";
+      var m = name.match(/^heading\s*([1-9])$/i);
+      if(m) levels[id] = +m[1];
+      else if(/^title$/i.test(name)) levels[id] = 1;
+    });
+    return levels;
+  }
+
+  function paragraphToRuns(pEl){
+    var runs = [];
+    wEls(pEl, "r").forEach(function(rEl){
+      if(rEl.parentNode.tagName && rEl.parentNode !== pEl && rEl.parentNode.namespaceURI===WNS && rEl.parentNode.localName!=="p"){
+        // skip runs that live inside nested structures we don't render (rare)
+      }
+      var rPr = rEl.getElementsByTagNameNS(WNS,"rPr")[0];
+      var struck = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"strike")[0] || null) : false;
+      if(!struck && rPr){
+        var dstrike = rEl.getElementsByTagNameNS(WNS,"dstrike")[0];
+        if(dstrike) struck = isFlagOn(dstrike);
+      }
+      if(struck) return; // never use struck-through text
+      var bold = rPr ? isFlagOn(rEl.getElementsByTagNameNS(WNS,"b")[0] || null) : false;
+      var text = "";
+      Array.prototype.forEach.call(rEl.childNodes, function(child){
+        if(child.namespaceURI===WNS && child.localName==="t") text += child.textContent;
+        else if(child.namespaceURI===WNS && child.localName==="tab") text += " ";
+        else if(child.namespaceURI===WNS && (child.localName==="br"||child.localName==="cr")) text += " ";
+      });
+      if(text) runs.push({ text:text, bold:bold });
+    });
+    return runs;
+  }
+
+  function runsToHtml(runs){
+    return runs.map(function(r){ return r.bold ? "<b>"+escapeHtml(r.text)+"</b>" : escapeHtml(r.text); }).join("");
+  }
+  function runsToPlainText(runs){ return runs.map(function(r){ return r.text; }).join(""); }
+
+  function docxParagraphsToRawPages(paragraphs, fallbackTitle){
+    // paragraphs: [{ level:0|1|2|.. (0=Title/H1, 1=H2-ish sub, null=body), html, text }]
+    var pages = [], docHeading = null, curPage = null, curSection = null;
+    function newPage(h){ curPage = { heading:h, sections:[] }; pages.push(curPage); }
+    function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+
+    paragraphs.forEach(function(p){
+      if(!p.text.trim()) return;
+      if(p.level === 1){
+        if(!docHeading) docHeading = p.text.trim();
+        newPage(p.text.trim()); newSection(null);
+      } else if(p.level && p.level >= 2){
+        if(!curPage) newPage(docHeading || fallbackTitle);
+        newSection(p.text.trim());
+      } else {
+        if(!curPage) newPage(docHeading || fallbackTitle);
+        if(!curSection) newSection(null);
+        curSection.blocks.push(p.html);
+      }
+    });
+    if(pages.length === 0){ newPage(fallbackTitle); newSection(null); }
+
+    var flat = [];
+    pages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curP = null, curH = null;
+    flat.forEach(function(item){
+      if(!curP || curH !== item.heading || curBlocks >= 6){
+        curP = { heading:item.heading, sections:[] }; rechunked.push(curP);
+        curH = item.heading; curBlocks = 0;
+      }
+      curP.sections.push({ sub:item.sub, blocks:item.blocks });
+      curBlocks += item.blocks.length;
+    });
+    return { rawPages: rechunked.length?rechunked:pages, heading: docHeading || fallbackTitle };
+  }
+
+  function handleDocx(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        JSZip.loadAsync(e.target.result).then(function(zip){
+          var docXmlP = zip.file("word/document.xml") ? zip.file("word/document.xml").async("text") : Promise.reject("مش ملف Word سليم");
+          var stylesXmlP = zip.file("word/styles.xml") ? zip.file("word/styles.xml").async("text") : Promise.resolve(null);
+          return Promise.all([docXmlP, stylesXmlP]);
+        }).then(function(res){
+          var docXml = res[0], stylesXml = res[1];
+          var headingLevels = loadHeadingStyleLevels(stylesXml);
+          var doc = new DOMParser().parseFromString(docXml, "application/xml");
+          var bodyParas = wEls(doc, "p");
+          var paragraphs = bodyParas.map(function(pEl){
+            var pPr = pEl.getElementsByTagNameNS(WNS,"pPr")[0];
+            var styleEl = pPr ? pPr.getElementsByTagNameNS(WNS,"pStyle")[0] : null;
+            var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
+            var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
+            var runs = paragraphToRuns(pEl);
+            return { level: level, html: runsToHtml(runs), text: runsToPlainText(runs) };
+          });
+          var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
+          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
+      };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  /* PDF structuring: purely client-side heuristic (works the same
+     whether the page is hosted on claude.ai, GitHub Pages, or Vercel —
+     no AI call, no backend). Groups text items into lines by their
+     vertical position, then classifies a short line in a larger-than-
+     usual font as a heading; everything else merges into paragraphs. */
+  function handlePdf(file){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(e){
+        var typedarray = new Uint8Array(e.target.result);
+        pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
+          var pageLinesList = [], pending = Promise.resolve();
+          for(var i=1;i<=pdf.numPages;i++){
+            (function(pageNum){
+              pending = pending.then(function(){
+                return pdf.getPage(pageNum).then(function(page){ return page.getTextContent(); })
+                  .then(function(tc){ pageLinesList.push(groupIntoLines(tc.items)); });
+              });
+            })(i);
+          }
+          return pending.then(function(){ return pageLinesList; });
+        }).then(function(pageLinesList){
+          var cleaned = filterNoiseLines(pageLinesList);
+          var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
+          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.pdf$/i,""), heading: parsed.heading });
+        }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
+      };
+      reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function groupIntoLines(items){
+    var lines = [];
+    items.forEach(function(it){
+      var y = Math.round(it.transform[5]);
+      var size = Math.abs(it.transform[3]) || Math.abs(it.transform[0]) || 10;
+      var line = lines.find(function(l){ return Math.abs(l.y - y) <= 2; });
+      if(!line){ line = { y:y, size:size, text:"" }; lines.push(line); }
+      line.text += (line.text ? " " : "") + it.str;
+      line.size = Math.max(line.size, size);
+    });
+    lines.sort(function(a,b){ return b.y - a.y; }); // top to bottom (PDF y grows upward)
+    return lines.filter(function(l){ return l.text.trim(); });
+  }
+
+  /* Drop lines that are clearly page furniture, not real content:
+     - a line whose exact text repeats across most pages (a running
+       header/footer — teacher's name, phone number, brand line,
+       "النجم" watermark, etc.) — generic, works for any teacher/brand
+     - a line containing a web link or Telegram/website URL
+     - a short line that's mostly a phone number */
+  function filterNoiseLines(pageLinesList){
+    if(pageLinesList.length <= 1) return pageLinesList;
+    var freq = {};
+    pageLinesList.forEach(function(lines){
+      var seenThisPage = {};
+      lines.forEach(function(l){
+        var norm = l.text.trim().replace(/\s+/g," ");
+        if(!norm || seenThisPage[norm]) return;
+        seenThisPage[norm] = true;
+        freq[norm] = (freq[norm]||0) + 1;
+      });
+    });
+    var repeatThreshold = Math.max(2, Math.ceil(pageLinesList.length * 0.5));
+    return pageLinesList.map(function(lines){
+      return lines.filter(function(l){
+        var norm = l.text.trim().replace(/\s+/g," ");
+        if(!norm) return false;
+        if(freq[norm] >= repeatThreshold) return false;
+        if(/https?:\/\/|www\.|t\.me\/|wixsite|\.com\b/i.test(norm)) return false;
+        if(/\d{7,}/.test(norm) && norm.length < 40) return false;
+        if(/\*\*\*/.test(norm)) return false; // poetry/proverb line
+        return true;
+      });
+    });
+  }
+
+  function pdfLinesToRawPages(pageLinesList, fallbackTitle){
+    var allSizes = [];
+    pageLinesList.forEach(function(lines){ lines.forEach(function(l){ allSizes.push(Math.round(l.size)); }); });
+    var freq = {}; allSizes.forEach(function(s){ freq[s]=(freq[s]||0)+1; });
+    var baseline = 12;
+    var best = 0;
+    Object.keys(freq).forEach(function(s){ if(freq[s]>best){ best=freq[s]; baseline=+s; } });
+    var headingMin = baseline * 1.15;
+
+    var rawPages = [];
+    var docHeading = null;
+    var curPage = null, curSection = null;
+
+    function newPage(h){ curPage = { heading:h, sections:[] }; rawPages.push(curPage); }
+    function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+    function pushParagraph(text){
+      if(!text.trim()) return;
+      if(!curPage) newPage(fallbackTitle);
+      if(!curSection) newSection(null);
+      curSection.blocks.push(escapeHtml(text.trim()));
+    }
+
+    pageLinesList.forEach(function(lines, pageIdx){
+      var buffer = "";
+      var sawHeadingThisPage = false;
+      lines.forEach(function(l){
+        var txt = l.text.trim();
+        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 70 && !/^[0-9\s.\-–|]+$/.test(txt);
+        if(isHeading){
+          pushParagraph(buffer); buffer = "";
+          if(!docHeading) docHeading = txt;
+          if(!curPage || (!sawHeadingThisPage && pageIdx>0)) newPage(txt);
+          else if(!curPage) newPage(txt);
+          newSection(txt);
+          sawHeadingThisPage = true;
+        } else {
+          buffer += (buffer ? " " : "") + txt;
+          if(buffer.length > 260){ pushParagraph(buffer); buffer=""; }
+        }
+      });
+      pushParagraph(buffer);
+    });
+
+    if(rawPages.length === 0){ newPage(fallbackTitle); newSection(null); }
+
+    // re-chunk to a manageable number of blocks per page (max ~6)
+    var flat = [];
+    rawPages.forEach(function(pg){ pg.sections.forEach(function(sec){ if(sec.blocks.length) flat.push({heading:pg.heading, sub:sec.sub, blocks:sec.blocks}); }); });
+    var rechunked = [], curBlocks = 0, curP = null, curH = null;
+    flat.forEach(function(item){
+      if(!curP || curH !== item.heading || curBlocks >= 6){
+        curP = { heading:item.heading, sections:[] }; rechunked.push(curP);
+        curH = item.heading; curBlocks = 0;
+      }
+      curP.sections.push({ sub:item.sub, blocks:item.blocks });
+      curBlocks += item.blocks.length;
+    });
+    return { rawPages: rechunked.length?rechunked:rawPages, heading: docHeading || fallbackTitle };
+  }
+
+  function setUploadStatus(msg){ var el=$("uploadStatus"); el.style.display="block"; el.textContent=msg; }
+  function uploadFailed(msg){ setUploadStatus("⚠️ " + msg); }
+
+  var pendingSharedBatch = []; // starts as a copy of the currently-deployed shared library, then gains/loses items this session
+  var pendingSeeded = false;
+  function seedPendingFromShared(){
+    if(pendingSeeded) return;
+    pendingSeeded = true;
+    pendingSharedBatch = SHARED_INDEX.map(function(it){
+      return { key:it.key, title:it.title, subtitle:it.subtitle, rawPages: SHARED_CONTENT[it.key] };
+    });
+  }
+  function upsertPendingShared(item){
+    var idx = pendingSharedBatch.findIndex(function(x){ return x.key===item.key; });
+    if(idx>=0) pendingSharedBatch[idx] = item; else pendingSharedBatch.push(item);
+  }
+  function renderPendingList(){
+    var wrap = $("pendingListWrap");
+    $("pendingCount").textContent = ar(pendingSharedBatch.length);
+    if(pendingSharedBatch.length===0){ wrap.innerHTML = '<div class="empty-note">القائمة فاضية</div>'; return; }
+    wrap.innerHTML = "";
+    pendingSharedBatch.forEach(function(item){
+      var row = document.createElement("div");
+      row.className = "review-item";
+      row.innerHTML = '<div class="txt">'+escapeHtml(item.title)+'</div><button data-key="'+item.key+'">🗑️ شيل</button>';
+      row.querySelector("button").addEventListener("click", function(){
+        pendingSharedBatch = pendingSharedBatch.filter(function(x){ return x.key!==item.key; });
+        renderPendingList();
+      });
+      wrap.appendChild(row);
+    });
+  }
+
+  function processFiles(files){
+    var isOfficial = $("officialCheck").checked;
+    var queue = Promise.resolve();
+    var results = [];
+    Array.prototype.forEach.call(files, function(file){
+      queue = queue.then(function(){
+        setUploadStatus("بيتقرا: " + file.name + "...");
+        var task = /\.docx$/i.test(file.name) ? handleDocx(file)
+                  : /\.pdf$/i.test(file.name) ? handlePdf(file)
+                  : Promise.reject("الصيغة دي مش مدعومة: " + file.name);
+        return task.then(function(r){ results.push(r); })
+          .catch(function(err){ showToast(typeof err==="string"?err:"حصل خطأ في: "+file.name); });
+      });
+    });
+    return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
+  }
+
+  function finishUploadBatch(results, isOfficial){
+    var lastKey = null, lastTitle = null, lastSub = null;
+    results.forEach(function(r){
+      var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
+      var key = slugify(title);
+      saveMalzamaContent(key, r.rawPages);
+      if(isOfficial){
+        upsertPendingShared({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
+      } else {
+        var index = getLibraryIndex().filter(function(x){ return !x.shared; });
+        if(!index.some(function(e){ return e.key===key; })){
+          index.push({ key:key, title:title, subtitle:r.fallbackTitle });
+          savePersonalIndex(index);
+        }
+      }
+      lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
+    });
+    setUploadStatus("");
+    if(results.length===0) return;
+    if(isOfficial){
+      $("exportBox").classList.remove("hidden");
+      renderPendingList();
+      showToast("اترفع "+results.length+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة");
+      renderHome();
+    } else {
+      $("modalUpload").classList.remove("show");
+      renderHome();
+      showToast('اتضافت "'+lastTitle+'" للملازم');
+      openUnit(lastKey, lastTitle, lastSub);
+    }
+  }
+
+  function downloadLibraryJson(){
+    var payload = { items: pendingSharedBatch };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "library.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function resetApp(){
+    if(!confirm("متأكد؟ هيتمسح كل الملازم الشخصية وتقدمك المحفوظ فيها من الجهاز ده، ومينفعش يترجع.")) return;
+    try{
+      var toRemove = [];
+      for(var i=0;i<localStorage.length;i++){
+        var k = localStorage.key(i);
+        if(k && k.indexOf("najm_") === 0) toRemove.push(k);
+      }
+      toRemove.forEach(function(k){ localStorage.removeItem(k); });
+    }catch(e){}
+    showToast("اترفع البرنامج — بيعيد التحميل...");
+    setTimeout(function(){ location.reload(); }, 600);
+  }
+
+  /* ---------- Wiring ---------- */
+  $("btnTheme").addEventListener("click", toggleTheme);
+  $("btnInfo").addEventListener("click", function(){ $("modalInfo").classList.add("show"); });
+  $("btnHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
+  document.querySelectorAll("[data-close]").forEach(function(x){ x.addEventListener("click", function(){ $(x.dataset.close).classList.remove("show"); }); });
+  document.querySelectorAll(".modal-overlay").forEach(function(ov){ ov.addEventListener("click", function(e){ if(e.target===ov) ov.classList.remove("show"); }); });
+
+  document.querySelectorAll(".mode-btn").forEach(function(btn){ btn.addEventListener("click", function(){ setMode(btn.dataset.mode); }); });
+  $("btnPrevPage").addEventListener("click", function(){ if(state.page>0){ state.page--; saveProgress(); renderPage(); } });
+  $("btnNextPage").addEventListener("click", function(){ if(state.page<MODEL.pages.length-1){ state.page++; saveProgress(); renderPage(); } });
+
+  $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
+  $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
+  $("btnRestart").addEventListener("click", function(){
+    switchView("unit");
+    setMode(state.mode, true, true);
+    showToast("محاولة جديدة — أجزاء مختلفة اتخفت هالمرة");
+  });
+  $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
+
+  $("btnAdd").addEventListener("click", function(){
+    seedPendingFromShared();
+    $("exportBox").classList.toggle("hidden", pendingSharedBatch.length===0);
+    renderPendingList();
+    $("modalUpload").classList.add("show");
+  });
+  $("pickFile").addEventListener("click", function(){ $("fileInput").click(); });
+  $("fileInput").addEventListener("change", function(e){
+    var files = e.target.files;
+    if(!files || !files.length) return;
+    seedPendingFromShared();
+    processFiles(files).then(function(res){ finishUploadBatch(res.results, res.isOfficial); });
+    e.target.value = "";
+  });
+  $("downloadLibrary").addEventListener("click", downloadLibraryJson);
+  $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
+  $("btnResetApp").addEventListener("click", resetApp);
+
+  loadTheme();
+  renderHome();
+  switchView("home");
+  fetchSharedLibrary().then(function(){ seedPendingFromShared(); renderHome(); });
+})();
+</script>
+</body>
+</html>

@@ -2542,89 +2542,34 @@
     return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
   }
 
-  // نفس الاسم/الملف → نفس المفتاح → تحديث محتوى مع الحفاظ على التحديد
-  function resolveExistingMalzamaKey(r){
-    var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
-    var keyTitle = slugify(title);
-    var keyFile = slugify(r.fallbackTitle || title);
-    var candidates = [keyTitle, keyFile];
-    var index = getLibraryIndex();
-    for(var i=0;i<index.length;i++){
-      var e = index[i];
-      if(candidates.indexOf(e.key) >= 0) return { key:e.key, title:e.title||title, existed:true };
-      if(slugify(e.title||"") === keyTitle) return { key:e.key, title:e.title||title, existed:true };
-      if(e.subtitle && slugify(e.subtitle) === keyFile) return { key:e.key, title:e.title||title, existed:true };
-    }
-    for(var j=0;j<pendingSharedBatch.length;j++){
-      var p = pendingSharedBatch[j];
-      if(candidates.indexOf(p.key) >= 0) return { key:p.key, title:p.title||title, existed:true };
-      if(slugify(p.title||"") === keyTitle) return { key:p.key, title:p.title||title, existed:true };
-    }
-    // shared library on site
-    if(typeof SHARED_INDEX !== "undefined"){
-      for(var s=0;s<SHARED_INDEX.length;s++){
-        var sh = SHARED_INDEX[s];
-        if(candidates.indexOf(sh.key) >= 0) return { key:sh.key, title:sh.title||title, existed:true };
-        if(slugify(sh.title||"") === keyTitle) return { key:sh.key, title:sh.title||title, existed:true };
-      }
-    }
-    return { key:keyTitle, title:title, existed:false };
-  }
-
   function finishUploadBatch(results, isOfficial){
     var lastKey = null, lastTitle = null, lastSub = null;
-    var updatedCount = 0, newCount = 0;
     results.forEach(function(r){
-      var resolved = resolveExistingMalzamaKey(r);
-      var key = resolved.key;
-      var title = resolved.title || r.heading || r.fallbackTitle || "ملزمة جديدة";
-      // تحديث المحتوى فقط — التحديد (najm_sel_*) يفضل كما هو
+      var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
+      var key = slugify(title);
       saveMalzamaContent(key, r.rawPages);
-      var keptSels = collectAllModeSelections(key);
-      var hasSels = ["headings","sentences","custom"].some(function(m){
-        return keptSels[m] && Object.keys(keptSels[m]).length > 0;
-      });
       if(isOfficial){
-        upsertPendingShared({
-          key: key,
-          title: title,
-          subtitle: r.fallbackTitle,
-          rawPages: r.rawPages,
-          selections: keptSels
-        });
+        upsertPendingShared({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
       } else {
         var index = getLibraryIndex().filter(function(x){ return !x.shared; });
         if(!index.some(function(e){ return e.key===key; })){
           index.push({ key:key, title:title, subtitle:r.fallbackTitle });
           savePersonalIndex(index);
-        } else {
-          // حدّث العنوان الفرعي لو اتغير اسم الملف
-          index = index.map(function(e){
-            if(e.key===key) return { key:e.key, title:title, subtitle:r.fallbackTitle||e.subtitle };
-            return e;
-          });
-          savePersonalIndex(index);
         }
       }
-      if(resolved.existed) updatedCount++; else newCount++;
       lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
-      r._keptSels = hasSels;
     });
     setUploadStatus("");
     if(results.length===0) return;
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
       renderPendingList();
-      showToast(updatedCount
-        ? ("تم تحديث المحتوى ("+ar(updatedCount)+") مع الحفاظ على التحديد — نزّل library.json")
-        : ("اترفع "+ar(newCount)+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة"));
+      showToast("اترفع "+results.length+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة");
       renderHome();
     } else {
       $("modalUpload").classList.remove("show");
       renderHome();
-      showToast(updatedCount
-        ? ('تم تحديث "'+lastTitle+'" مع الحفاظ على التحديد')
-        : ('اتضافت "'+lastTitle+'" للملازم'));
+      showToast('اتضافت "'+lastTitle+'" للملازم');
       openUnit(lastKey, lastTitle, lastSub);
     }
   }

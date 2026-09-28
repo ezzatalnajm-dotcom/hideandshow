@@ -55,16 +55,8 @@
   .malzama-main{flex:1;display:flex;align-items:center;gap:12px;min-width:0;cursor:pointer;}
   .malzama-num{width:40px;height:40px;border-radius:12px;background:linear-gradient(150deg,var(--gold-400),var(--gold-600));color:var(--navy-950);font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
   .malzama-info{flex:1;min-width:0;}
-  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .malzama-info .t{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .malzama-info .s{color:var(--muted);font-size:12px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .ready-badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;white-space:nowrap;flex:0 0 auto;}
-  .ready-badge.ok{background:rgba(46,158,91,.18);color:var(--ok);}
-  .ready-badge.partial{background:rgba(224,182,47,.2);color:var(--gold-600);}
-  .ready-badge.no{background:rgba(201,75,75,.15);color:#c94b4b;}
-  .ready-modes{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
-  .ready-modes span{font-size:10.5px;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:2px;}
-  .ready-modes span.on{color:var(--ok);}
-  .ready-modes span.off{opacity:.55;}
   .malzama-del{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:6px;flex:0 0 auto;}
   .malzama-del:active{color:var(--danger);}
   .upload-hint{padding:2px 18px 18px;color:var(--muted);font-size:12px;text-align:center;}
@@ -75,17 +67,13 @@
   .unit-sub{color:var(--muted);font-size:12px;margin:0;}
   .review-pill{background:rgba(217,130,43,.14);color:var(--warn);border:none;border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:800;cursor:pointer;white-space:nowrap;flex:0 0 auto;}
 
-  .mode-row{display:flex;gap:6px;padding:10px 14px 2px;overflow-x:hidden;}
-  .mode-btn{flex:1 1 0;min-width:0;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:12px;padding:8px 6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;}
+  .mode-row{display:flex;gap:7px;padding:12px 18px 2px;overflow-x:auto;}
+  .mode-btn{flex:0 0 auto;border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 12px;font-size:11.5px;font-weight:700;cursor:pointer;white-space:normal;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:140px;}
   :root:not([data-theme="light"]) .mode-btn{border-color:rgba(255,255,255,.14);}
-  .mode-btn .mt{display:flex;align-items:center;justify-content:center;gap:3px;}
-  .mode-btn .mtime{font-size:9px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+  .mode-btn .mt{display:flex;align-items:center;gap:5px;}
+  .mode-btn .mtime{font-size:9.5px;font-weight:600;color:var(--muted);}
   .mode-btn.active{background:var(--navy-900);color:#fff;border-color:var(--navy-900);}
   .mode-btn.active .mtime{color:var(--gold-400);}
-  @media (max-width:400px){
-    .mode-btn{padding:7px 4px;font-size:10.5px;}
-    .mode-btn .mtime{display:none;}
-  }
 
   .shuffle-note{margin:8px 18px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px;}
 
@@ -105,9 +93,8 @@
   .doc-heading .star{color:var(--gold-400);font-size:13px;}
   .doc-subheading{color:var(--navy-700);font-weight:800;font-size:13.5px;padding:14px 16px 2px;}
   :root:not([data-theme="light"]) .doc-subheading{color:var(--gold-400);}
-  .doc-block{padding:8px 16px 2px;font-size:14.5px;line-height:2.15;color:var(--ink);word-spacing:0.02em;}
-  .doc-block b, .doc-block strong{font-weight:800;}
-  .doc-block span[style*="font-size"]{line-height:1.9;}
+  .doc-block{padding:8px 16px 2px;font-size:14px;line-height:2.05;color:var(--ink);}
+  .doc-block b{font-weight:800;}
 
   .blank{border-radius:5px;padding:0 3px;cursor:pointer;position:relative;filter:blur(7px);transition:filter .22s ease, background .22s ease;background:rgba(224,182,47,.16);font-weight:inherit;font-size:inherit;}
   .blank.locked{cursor:not-allowed;filter:blur(7px);opacity:.5;background:rgba(120,120,120,.12);}
@@ -153,16 +140,9 @@
   .rate-know.active{background:var(--ok);color:#fff;}
   .rate-review{background:rgba(217,130,43,.14);color:var(--warn);}
   .rate-review.active{background:var(--warn);color:#fff;}
-  .mic-mini,.spk-mini{border:1px solid rgba(10,27,46,.12);background:var(--card);color:var(--ink);font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px;line-height:1;border-radius:999px;}
-  :root:not([data-theme="light"]) .mic-mini,:root:not([data-theme="light"]) .spk-mini{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);}
-  .mic-mini.on{color:#fff;background:var(--danger);border-color:var(--danger);animation:pulseMic .8s ease infinite alternate;}
-  .spk-mini.on{color:#fff;background:var(--ok);border-color:var(--ok);}
-  .spk-mini:disabled{opacity:.4;cursor:default;}
-  @keyframes pulseMic{from{transform:scale(1)}to{transform:scale(1.06)}}
-  .voice-btns{display:inline-flex;align-items:center;gap:6px;margin-inline-start:6px;vertical-align:middle;}
+  .mic-mini{border:none;background:transparent;color:var(--muted);font-size:14px;cursor:pointer;}
+  .mic-mini.on{color:var(--danger);}
   .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
-  .export-steps{font-size:12.5px;line-height:1.9;color:var(--ink);background:rgba(224,182,47,.1);border:1px solid rgba(224,182,47,.3);border-radius:12px;padding:10px 12px;margin:10px 0;}
-  .export-steps b{color:var(--gold-600);}
 
   .bottombar{position:sticky;bottom:0;background:var(--card);border-top:1px solid rgba(10,27,46,.08);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:0 -6px 16px rgba(10,27,46,.08);}
   :root:not([data-theme="light"]) .bottombar{border-top-color:rgba(255,255,255,.08);}
@@ -201,21 +181,10 @@
   .tg{background:#229ED9;color:#fff;}
   .modal .file-choice{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
   .file-choice button{border:1px solid rgba(10,27,46,.15);background:var(--paper);color:var(--ink);border-radius:var(--radius-sm);padding:13px;font-size:13.5px;font-weight:700;cursor:pointer;text-align:right;display:flex;align-items:center;gap:10px;}
-  .review-item{background:var(--paper);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:9px;font-size:13px;line-height:1.8;display:flex;flex-direction:column;gap:10px;}
+  .review-item{background:var(--paper);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:9px;font-size:13px;line-height:1.8;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   :root:not([data-theme="light"]) .review-item{background:rgba(255,255,255,.05);}
-  .review-item .rev-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   .review-item .txt{flex:1;}
-  .review-item .txt.rev-hidden{filter:blur(7px);background:rgba(224,182,47,.16);border-radius:6px;padding:4px 6px;cursor:pointer;user-select:none;}
-  .review-item .txt.rev-shown{filter:none;background:rgba(46,158,91,.12);border-radius:6px;padding:4px 6px;}
   .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
-  .review-item .rev-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .doc-fig{margin:8px 16px;text-align:center;}
-  .doc-fig img{max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(10,27,46,.08);}
-  .doc-fig .cap{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700;}
-  .edit-bar{margin:8px 18px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-  .edit-bar button{border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;}
-  :root:not([data-theme="light"]) .edit-bar button{border-color:rgba(255,255,255,.14);}
-  .block-edit-ta{width:100%;min-height:72px;border-radius:10px;border:1px solid rgba(224,182,47,.45);padding:8px 10px;font-size:14px;line-height:1.9;font-family:inherit;background:var(--paper);color:var(--ink);box-sizing:border-box;}
   .empty-note{color:var(--muted);font-size:13px;text-align:center;padding:20px 0;}
   .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:88%;text-align:center;}
   .toast.show{opacity:1;}
@@ -263,22 +232,15 @@
         <p class="unit-sub" id="unitSub">العضلات والحركة</p>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
-        <button class="review-pill" id="btnUnitHome" title="الرئيسية" style="background:var(--card);color:var(--ink);border:1px solid rgba(10,27,46,.12);">🏠 الرئيسية</button>
-        <button class="review-pill" id="btnRestartUnit" title="ابدأ الاختبار" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">▶️ ابدأ الاختبار</button>
+        <button class="review-pill" id="btnRestartUnit" title="إعادة من جديد" style="background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">🔀 إعادة من جديد</button>
         <button class="review-pill" id="btnOpenReview">📋 محتاج مراجعة (<span id="reviewCount">٠</span>)</button>
       </div>
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">حدّد · احفظ</span></button>
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">حدّد · احفظ</span></button>
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · اختبر</span></button>
-    </div>
-    <div class="edit-bar" id="editBar">
-      <button type="button" id="btnEditPageText" title="عدّل نص الفقرة">✏️ تعديل النص</button>
-      <button type="button" id="btnAddSpace" title="أضف مسافة بين كلمتين">␣+ مسافة</button>
-      <button type="button" id="btnDelSpace" title="احذف مسافة زائدة">␣− حذف مسافة</button>
-      <button type="button" id="btnDeletePage" title="احذف الصفحة الحالية" style="color:var(--danger);">🗑️ حذف الصفحة</button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">إخفاء عشوائي للجمل</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · احفظ · اختبر</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">يعتمد على تنسيق الملف</span></button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
     <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
@@ -290,7 +252,6 @@
       <button id="btnStartSelect" class="btn-gold" style="border:none;border-radius:999px;padding:11px 18px;font-weight:800;font-size:13.5px;cursor:pointer;box-shadow:0 4px 12px rgba(224,182,47,.35);">① ابدأ التحديد</button>
       <button id="btnSaveCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--ok);color:#fff;">② حفظ التخصيص</button>
       <button id="btnClearCustom" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:10px 14px;font-weight:700;font-size:12px;cursor:pointer;">🗑️ مسح</button>
-      <button id="btnExportStudents" class="btn-ghost hidden" style="border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:13px;cursor:pointer;background:var(--navy-900);color:var(--gold-400);border:1px solid var(--gold-500);">⬇️ نزّل library.json للطلاب</button>
       <span id="customSelectCount" style="font-size:12.5px;color:var(--muted);font-weight:700;"></span>
     </div>
 
@@ -318,7 +279,7 @@
     </div>
     <div class="done-actions">
       <button class="btn-gold" id="btnReviewNeeded">📋 راجع اللي محتاج مراجعة</button>
-      <button class="btn-ghost" id="btnRestart">▶️ ابدأ الاختبار من جديد</button>
+      <button class="btn-ghost" id="btnRestart">🔀 محاولة جديدة (تجديد عشوائي)</button>
       <button class="btn-ghost" id="btnBackHome">الرئيسية</button>
     </div>
   </div>
@@ -365,50 +326,25 @@
     <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
     <p id="uploadStatus" style="display:none;"></p>
     <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
-      <div class="export-steps">
-        <div><b>كيف يوصل الإخفاء لطلابك أونلاين؟</b></div>
-        <div>① ارفع الملزمة هنا مع تفعيل «ملازم رسمية»</div>
-        <div>② افتح الملزمة → حدّد الإخفاء في التطبيق → <b>احفظ</b></div>
-        <div>③ ارجع هنا → <b>نزّل library.json</b></div>
-        <div>④ ارفع الملف ده <b>جنب index.html</b> على نفس موقع Vercel</div>
-        <div>⑤ الطالب يفتح الرابط → الإخفاء جاهز → «ابدأ الاختبار»</div>
-      </div>
-      <p style="font-size:12.5px;color:var(--muted);">الملازم في الملف الحالي: <span id="pendingCount">٠</span> — شيل أي واحدة قبل التنزيل لو مش عايزها.</p>
+      <p style="font-size:12.5px;color:var(--muted);">قائمة المكتبة الرسمية الحالية (اللي هتتصدّر في library.json) — <span id="pendingCount">٠</span> ملزمة. شيل أي واحدة قبل ما تنزّل لو محتاجة تتغيّر.</p>
       <div id="pendingListWrap"></div>
-      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json) مع الإخفاءات</button></div>
+      <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل ملف المكتبة (library.json)</button></div>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalReview">
   <div class="modal">
-    <h3>محتاج مراجعة — إعادة اختبار <span class="close-x" data-close="modalReview">✕</span></h3>
-    <p style="color:var(--muted);font-size:12.5px;">كل نقطة مخفية زي الاختبار — اضغط عليها عشان تظهر، بعدين قيّم أو سجّل صوتك.</p>
+    <h3>محتاج مراجعة <span class="close-x" data-close="modalReview">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;">القائمة دي مجمّعة من كل المودات — أي فقرة قيّمتها "محتاج مراجعة" في أي مود هتلاقيها هنا.</p>
     <div id="reviewListWrap"></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modalExportDone">
-  <div class="modal">
-    <h3>تم الحفظ ✓ <span class="close-x" data-close="modalExportDone">✕</span></h3>
-    <p style="font-size:14px;line-height:1.9;">الإخفاء اتحفظ على جهازك. عشان يوصل للطلاب:</p>
-    <div class="export-steps">
-      <div>① اضغط الزر الأخضر تحت ونزّل <b>library.json</b></div>
-      <div>② ارفع الملف على <b>GitHub</b> جنب <b>index.html</b></div>
-      <div>③ Vercel يحدّث لوحده — الطالب يفتح الرابط ويلاقي الإخفاء</div>
-    </div>
-    <div class="file-choice" style="margin-top:12px;">
-      <button id="btnDownloadFromModal" style="background:var(--ok);color:#fff;font-size:16px;padding:14px;">⬇️ نزّل library.json الآن</button>
-    </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalSettings">
   <div class="modal">
     <h3>الإعدادات <span class="close-x" data-close="modalSettings">✕</span></h3>
-    <p style="color:var(--muted);font-size:12.5px;">بعد ما تحدد الإخفاء وتحفظه، نزّل الملف وارفعه على GitHub جنب index.html.</p>
-    <div class="file-choice"><button id="btnExportFromSettings">⬇️ نزّل library.json للطلاب</button></div>
-    <p style="color:var(--muted);font-size:12.5px;margin-top:12px;">تصفير البرنامج بيمسح الملازم الشخصية والتقدم على جهازك. مش بيأثر على library.json على الموقع.</p>
+    <p style="color:var(--muted);font-size:12.5px;">تصفير البرنامج بيمسح كل الملازم الشخصية اللي رفعتها على جهازك وتقدمك المحفوظ فيها. مش بيأثر على الملازم الرسمية اللي جايه من library.json.</p>
     <div class="file-choice"><button id="btnResetApp" style="color:var(--danger);">🗑️ تصفير البرنامج (حذف كل حاجة محلية)</button></div>
   </div>
 </div>
@@ -426,9 +362,9 @@
 
   var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين" };
   var MODE_HINTS = {
-    sentences: "✂️ حدّد بنفسك ما يُخفى (نقرة/سحب) ثم احفظ. ✕ مرتين = مش هيتخفي تاني.",
-    custom: "✏️ نقرة = كلمة · سحب = عدة كلمات · احفظ ثم اختبر. ✕ مرتين = مش هيتخفي تاني.",
-    headings: "🏷️ حدّد العناوين بنفسك ثم احفظ. كل ملزمة لوحدها. ✕ مرتين = مش هيتخفي تاني."
+    sentences: "✂️ جمل مفرّقة مموّهة عشوائيًا مع ترك مفتاح تذكير — مش هتخفي جملتين متتاليتين",
+    custom: "✏️ نقرة = كلمة واحدة · سحب = عدة كلمات · بعدين احفظ واختبر نفسك",
+    headings: "🏷️ إخفاء ثابت للعناوين. اضغط أي عنوان ظاهر لإخفائه. ✕ يلغي الإخفاء (والترجمة معه)."
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -446,39 +382,27 @@
     var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
     return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
   }
-  // كلمات مع علامة السميك — نفصل على المسافات الحقيقية فقط
-  // حتى لو Word قسّم الكلمة على أكتر من run (جزء bold وجزء عادي)
+  // Words with bold flag from original HTML (preserve thick text)
   function wordsWithBold(html){
     var tmp = document.createElement("div");
     tmp.innerHTML = html || "";
-    var chars = [];
+    var runs = [];
     function walk(node, bold){
       if(node.nodeType === 3){
-        var t = node.textContent || "";
-        for(var i=0;i<t.length;i++) chars.push({ ch: t.charAt(i), bold: !!bold });
+        var t = node.textContent;
+        if(t) runs.push({ text: t, bold: !!bold });
       } else if(node.nodeType === 1){
         var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
         Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
       }
     }
     walk(tmp, false);
-    var list = [], cur = [], boldVotes = 0, total = 0;
-    function flush(){
-      if(!cur.length) return;
-      var t = cur.join("").replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g,"");
-      if(t) list.push({ text: t, bold: total > 0 && boldVotes >= total / 2 });
-      cur = []; boldVotes = 0; total = 0;
-    }
-    chars.forEach(function(item){
-      if(/\s/.test(item.ch)){
-        flush();
-      } else {
-        cur.push(item.ch);
-        total++;
-        if(item.bold) boldVotes++;
-      }
+    var list = [];
+    runs.forEach(function(run){
+      run.text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g,"").split(/\s+/).forEach(function(p){
+        if(p) list.push({ text: p, bold: run.bold });
+      });
     });
-    flush();
     return list;
   }
   function formatWordHtml(w){
@@ -527,8 +451,6 @@
   var LIB_INDEX_KEY = "najm_lib_index_v2";
   var SHARED_INDEX = [];   // [{key,title,subtitle}]
   var SHARED_CONTENT = {}; // key -> rawPages
-  // Pre-baked hides from official library.json (so students start testing immediately)
-  var SHARED_SELECTIONS = {}; // key -> { headings:{}, sentences:{}, custom:{} }
 
   function fetchSharedLibrary(){
     return fetch("./library.json").then(function(res){
@@ -537,12 +459,7 @@
     }).then(function(data){
       if(data && Array.isArray(data.items)){
         SHARED_INDEX = data.items.map(function(it){ return { key:it.key, title:it.title, subtitle:it.subtitle }; });
-        data.items.forEach(function(it){
-          SHARED_CONTENT[it.key] = it.rawPages;
-          if(it.selections && typeof it.selections === "object"){
-            SHARED_SELECTIONS[it.key] = it.selections;
-          }
-        });
+        data.items.forEach(function(it){ SHARED_CONTENT[it.key] = it.rawPages; });
       }
     }).catch(function(){ /* no shared library deployed yet — that's fine */ });
   }
@@ -689,30 +606,6 @@
     set[normExcludeText(text)] = true;
     saveExcludeSet(malzamaKey, set);
   }
-  function excludeCountKey(malzamaKey){ return "najm_exclude_cnt_" + malzamaKey; }
-  function loadExcludeCounts(malzamaKey){
-    try{ var raw=localStorage.getItem(excludeCountKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
-    return {};
-  }
-  function saveExcludeCounts(malzamaKey, obj){
-    try{ localStorage.setItem(excludeCountKey(malzamaKey), JSON.stringify(obj)); }catch(e){}
-  }
-  function bumpExcludeCount(malzamaKey, text){
-    var n = normExcludeText(text);
-    if(!n) return 1;
-    var c = loadExcludeCounts(malzamaKey);
-    c[n] = (c[n] || 0) + 1;
-    saveExcludeCounts(malzamaKey, c);
-    return c[n];
-  }
-  function removeFromForceHide(malzamaKey, text){
-    var fh = loadForceHideSet(malzamaKey);
-    var n = normExcludeText(text);
-    delete fh[n];
-    // also remove bilingual pieces
-    String(text||"").split(/\s+/).forEach(function(w){ if(w.length>=2) delete fh[normExcludeText(w)]; });
-    saveForceHideSet(malzamaKey, fh);
-  }
 
   // Merge Arabic word + adjacent English translation into one hide unit
   // e.g. "الدم blood" or "خطوط z (z line)"
@@ -804,42 +697,27 @@
     var sectionHeadingBlankByKey = {}; // "pi_si" -> blankId
     var excludeSet = (state && state.malzamaKey) ? loadExcludeSet(state.malzamaKey) : {};
     var forceHideSet = (state && state.malzamaKey) ? loadForceHideSet(state.malzamaKey) : {};
-    var excludeCounts = (state && state.malzamaKey) ? loadExcludeCounts(state.malzamaKey) : {};
-    function permanentlyExcluded(text){
-      var n = normExcludeText(text);
-      return !!(excludeCounts[n] && excludeCounts[n] >= 2);
-    }
     function excluded(text){
-      var n = normExcludeText(text);
-      return !!excludeSet[n] || permanentlyExcluded(text);
+      return !!excludeSet[normExcludeText(text)];
     }
     function forced(text){
       var n = normExcludeText(text);
-      if(!n || permanentlyExcluded(n) || excludeSet[n]) return false;
+      if(!n) return false;
       if(forceHideSet[n]) return true;
-      // also match original plain text containing a forced phrase
+      // sentence contains a user-corrected phrase (min 4 chars)
       var keys = Object.keys(forceHideSet);
       for(var i=0;i<keys.length;i++){
-        if(permanentlyExcluded(keys[i]) || excludeSet[keys[i]]) continue;
-        var orig = forceHideSet[keys[i]];
-        var needle = (typeof orig === "string" && orig.length >= 2) ? orig : keys[i];
-        if(needle.length >= 2 && (n.indexOf(keys[i]) >= 0 || String(text||"").indexOf(needle) >= 0)) return true;
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0) return true;
       }
       return false;
     }
     function forcedPhraseIn(text){
-      // Return original phrase string (for indexOf on plain text), not only normalized key
-      var plain = String(text||"");
-      var n = normExcludeText(plain);
+      var n = normExcludeText(text);
       var keys = Object.keys(forceHideSet);
-      var best = null, bestLen = 0;
+      var best = null;
       for(var i=0;i<keys.length;i++){
-        if(permanentlyExcluded(keys[i]) || excludeSet[keys[i]]) continue;
-        var orig = forceHideSet[keys[i]];
-        var needle = (typeof orig === "string" && orig.length >= 2) ? orig : keys[i];
-        if(needle.length < 2) continue;
-        if(plain.indexOf(needle) >= 0 || n.indexOf(keys[i]) >= 0){
-          if(needle.length > bestLen){ best = needle; bestLen = needle.length; }
+        if(keys[i].length >= 4 && n.indexOf(keys[i]) >= 0){
+          if(!best || keys[i].length > best.length) best = keys[i];
         }
       }
       return best;
@@ -867,11 +745,23 @@
           return { key: secKeyPrefix+bi, html: html, label: label, restHtml: restHtml };
         });
 
-        // page.heading (unit/lesson) never hidden. User hides manually in headings/sentences/custom.
+        // Headings-only mode: hide real section sub-titles only (not list markers / الل / لاحظ).
+        // Keep page.heading (unit/lesson title) visible — never hidden.
+        if(mode === "headings" && sec.sub){
+          var subT = String(sec.sub).trim();
+          var subIsMarker = isTrivialFragment(subT) || LIST_MARKER_RE.test(subT) || BARE_ENUM_RE.test(subT) || NOT_TITLE_RE.test(subT);
+          if(!subIsMarker && !excluded(subT) && subT.length >= 3){
+            globalId++; var shid = globalId; allIds.push(shid);
+            sectionHeadingBlankByKey[pi+"_"+si] = shid;
+          }
+        }
+
         var lastInlineHid = null;
         blocksInfo.forEach(function(bi2){
-          // Shared manual hide: custom + headings + sentences (word ranges the user saved)
-          if(mode === "custom" || mode === "headings" || mode === "sentences"){
+          if(mode === "custom"){
+            // Custom: hide word ranges the user selected.
+            // Keys look like: "blockKey|w|startIdx|endIdx" (inclusive word indices)
+            // Also support legacy sentence keys "blockKey|si" by ignoring them if no match.
             if(isPromoOrVerse(stripHtml(bi2.html))){
               unitByBlockKey[bi2.key] = { renderHtml: "", blankIds: [] };
             } else {
@@ -879,10 +769,10 @@
               var wordsC = wb.map(function(x){ return x.text; });
               var idsC = [];
               var ranges = [];
-              Object.keys(customSelected || {}).forEach(function(k){
+              Object.keys(customSelected).forEach(function(k){
                 if(k.indexOf(bi2.key + "|w|") === 0){
-                  var tail = k.slice(bi2.key.length + 3).split("|");
-                  var a = +tail[0], b = +tail[1];
+                  var parts = k.split("|");
+                  var a = +parts[2], b = +parts[3];
                   if(!isNaN(a) && !isNaN(b)) ranges.push([Math.min(a,b), Math.max(a,b)]);
                 }
               });
@@ -892,11 +782,6 @@
               ranges.forEach(function(r){
                 if(!merged.length || r[0] > merged[merged.length-1][1]+1) merged.push(r.slice());
                 else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], r[1]);
-              });
-              // Drop ranges whose text was excluded twice (permanent)
-              merged = merged.filter(function(r){
-                var ph = wordsC.slice(r[0], r[1]+1).join(" ");
-                return !excluded(ph) && !permanentlyExcluded(ph);
               });
               if(wordsC.length === 0 || merged.length === 0){
                 unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
@@ -918,6 +803,106 @@
                 unitByBlockKey[bi2.key] = { renderHtml: htmlParts.join(" "), blankIds: idsC };
               }
             }
+          } else if(mode === "headings"){
+            // Fixed: hide side titles / short title-lines. Never page.heading.
+            var plainH = stripHtml(bi2.html);
+            var idsH = [];
+            function attrEsc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+            function blankSpan(txt){
+              globalId++; idsH.push(globalId); allIds.push(globalId);
+              return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+attrEsc(txt)+'">'+escapeHtml(txt)+'</span>';
+            }
+            function isMarkerTxt(t){
+              t = (t||"").trim();
+              return !t || isTrivialFragment(t) || LIST_MARKER_RE.test(t) || BARE_ENUM_RE.test(t) || NOT_TITLE_RE.test(t) || /^(لاحظ|الل|القط)\b/.test(t);
+            }
+            if(excluded(plainH)){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else if(forced(plainH) && plainH.length <= 120){
+              unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
+            } else {
+              // Split block into lines (PDF often puts each title on its own line)
+              var lines = plainH.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+              if(lines.length <= 1){
+                // try sentence-like split for "عنوان. شرح..."
+                lines = plainH.replace(/([.!?؟:：])\s+/g, "$1\n").split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+                if(lines.length <= 1) lines = [plainH];
+              }
+              // Apply forced phrases inside the block
+              var fp = forcedPhraseIn(plainH);
+              if(fp && !excluded(fp) && plainH.indexOf(fp) >= 0){
+                var bi = plainH.indexOf(fp);
+                var htmlF = escapeHtml(plainH.slice(0,bi)) + blankSpan(fp) + escapeHtml(plainH.slice(bi+fp.length));
+                unitByBlockKey[bi2.key] = { renderHtml: htmlF, blankIds: idsH };
+              } else if(lines.length >= 2){
+                var htmlLines = lines.map(function(line){
+                  if(excluded(line) || isMarkerTxt(line)) return escapeHtml(line);
+                  if(forced(line) || isSubHeadingBlock("", line)) return blankSpan(line);
+                  // leading label in line
+                  var lm = line.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
+                  if(lm && !isMarkerTxt(lm[1])){
+                    return blankSpan(lm[1]) + " " + escapeHtml(lm[2]);
+                  }
+                  return escapeHtml(line);
+                });
+                unitByBlockKey[bi2.key] = { renderHtml: htmlLines.join("<br>"), blankIds: idsH };
+              } else if(bi2.label && !isMarkerTxt(bi2.label) && bi2.restHtml && stripHtml(bi2.restHtml).length > 8){
+                var labelShow = bi2.label + (/:$/.test(bi2.label)?"":":");
+                unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(labelShow)+'</b> '+bi2.restHtml, blankIds: idsH };
+              } else if(isSubHeadingBlock(bi2.html, plainH)){
+                unitByBlockKey[bi2.key] = { renderHtml: blankSpan(plainH), blankIds: idsH };
+              } else {
+                // last try: leading plain label
+                var pm2 = plainH.match(/^(.{1,40}?[:：])\s+(.{9,})$/);
+                if(pm2 && !isMarkerTxt(pm2[1])){
+                  unitByBlockKey[bi2.key] = { renderHtml: '<b>'+blankSpan(pm2[1])+'</b> '+escapeHtml(pm2[2]), blankIds: idsH };
+                } else {
+                  unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+                }
+              }
+            }
+          } else if(mode === "sentences"){ // 'sentences' mode
+            var sents = splitSentences(stripHtml(bi2.restHtml)).filter(function(s){ return !VERSE_RE.test(s) && !isPromoOrVerse(s); });
+            sents = mergeBilingualUnits(sents);
+            if(sents.length === 0){
+              unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+            } else {
+              var hSet = pickSentenceHides(sents, 0.45, rnd);
+              // force-hide user-pinned sentences/phrases; respect exclusions
+              sents.forEach(function(s, ix){ if(forced(s)) hSet[ix] = true; });
+              Object.keys(hSet).forEach(function(ix){ if(excluded(sents[ix])) delete hSet[ix]; });
+              var ids2 = [];
+              var anyForcedPhrase = sents.some(function(s){ var fp=forcedPhraseIn(s); return fp && !excluded(fp); });
+              var anyHidden = Object.keys(hSet).length > 0 || anyForcedPhrase;
+              if(!anyHidden){
+                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+              } else {
+                var html3 = sents.map(function(s,i){
+                  if(hSet[i]){
+                    globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var phrase = forcedPhraseIn(s);
+                    if(phrase && s.indexOf(phrase) >= 0 && phrase.length < s.length){
+                      var before = s.slice(0, s.indexOf(phrase));
+                      var after = s.slice(s.indexOf(phrase) + phrase.length);
+                      return escapeHtml(before) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(phrase)+'">'+escapeHtml(phrase)+'</span>' + escapeHtml(after);
+                    }
+                    var kr2 = splitKeyAndRest(s);
+                    if(kr2) return escapeHtml(kr2.key) + ' <span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(kr2.rest)+'</span>';
+                    return '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(s)+'">'+escapeHtml(s)+'</span>';
+                  }
+                  // not randomly hidden — but user may have forced a phrase inside
+                  var fp = forcedPhraseIn(s);
+                  if(fp && !excluded(fp)){
+                    globalId++; ids2.push(globalId); allIds.push(globalId);
+                    var bi = s.indexOf(fp);
+                    return escapeHtml(s.slice(0,bi)) + '<span class="blank" data-id="'+globalId+'" data-hide-text="'+escapeHtml(fp)+'">'+escapeHtml(fp)+'</span>' + escapeHtml(s.slice(bi+fp.length));
+                  }
+                  return escapeHtml(s);
+                }).join(" ");
+                anyHidden = ids2.length > 0;
+                unitByBlockKey[bi2.key] = { renderHtml: (bi2.label?'<b>'+escapeHtml(bi2.label)+':</b> ':'') + html3, blankIds: ids2 };
+              }
+            }
           } else {
             unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
           }
@@ -928,27 +913,16 @@
     var pages = rawPages.map(function(page, pi){
       var sections = page.sections.map(function(sec, si){
         var subBlankId = sectionHeadingBlankByKey[pi+"_"+si] || null;
-        var blocks = [];
-        var prevPlain = "";
-        sec.blocks.forEach(function(html, bi){
+        var blocks = sec.blocks.map(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
           var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [] };
-          if(isPromoOrVerse(stripHtml(html))) return;
-          var plain = stripHtml(html).replace(/\s+/g," ").trim().toLowerCase();
-          // إسقاط فقرة مكررة متتالية (PDF يكرر السطر أحيانًا)
-          if(plain && plain === prevPlain) return;
-          prevPlain = plain;
-          blocks.push({ key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html });
-        });
-        var sub = sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null;
-        // لا تكرر sub لو مطابق لعنوان الصفحة أو أول فقرة
-        if(sub){
-          var sn = String(sub).replace(/\s+/g," ").trim().toLowerCase();
-          var hn = String(page.heading||"").replace(/\s+/g," ").trim().toLowerCase();
-          if(sn === hn) sub = null;
-          if(sub && blocks[0] && sn === String(blocks[0].plainText||"").replace(/\s+/g," ").trim().toLowerCase()) sub = null;
-        }
-        return { sub: sub, subBlankId: sub ? subBlankId : null, blocks: blocks };
+          // Skip poetry / promo blocks entirely in every mode
+          if(isPromoOrVerse(stripHtml(html))){
+            return null;
+          }
+          return { key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html };
+        }).filter(Boolean);
+        return { sub: sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null, subBlankId: subBlankId, blocks: blocks };
       }).filter(function(sec){ return sec.blocks.length > 0 || sec.sub; });
       return { heading: page.heading, sections: sections };
     }).filter(function(p){ return p.sections.length > 0; });
@@ -971,35 +945,13 @@
   var MODEL = null, RAW_PAGES = null;
 
   function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
-  // Each mode has its own saved hides (per ملزمة) — teacher/student hide manually
-  function selectionStorageKey(malzamaKey, mode){
-    mode = mode || "custom";
-    if(mode === "custom") return "najm_custom_" + malzamaKey;
-    return "najm_sel_" + mode + "_" + malzamaKey;
+  function customKey(malzamaKey){ return "najm_custom_" + malzamaKey; }
+  function loadCustomSelection(malzamaKey){
+    try{ var raw = localStorage.getItem(customKey(malzamaKey)); if(raw) return JSON.parse(raw); }catch(e){}
+    return {}; // { blockKey: true, ... }
   }
-  function loadCustomSelection(malzamaKey, mode){
-    mode = mode || "custom";
-    // 1) Student/teacher local edits always win
-    try{ var raw = localStorage.getItem(selectionStorageKey(malzamaKey, mode)); if(raw) return JSON.parse(raw); }catch(e){}
-    // 2) Official library pre-baked hides (from library.json)
-    if(SHARED_SELECTIONS[malzamaKey] && SHARED_SELECTIONS[malzamaKey][mode]){
-      return Object.assign({}, SHARED_SELECTIONS[malzamaKey][mode]);
-    }
-    // 3) legacy custom key
-    if(mode === "custom"){
-      try{ var leg = localStorage.getItem("najm_custom_" + malzamaKey); if(leg) return JSON.parse(leg); }catch(e2){}
-    }
-    return {};
-  }
-  function saveCustomSelection(malzamaKey, sel, mode){
-    try{ localStorage.setItem(selectionStorageKey(malzamaKey, mode || "custom"), JSON.stringify(sel || {})); }catch(e){}
-  }
-  function collectAllModeSelections(malzamaKey){
-    return {
-      headings: loadCustomSelection(malzamaKey, "headings"),
-      sentences: loadCustomSelection(malzamaKey, "sentences"),
-      custom: loadCustomSelection(malzamaKey, "custom")
-    };
+  function saveCustomSelection(malzamaKey, sel){
+    try{ localStorage.setItem(customKey(malzamaKey), JSON.stringify(sel)); }catch(e){}
   }
   // Expand a word-index range so Arabic word + its English translation stay together
   function expandBilingualRange(words, lo, hi){
@@ -1020,69 +972,29 @@
   function excludeFromHide(text){
     if(!text) return;
     text = String(text).replace(/\s+/g," ").trim();
-    var variants = [text];
+    addExcludeText(state.malzamaKey, text);
+    // Also exclude Arabic+English pair together (الدم blood / blood الدم)
+    var parts = text.split(/\s+/);
+    if(parts.length >= 2){
+      addExcludeText(state.malzamaKey, parts.join(" "));
+    }
+    // If text is only Arabic or only English, try to exclude common bilingual form from blank's data
     var mEn = text.match(/^([\u0600-\u06FF\s]+)\s+([A-Za-z][A-Za-z0-9\-\s]{0,30})$/);
     var mAr = text.match(/^([A-Za-z][A-Za-z0-9\-\s]{0,30})\s+([\u0600-\u06FF\s]+)$/);
-    if(mEn){ variants.push(mEn[1].trim(), mEn[2].trim(), mEn[1].trim()+" "+mEn[2].trim()); }
-    if(mAr){ variants.push(mAr[1].trim(), mAr[2].trim(), mAr[1].trim()+" "+mAr[2].trim()); }
-    variants.forEach(function(v){ if(v) addExcludeText(state.malzamaKey, v); });
-    variants.forEach(function(v){ if(v) removeFromForceHide(state.malzamaKey, v); });
-    // Remove matching word-ranges from THIS mode's saved selection
-    var sel = loadCustomSelection(state.malzamaKey, state.mode);
-    var normT = normExcludeText(text);
-    Object.keys(sel).forEach(function(k){
-      // can't know phrase without model words — drop ranges when rebuilding via excluded()
-    });
-    // Also strip any range whose hide-text equals excluded text from state.customSelected
-    Object.keys(state.customSelected || {}).forEach(function(k){
-      // kept via excluded() filter in buildModel
-    });
-    var cnt = bumpExcludeCount(state.malzamaKey, text);
-    // If twice: permanently drop from saved selection any blank that matches
-    if(cnt >= 2 && MODEL){
-      var sel2 = loadCustomSelection(state.malzamaKey, state.mode);
-      MODEL.pages.forEach(function(pg){
-        pg.sections.forEach(function(sec){
-          sec.blocks.forEach(function(block){
-            var words = splitIntoWords(block.plainText || "");
-            Object.keys(sel2).forEach(function(k){
-              if(k.indexOf(block.key + "|w|") !== 0) return;
-              var tail = k.slice(block.key.length + 3).split("|");
-              var a = +tail[0], b = +tail[1];
-              if(isNaN(a)||isNaN(b)) return;
-              var ph = words.slice(Math.min(a,b), Math.max(a,b)+1).join(" ");
-              if(normExcludeText(ph) === normT || normExcludeText(ph).indexOf(normT) >= 0 || normT.indexOf(normExcludeText(ph)) >= 0){
-                delete sel2[k];
-              }
-            });
-          });
-        });
-      });
-      saveCustomSelection(state.malzamaKey, sel2, state.mode);
-      state.customSelected = sel2;
-    }
+    if(mEn){ addExcludeText(state.malzamaKey, mEn[1].trim()); addExcludeText(state.malzamaKey, mEn[2].trim()); addExcludeText(state.malzamaKey, mEn[1].trim()+" "+mEn[2].trim()); }
+    if(mAr){ addExcludeText(state.malzamaKey, mAr[1].trim()); addExcludeText(state.malzamaKey, mAr[2].trim()); addExcludeText(state.malzamaKey, mAr[1].trim()+" "+mAr[2].trim()); }
     loadProgress(false);
-    if(cnt >= 2){
-      showToast("اتلغى مرتين — اتشال من المخفيات ومش هيرجع ✕✕");
-    } else {
-      showToast("اتشال من المخفي — ✕ مرة تانية عشان ميرجعش");
-    }
+    showToast("تم إلغاء إخفاء الجزء (والترجمة إن وُجدت) ✕");
     renderPage();
   }
   function forceHideText(text){
     if(!text) return;
     text = String(text).replace(/\s+/g," ").trim();
     if(text.length < 2) return;
-    var n = normExcludeText(text);
-    var counts = loadExcludeCounts(state.malzamaKey);
-    if((counts[n] || 0) >= 2){
-      showToast("الجزء ده اتلغى مرتين — مش هيتخفي تاني");
-      return;
-    }
     var set = loadForceHideSet(state.malzamaKey);
-    set[n] = text; // store original wording for matching
+    set[normExcludeText(text)] = true;
     var ex = loadExcludeSet(state.malzamaKey);
-    delete ex[n];
+    delete ex[normExcludeText(text)];
     saveExcludeSet(state.malzamaKey, ex);
     saveForceHideSet(state.malzamaKey, set);
     loadProgress(false);
@@ -1146,7 +1058,7 @@
       seed = Math.floor(Math.random()*1e9)+1; state.revealedIds={}; state.blockRatings={}; state.page=0;
     }
     state.seed = seed;
-    state.customSelected = loadCustomSelection(state.malzamaKey, state.mode);
+    state.customSelected = loadCustomSelection(state.malzamaKey);
     state.excludeSet = loadExcludeSet(state.malzamaKey);
     MODEL = buildModel(RAW_PAGES, state.mode, seed, state.customSelected, state.excludeSet);
     saveProgress();
@@ -1181,25 +1093,10 @@
     var revealed = {}, seed = null;
     try{ var d = JSON.parse(localStorage.getItem(pk)); if(d){ revealed=d.revealedIds||{}; seed=d.seed; } }catch(e){}
     if(!seed) return {done:0,total:null,pct:0};
-    var customSel = loadCustomSelection(malzamaKey, mode);
+    var customSel = (mode === "custom") ? loadCustomSelection(malzamaKey) : {};
     var model = buildModel(raw, mode, seed, customSel, loadExcludeSet(malzamaKey));
     var done=0; model.allIds.forEach(function(id){ if(revealed[id]) done++; });
     return { done:done, total:model.allIds.length, pct: model.allIds.length? Math.round(done/model.allIds.length*100):0 };
-  }
-
-  // جاهزية الإخفاء في التلات مودات
-  function modeHasHides(malzamaKey, mode){
-    var sel = loadCustomSelection(malzamaKey, mode);
-    return !!(sel && Object.keys(sel).length > 0);
-  }
-  function readinessFor(malzamaKey){
-    var h = modeHasHides(malzamaKey, "headings");
-    var s = modeHasHides(malzamaKey, "sentences");
-    var c = modeHasHides(malzamaKey, "custom");
-    var n = (h?1:0) + (s?1:0) + (c?1:0);
-    var status = n === 3 ? "ok" : (n === 0 ? "no" : "partial");
-    var label = status === "ok" ? "🟢 جاهزة" : (status === "partial" ? "🟡 جزئي" : "🔴 غير جاهزة");
-    return { headings:h, sentences:s, custom:c, count:n, status:status, label:label };
   }
 
   /* ---------- Home ---------- */
@@ -1212,29 +1109,18 @@
     }
     index.forEach(function(entry, i){
       var comp = completionFor(entry.key, "sentences");
-      var ready = readinessFor(entry.key);
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
       var delBtn = entry.shared
         ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
         : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
-      var modesHtml =
-        '<div class="ready-modes">' +
-          '<span class="'+(ready.headings?"on":"off")+'">'+(ready.headings?"✅":"⚪")+' عناوين</span>' +
-          '<span class="'+(ready.sentences?"on":"off")+'">'+(ready.sentences?"✅":"⚪")+' جمل</span>' +
-          '<span class="'+(ready.custom?"on":"off")+'">'+(ready.custom?"✅":"⚪")+' تخصيص</span>' +
-        '</div>';
       card.innerHTML =
         '<div class="malzama-main" data-key="'+entry.key+'">' +
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
-          '<div class="malzama-info">' +
-            '<div class="t"><span>'+escapeHtml(entry.title)+'</span><span class="ready-badge '+ready.status+'">'+ready.label+'</span></div>' +
-            '<div class="s">'+escapeHtml(entry.subtitle||"")+(entry.subtitle?" · ":"")+progTxt+'</div>' +
-            modesHtml +
-          '</div>' +
+          '<div class="malzama-info"><div class="t">'+escapeHtml(entry.title)+'</div><div class="s">'+escapeHtml(entry.subtitle||"")+' · '+progTxt+'</div></div>' +
         '</div>' + delBtn;
-      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle, !!entry.shared); });
+      card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle); });
       var delEl = card.querySelector(".malzama-del");
       if(delEl && !entry.shared){
         delEl.addEventListener("click", function(e){
@@ -1249,58 +1135,16 @@
     });
   }
 
-  function findFirstPageWithBlanks(){
-    if(!MODEL || !MODEL.pages) return 0;
-    for(var pi=0; pi<MODEL.pages.length; pi++){
-      var page = MODEL.pages[pi];
-      for(var si=0; si<(page.sections||[]).length; si++){
-        var sec = page.sections[si];
-        if(sec.subBlankId) return pi;
-        for(var bi=0; bi<(sec.blocks||[]).length; bi++){
-          if(sec.blocks[bi].blankIds && sec.blocks[bi].blankIds.length) return pi;
-        }
-      }
-    }
-    return 0;
-  }
-
-  function openUnit(key, title, subtitle, isShared){
+  function openUnit(key, title, subtitle){
     var raw = getMalzamaContent(key);
     if(!raw){ showToast("مقدرش ألاقي محتوى الملزمة دي"); return; }
     state.malzamaKey = key; state.malzamaTitle = title; state.malzamaSub = subtitle||"";
-    state.isShared = !!isShared;
     RAW_PAGES = raw;
     $("unitTitle").textContent = title;
     $("unitSub").textContent = subtitle||"";
     switchView("unit");
     updateReviewBadge();
-    setMode("headings", true);
-    // ابدأ من أول صفحة فيها سؤال (جزء مخفي)
-    var firstQ = findFirstPageWithBlanks();
-    if(firstQ > 0){
-      state.page = firstQ;
-      saveProgress();
-      renderPage();
-    }
-    var readySel = loadCustomSelection(key, "headings");
-    var hasHides = readySel && Object.keys(readySel).length > 0;
-    if(hasHides){
-      setTimeout(function(){
-        showToast(firstQ > 0
-          ? ("بدأنا من أول صفحة فيها سؤال — صفحة " + ar(firstQ+1))
-          : "الإخفاء جاهز — اضغط «▶️ ابدأ الاختبار»");
-      }, 300);
-    } else if(!state.isShared){
-      setTimeout(function(){
-        var btn = $("btnStartSelect");
-        if(btn && !btn.classList.contains("hidden")){
-          btn.style.boxShadow = "0 0 0 3px rgba(224,182,47,.85)";
-          btn.scrollIntoView({ behavior:"smooth", block:"nearest" });
-          setTimeout(function(){ btn.style.boxShadow = ""; }, 3500);
-        }
-        showToast("اضغط «① ابدأ التحديد» عشان تختار اللي يتخفي");
-      }, 350);
-    }
+    setMode(state.mode || "sentences", true);
   }
 
   function setMode(mode, skipToast, reshuffle){
@@ -1308,18 +1152,14 @@
     loadProgress(reshuffle);
     document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.mode===mode); });
     $("hintBanner").textContent = MODE_HINTS[mode] || "";
-    var canSelect = (mode === "custom" || mode === "sentences" || mode === "headings");
-    $("shuffleNote").classList.add("hidden"); // manual hide modes — no random shuffle note
-    $("customGuide").classList.toggle("hidden", !canSelect);
-    $("customToolbar").classList.toggle("hidden", !canSelect);
+    var isCustom = mode === "custom";
+    $("shuffleNote").classList.toggle("hidden", mode !== "sentences");
+    $("customGuide").classList.toggle("hidden", !isCustom);
+    $("customToolbar").classList.toggle("hidden", !isCustom);
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
     $("customSelectCount").textContent = "";
-    $("customGuide").innerHTML =
-      '<div style="margin-bottom:2px;">① <b>ابدأ التحديد</b> · تنقّل بين الصفحات · نقرة/سحب</div>'+
-      '<div style="margin-bottom:2px;">② <b>احفظ مرة واحدة</b> في الآخر — للملازم الرسمية يدخل مع library.json</div>'+
-      '<div>③ ✕ مرة = شيل · ✕ مرتين = مش هيرجع · ثم «ابدأ الاختبار»</div>';
     if(!skipToast) showToast("مود: " + MODE_LABELS[mode]);
     renderPage();
   }
@@ -1568,20 +1408,19 @@
     var page = MODEL.pages[state.page];
     if(!page){ wrap.innerHTML = '<div class="empty-note">مفيش محتوى</div>'; return; }
 
+    // If custom mode and nothing selected yet (and not currently selecting)
+    if(state.mode === "custom" && !state.selecting && MODEL.allIds.length === 0){
+      wrap.innerHTML = '<div class="empty-note" style="padding:40px 20px;line-height:1.9;">لسه ما حددتش أجزاء للإخفاء.<br>اضغط «ابدأ التحديد» · اضغط كلمة أو مرّر · ضغطتين للجملة · اضغط تاني للإلغاء · ثم احفظ.</div>';
+      updateNavButtons();
+      return;
+    }
+
     var docCard = document.createElement("div");
     docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
     docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
-    // تنبيه لو مفيش إخفاء — مع إظهار المحتوى للتعديل والقراءة
-    if((state.mode === "custom" || state.mode === "headings" || state.mode === "sentences") && !state.selecting && MODEL.allIds.length === 0){
-      var note = document.createElement("div");
-      note.className = "empty-note";
-      note.style.cssText = "padding:12px 16px;line-height:1.8;text-align:right;";
-      note.innerHTML = "لسه ما فيش أجزاء مخفية في المود ده — اضغط «① ابدأ التحديد» أو عدّل النص من الشريط فوق.";
-      docCard.appendChild(note);
-    }
 
-    // Selecting UI (word tap/drag) in custom OR sentences mode
-    var useClean = state.selecting && (state.mode === "custom" || state.mode === "sentences" || state.mode === "headings");
+    // When selecting in custom mode, show original clean text (no blanks)
+    var useClean = state.selecting && state.mode === "custom";
 
     page.sections.forEach(function(sec){
       if(sec.sub){
@@ -1594,54 +1433,28 @@
         }
         docCard.appendChild(sh);
       }
-      var lastRenderPlain = "";
       sec.blocks.forEach(function(block){
-        var pNorm = String(block.plainText||"").replace(/\s+/g," ").trim().toLowerCase();
-        // لا تعرض فقرتين متتاليتين بنفس النص (إصلاح التكرار الظاهر للطالب)
-        if(pNorm && pNorm === lastRenderPlain) return;
-        lastRenderPlain = pNorm;
         var bd = document.createElement("div");
         bd.className = "doc-block";
         bd.dataset.blockKey = block.key;
         if(useClean){
+          // Word-level selection with bold preserved from original HTML
           renderSelectableBlock(bd, block);
         } else {
           bd.innerHTML = block.html;
         }
-        if(state.editPick){
-          bd.style.outline = "2px dashed rgba(224,182,47,.7)";
-          bd.style.cursor = "pointer";
-          bd.addEventListener("click", function(){ editBlockByKey(block.key); });
-        }
         docCard.appendChild(bd);
-        // رسوم علمية مرفقة مع بياناتها (لو موجودة في الفقرة أو page.figures)
-        if(block.figures && block.figures.length){
-          block.figures.forEach(function(fig){
-            var figEl = document.createElement("div");
-            figEl.className = "doc-fig";
-            figEl.innerHTML = '<img src="'+fig.src+'" alt="رسم علمي">'+(fig.caption?('<div class="cap">'+escapeHtml(fig.caption)+'</div>'):'');
-            docCard.appendChild(figEl);
-          });
-        }
 
-        // مايك + سبيكر يظهران دائمًا أثناء الاختبار (حتى لو مفيش إخفاء في الفقرة)
-        if(!useClean){
+        if(!useClean && block.blankIds.length > 0){
           var rateRow = document.createElement("div");
           rateRow.className = "block-rate";
           rateRow.dataset.blockKey = block.key;
           var rating = state.blockRatings[block.key];
-          var hasBlanks = block.blankIds && block.blankIds.length > 0;
-          var rateHtml = hasBlanks
-            ? ('<span class="lbl">قيّم نفسك:</span>' +
-               '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
-               '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>')
-            : '<span class="lbl">صوت:</span>';
           rateRow.innerHTML =
-            rateHtml +
-            '<span class="voice-btns">'+
-              '<button type="button" class="mic-mini" data-key="'+block.key+'" title="اضغط واستمر للتسجيل">🎤 اضغط واستمر</button>'+
-              '<button type="button" class="spk-mini" data-key="'+block.key+'" title="اسمع تسجيلك" disabled>🔊 اسمع</button>'+
-            '</span>';
+            '<span class="lbl">قيّم نفسك:</span>' +
+            '<button class="rate-btn rate-know '+(rating==="know"?"active":"")+'" data-key="'+block.key+'" data-rate="know">✓ عرفتها</button>' +
+            '<button class="rate-btn rate-review '+(rating==="review"?"active":"")+'" data-key="'+block.key+'" data-rate="review">↻ محتاج مراجعة</button>' +
+            '<button class="mic-mini" data-key="'+block.key+'" title="قول إجابتك بصوتك">🎤</button>';
           docCard.appendChild(rateRow);
           var saidEl = document.createElement("div");
           saidEl.className = "said-inline";
@@ -1728,19 +1541,11 @@
           var blockEl = wrap.querySelector('.doc-block[data-block-key="'+CSS.escape(key)+'"]');
           setReviewStatus(state.malzamaKey, key, btn.dataset.rate, blockEl ? blockEl.textContent.trim() : "");
           renderPage();
-          tryFinishAfterRate();
         });
       });
-      // مايك: اضغط واستمر (hold) — سيّب عشان توقف (زي واتساب)
       wrap.querySelectorAll(".mic-mini").forEach(function(btn){
-        bindHoldMic(btn, btn.dataset.key);
+        btn.addEventListener("click", function(){ startSpeech(btn.dataset.key, btn); });
       });
-      wrap.querySelectorAll(".spk-mini").forEach(function(btn){
-        var key = btn.dataset.key;
-        btn.disabled = !hasVoiceRec(key);
-        btn.addEventListener("click", function(){ playVoiceRec(key, btn); });
-      });
-      if(allBlanksRevealed()) maybeShowFinishHint();
     }
 
     updateNavButtons();
@@ -1752,46 +1557,7 @@
     saveProgress();
     renderPage();
     var comp = computeCompletion();
-    // لا نقفل الوحدة فور آخر كشف — ندي فرصة للتقييم والمراجعة
-    if(comp.total>0 && comp.done === comp.total){
-      showToast("آخر جزء اتكشف — قيّمه (عرفتها / محتاج مراجعة) ثم إنهاء");
-      maybeShowFinishHint();
-    }
-  }
-  function allBlanksRevealed(){
-    if(!MODEL || !MODEL.allIds.length) return false;
-    return MODEL.allIds.every(function(id){ return !!state.revealedIds[id]; });
-  }
-  function maybeShowFinishHint(){
-    // زر إنهاء يظهر في الشريط السفلي لما كله اتكشف
-    var bar = document.querySelector(".bottombar");
-    if(!bar || $("btnFinishUnit")) return;
-    var btn = document.createElement("button");
-    btn.id = "btnFinishUnit";
-    btn.className = "nav-btn";
-    btn.style.cssText = "background:var(--ok);color:#fff;font-weight:800;";
-    btn.textContent = "✓ إنهاء الوحدة";
-    btn.addEventListener("click", function(){ finishUnit(); });
-    bar.insertBefore(btn, bar.firstChild);
-  }
-  function tryFinishAfterRate(){
-    if(!allBlanksRevealed()) return;
-    // لو كل الفقرات اللي فيها إخفاء اتقيّمت، ننهي تلقائي بعد التقييم
-    var need = {};
-    if(MODEL && MODEL.pages){
-      MODEL.pages.forEach(function(pg){
-        pg.sections.forEach(function(sec){
-          sec.blocks.forEach(function(b){
-            if(b.blankIds && b.blankIds.length) need[b.key] = true;
-          });
-        });
-      });
-    }
-    var keys = Object.keys(need);
-    if(!keys.length) return;
-    var allRated = keys.every(function(k){ return !!state.blockRatings[k]; });
-    if(allRated) setTimeout(finishUnit, 400);
-    else maybeShowFinishHint();
+    if(comp.total>0 && comp.done === comp.total){ setTimeout(finishUnit, 350); }
   }
   function firstUnrevealedGlobal(){
     for(var i=0;i<MODEL.allIds.length;i++){ var id=MODEL.allIds[i]; if(!state.revealedIds[id]) return id; }
@@ -1838,10 +1604,10 @@
     return null;
   }
   function updateNavButtons(){
-    // أثناء التحديد: التنقل بين الصفحات مسموح (احفظ مرة واحدة في الآخر)
-    $("btnPrevPage").disabled = state.page===0;
-    $("btnNextPage").disabled = !MODEL || state.page===MODEL.pages.length-1;
+    $("btnPrevPage").disabled = state.page===0 || state.selecting;
+    $("btnNextPage").disabled = state.page===MODEL.pages.length-1 || state.selecting;
     var next = nextUnrevealedOnPage();
+    // Also look globally if nothing on current page (student may not see it)
     if(!next) next = firstUnrevealedGlobal();
     $("btnReveal").disabled = !next || state.selecting;
     $("btnReveal").onclick = function(){
@@ -1886,114 +1652,22 @@
     switchView("done");
   }
 
-  // ---- Voice record + playback (per block, on this device) ----
-  var voiceStore = {}; // key -> { url, blob }
-  var activeRecorder = null;
-  var activeRecKey = null;
-  var activeAudio = null;
-
-  function voiceKey(blockKey){ return (state.malzamaKey || "") + "::" + blockKey; }
-  function hasVoiceRec(blockKey){ return !!(voiceStore[voiceKey(blockKey)] && voiceStore[voiceKey(blockKey)].url); }
-
-  function stopActiveAudio(){
-    if(activeAudio){ try{ activeAudio.pause(); }catch(e){} activeAudio = null; }
-    document.querySelectorAll(".spk-mini.on").forEach(function(b){ b.classList.remove("on"); });
-  }
-
-  function stopVoiceRec(){
-    if(activeRecorder){
-      try{ activeRecorder.stop(); }catch(e){}
-    }
-  }
-
-  function startVoiceRecHold(blockKey, btn){
-    if(activeRecorder) stopVoiceRec();
-    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-      showToast("المتصفح مش سامح بالتسجيل الصوتي");
-      return;
-    }
-    stopActiveAudio();
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
-      var chunks = [];
-      var mime = MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm" : "";
-      var rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
-      activeRecorder = rec;
-      activeRecKey = blockKey;
-      btn.classList.add("on");
-      rec.ondataavailable = function(e){ if(e.data && e.data.size) chunks.push(e.data); };
-      rec.onstop = function(){
-        stream.getTracks().forEach(function(t){ t.stop(); });
-        btn.classList.remove("on");
-        activeRecorder = null;
-        activeRecKey = null;
-        if(!chunks.length){ showToast("مفيش صوت اتسجل — اضغط واستمر"); return; }
-        var blob = new Blob(chunks, { type: chunks[0].type || "audio/webm" });
-        var prev = voiceStore[voiceKey(blockKey)];
-        if(prev && prev.url) try{ URL.revokeObjectURL(prev.url); }catch(e){}
-        var url = URL.createObjectURL(blob);
-        voiceStore[voiceKey(blockKey)] = { url: url, blob: blob };
-        var spk = document.querySelector('.spk-mini[data-key="'+CSS.escape(blockKey)+'"]');
-        if(spk) spk.disabled = false;
-        var out = $("said-" + blockKey);
-        if(out){ out.style.display="block"; out.textContent = "🎤 تم التسجيل — اضغط 🔊 للسماع"; }
-        showToast("اتسجل — 🔊 للسماع");
-      };
-      rec.onerror = function(){
-        stream.getTracks().forEach(function(t){ t.stop(); });
-        btn.classList.remove("on");
-        activeRecorder = null;
-        showToast("فشل التسجيل");
-      };
-      try{ rec.start(); }catch(e){
-        stream.getTracks().forEach(function(t){ t.stop(); });
-        btn.classList.remove("on");
-        showToast("مقدرش أبدأ التسجيل");
-      }
-    }).catch(function(){
-      showToast("لازم تسمح بالمايك من إعدادات المتصفح");
-    });
-  }
-
-  function bindHoldMic(btn, blockKey){
-    if(!btn || btn._holdBound) return;
-    btn._holdBound = true;
-    var started = false;
-    function onDown(e){
-      e.preventDefault();
-      started = true;
-      startVoiceRecHold(blockKey, btn);
-    }
-    function onUp(e){
-      if(!started) return;
-      started = false;
-      stopVoiceRec();
-    }
-    btn.addEventListener("pointerdown", onDown);
-    btn.addEventListener("pointerup", onUp);
-    btn.addEventListener("pointerleave", onUp);
-    btn.addEventListener("pointercancel", onUp);
-    // منع قائمة اللمس الطويلة على الموبايل
-    btn.style.touchAction = "none";
-    btn.addEventListener("contextmenu", function(e){ e.preventDefault(); });
-  }
-
-  function playVoiceRec(blockKey, btn){
-    var rec = voiceStore[voiceKey(blockKey)];
-    if(!rec || !rec.url){ showToast("مفيش تسجيل للجزء ده"); return; }
-    if(activeAudio && btn.classList.contains("on")){
-      stopActiveAudio();
-      return;
-    }
-    stopActiveAudio();
-    var audio = new Audio(rec.url);
-    activeAudio = audio;
+  function startSpeech(key, btn){
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ showToast("المتصفح ده مش بيدعم التعرف على الصوت"); return; }
+    var rec = new SR(); rec.lang="ar-SA"; rec.interimResults=false;
     btn.classList.add("on");
-    audio.onended = function(){ btn.classList.remove("on"); activeAudio = null; };
-    audio.onerror = function(){ btn.classList.remove("on"); showToast("مقدرش أشغّل التسجيل"); };
-    audio.play().catch(function(){ btn.classList.remove("on"); showToast("اضغط تاني للتشغيل"); });
+    rec.onresult = function(e){
+      var text = e.results[0][0].transcript;
+      var out = $("said-" + key);
+      if(out){ out.style.display="block"; out.textContent = "🎤 قلت: " + text; }
+    };
+    rec.onerror = function(){ showToast("مقدرش أسمعك، جرب تاني"); };
+    rec.onend = function(){ btn.classList.remove("on"); };
+    try{ rec.start(); }catch(e){ btn.classList.remove("on"); }
   }
 
-  /* ---------- Review list modal — إعادة اختبار ---------- */
+  /* ---------- Review list modal ---------- */
   function renderReviewModal(){
     var map = loadReviewMap(state.malzamaKey);
     var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
@@ -2006,37 +1680,13 @@
     keys.forEach(function(k){
       var item = document.createElement("div");
       item.className = "review-item";
-      var has = hasVoiceRec(k);
-      var text = map[k].text || "";
-      item.innerHTML =
-        '<div class="rev-row">'+
-          '<div class="txt rev-hidden" data-full="1" title="اضغط للإظهار">'+escapeHtml(text)+'</div>'+
-        '</div>'+
-        '<div class="rev-actions">'+
-          '<button type="button" class="rev-reveal">👁 إظهار</button>'+
-          '<span class="voice-btns">'+
-            '<button type="button" class="mic-mini" data-key="'+k+'" title="اضغط واستمر">🎤</button>'+
-            '<button type="button" class="spk-mini" data-key="'+k+'" title="اسمع" '+(has?"":"disabled")+'>🔊</button>'+
-          '</span>'+
-          '<button type="button" class="done-rev" data-key="'+k+'">✓ خلصت</button>'+
-        '</div>';
-      var txtEl = item.querySelector(".txt");
-      function revealRev(){
-        txtEl.classList.remove("rev-hidden");
-        txtEl.classList.add("rev-shown");
-      }
-      item.querySelector(".rev-reveal").addEventListener("click", revealRev);
-      txtEl.addEventListener("click", revealRev);
-      item.querySelector(".done-rev").addEventListener("click", function(){
+      item.innerHTML = '<div class="txt">'+escapeHtml(map[k].text)+'</div><button data-key="'+k+'">✓ خلصت</button>';
+      item.querySelector("button").addEventListener("click", function(){
         var m = loadReviewMap(state.malzamaKey);
         delete m[k];
         saveReviewMap(state.malzamaKey, m);
         updateReviewBadge();
         renderReviewModal();
-      });
-      bindHoldMic(item.querySelector(".mic-mini"), k);
-      item.querySelector(".spk-mini").addEventListener("click", function(){
-        playVoiceRec(k, item.querySelector(".spk-mini"));
       });
       wrap.appendChild(item);
     });
@@ -2113,19 +1763,18 @@
     function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
 
     paragraphs.forEach(function(p){
-      var hasImg = !!(p.html && /<img\s/i.test(p.html));
-      if(!p.text.trim() && !hasImg) return;
-      if(p.text.trim() && isPromoOrVerse(p.text)) return;
-      if(p.level === 1 && p.text.trim()){
+      if(!p.text.trim()) return;
+      if(isPromoOrVerse(p.text)) return; // drop poetry & promo entirely
+      if(p.level === 1){
         if(!docHeading) docHeading = p.text.trim();
         newPage(p.text.trim()); newSection(null);
-      } else if(p.level && p.level >= 2 && p.text.trim()){
+      } else if(p.level && p.level >= 2){
         if(!curPage) newPage(docHeading || fallbackTitle);
         newSection(p.text.trim());
       } else {
         if(!curPage) newPage(docHeading || fallbackTitle);
         if(!curSection) newSection(null);
-        if(p.html) curSection.blocks.push(p.html);
+        curSection.blocks.push(p.html);
       }
     });
     if(pages.length === 0){ newPage(fallbackTitle); newSection(null); }
@@ -2151,47 +1800,12 @@
         JSZip.loadAsync(e.target.result).then(function(zip){
           var docXmlP = zip.file("word/document.xml") ? zip.file("word/document.xml").async("text") : Promise.reject("مش ملف Word سليم");
           var stylesXmlP = zip.file("word/styles.xml") ? zip.file("word/styles.xml").async("text") : Promise.resolve(null);
-          // استخراج الصور العلمية من word/media
-          var mediaMap = {};
-          var mediaJobs = [];
-          Object.keys(zip.files).forEach(function(path){
-            if(/^word\/media\//i.test(path) && !zip.files[path].dir){
-              mediaJobs.push(zip.files[path].async("base64").then(function(b64){
-                var name = path.split("/").pop();
-                var ext = (name.split(".").pop()||"png").toLowerCase();
-                var mime = ext==="png"?"image/png":(ext==="jpg"||ext==="jpeg")?"image/jpeg":ext==="gif"?"image/gif":ext==="webp"?"image/webp":"image/png";
-                var dataUrl = "data:"+mime+";base64,"+b64;
-                mediaMap[name] = dataUrl;
-                mediaMap["media/"+name] = dataUrl;
-                mediaMap[path.replace(/^word\//,"")] = dataUrl;
-              }).catch(function(){}));
-            }
-          });
-          return Promise.all([docXmlP, stylesXmlP, Promise.all(mediaJobs)]).then(function(res){
-            return { docXml: res[0], stylesXml: res[1], mediaMap: mediaMap };
-          });
-        }).then(function(pack){
-          var docXml = pack.docXml, stylesXml = pack.stylesXml, mediaMap = pack.mediaMap || {};
+          return Promise.all([docXmlP, stylesXmlP]);
+        }).then(function(res){
+          var docXml = res[0], stylesXml = res[1];
           var headingLevels = loadHeadingStyleLevels(stylesXml);
           var doc = new DOMParser().parseFromString(docXml, "application/xml");
           var bodyParas = wEls(doc, "p");
-          var A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
-          var R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-          function imagesInPara(pEl){
-            var html = "";
-            var blips = pEl.getElementsByTagNameNS(A_NS, "blip");
-            Array.prototype.forEach.call(blips, function(blip){
-              var embed = blip.getAttributeNS(R_NS, "embed") || blip.getAttribute("r:embed");
-              // fall back: any image by scanning media (order-based last resort skipped)
-              if(!embed) return;
-              // relationships are complex — try match by index/name in mediaMap
-            });
-            // أبسط: لو الفقرة فيها drawing و عندنا صور، نرفق كل الصور غير المستخدمة لاحقًا
-            return html;
-          }
-          // ابنِ قائمة صور مرة واحدة وألصق كل صورة بعد أقرب فقرة نصية تالية (تقريبي)
-          var mediaList = Object.keys(mediaMap).filter(function(k){ return k.indexOf("/")===-1; });
-          var mediaIdx = 0;
           var paragraphs = bodyParas.map(function(pEl){
             var pPr = pEl.getElementsByTagNameNS(WNS,"pPr")[0];
             var styleEl = pPr ? pPr.getElementsByTagNameNS(WNS,"pStyle")[0] : null;
@@ -2200,17 +1814,8 @@
             var runs = paragraphToRuns(pEl);
             var html = runsToHtml(runs);
             var text = runsToPlainText(runs);
-            var hasDrawing = pEl.getElementsByTagNameNS(A_NS, "blip").length > 0
-              || pEl.getElementsByTagName("w:drawing").length > 0
-              || (pEl.getElementsByTagNameNS(WNS,"drawing")||[]).length > 0;
-            if(hasDrawing && mediaIdx < mediaList.length){
-              var src = mediaMap[mediaList[mediaIdx]];
-              mediaIdx++;
-              if(src){
-                // صورة + أي نص مرافق (بيانات الرسم) في نفس البلوك
-                html += (html?' ':'') + '<div class="doc-fig"><img src="'+src+'" alt="رسم"></div>';
-              }
-            }
+            // Heuristic: short fully-bold paragraph → treat as sub-heading (level 2)
+            // Skip list markers: أولا، أ.، 1، : etc.
             if(!level && text.trim().length > 0 && text.trim().length <= 80){
               var tTrim = text.trim();
               var isMarker = isTrivialFragment(tTrim) || LIST_MARKER_RE.test(tTrim) || BARE_ENUM_RE.test(tTrim);
@@ -2222,14 +1827,6 @@
             }
             return { level: level, html: html, text: text };
           });
-          // أي صور متبقية في آخر الصفحة
-          if(mediaIdx < mediaList.length){
-            var rest = "";
-            for(; mediaIdx < mediaList.length; mediaIdx++){
-              rest += '<div class="doc-fig"><img src="'+mediaMap[mediaList[mediaIdx]]+'" alt="رسم"></div>';
-            }
-            if(rest) paragraphs.push({ level:null, html:rest, text:"" });
-          }
           var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
         }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
@@ -2272,66 +1869,17 @@
   }
 
   function groupIntoLines(items){
-    // Collect items with geometry + font (needed for Arabic order + bold)
-    var raw = [];
-    items.forEach(function(it){
-      var str = (it.str || "").replace(/\s+/g, " ");
-      if(!str || !str.trim()) return;
-      var tr = it.transform || [1,0,0,1,0,0];
-      var size = Math.abs(tr[3]) || Math.abs(tr[0]) || 10;
-      var x = tr[4] || 0;
-      var y = Math.round(tr[5] || 0);
-      var font = (it.fontName || it.font || "") + "";
-      var bold = /bold|black|heavy|semibold|demibold|extrabold/i.test(font) || (it.fontWeight >= 600);
-      raw.push({ str: str, x: x, y: y, size: size, bold: bold, w: Math.abs(tr[0]) * (str.length || 1) });
-    });
-    // Group into lines by Y (slightly looser for Arabic fonts)
     var lines = [];
-    raw.forEach(function(it){
-      var line = null;
-      for(var i=0;i<lines.length;i++){
-        if(Math.abs(lines[i].y - it.y) <= 3.5){ line = lines[i]; break; }
-      }
-      if(!line){ line = { y: it.y, size: it.size, items: [], boldVotes: 0, total: 0 }; lines.push(line); }
-      line.items.push(it);
-      line.size = Math.max(line.size, it.size);
-      line.total++;
-      if(it.bold) line.boldVotes++;
+    items.forEach(function(it){
+      var y = Math.round(it.transform[5]);
+      var size = Math.abs(it.transform[3]) || Math.abs(it.transform[0]) || 10;
+      var line = lines.find(function(l){ return Math.abs(l.y - y) <= 2; });
+      if(!line){ line = { y:y, size:size, text:"" }; lines.push(line); }
+      line.text += (line.text ? " " : "") + it.str;
+      line.size = Math.max(line.size, size);
     });
-    lines.sort(function(a,b){ return b.y - a.y; }); // top → bottom
-    return lines.map(function(line){
-      var its = line.items.slice();
-      // Detect if line is mostly Arabic → read right-to-left (sort x descending)
-      var sample = its.map(function(t){ return t.str; }).join("");
-      var arChars = (sample.match(/[\u0600-\u06FF]/g) || []).length;
-      var enChars = (sample.match(/[A-Za-z]/g) || []).length;
-      var rtl = arChars >= enChars;
-      its.sort(function(a,b){ return rtl ? (b.x - a.x) : (a.x - b.x); });
-      // إزالة عناصر مكررة بنفس الموضع تقريبًا (PDF أحيانًا يرسم النص مرتين)
-      var deduped = [];
-      its.forEach(function(cur){
-        var prev = deduped[deduped.length-1];
-        if(prev && Math.abs(prev.x - cur.x) < 1.5 && prev.str === cur.str) return;
-        deduped.push(cur);
-      });
-      its = deduped;
-      var parts = [];
-      for(var i=0;i<its.length;i++){
-        var cur = its[i];
-        if(i === 0){ parts.push(cur.str); continue; }
-        var prev = its[i-1];
-        var gap = rtl ? (prev.x - (cur.x + (cur.w || 0))) : (cur.x - (prev.x + (prev.w || 0)));
-        if(gap > Math.max(1.2, prev.size * 0.15)) parts.push(" ");
-        parts.push(cur.str);
-      }
-      var text = parts.join("").replace(/\s+/g, " ").trim();
-      return {
-        y: line.y,
-        size: line.size,
-        text: text,
-        bold: line.total > 0 && (line.boldVotes / line.total) >= 0.45
-      };
-    }).filter(function(l){ return l.text; });
+    lines.sort(function(a,b){ return b.y - a.y; }); // top to bottom (PDF y grows upward)
+    return lines.filter(function(l){ return l.text.trim(); });
   }
 
   /* Drop lines that are clearly page furniture, not real content:
@@ -2377,8 +1925,7 @@
     var baseline = 12;
     var best = 0;
     Object.keys(freq).forEach(function(s){ if(freq[s]>best){ best=freq[s]; baseline=+s; } });
-    var headingMin = baseline * 1.12;
-    var largeMin = baseline * 1.08;
+    var headingMin = baseline * 1.15;
 
     var rawPages = [];
     var docHeading = null;
@@ -2386,87 +1933,32 @@
 
     function newPage(h){ curPage = { heading:h, sections:[] }; rawPages.push(curPage); }
     function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
-    function ensureSection(){
+    function pushParagraph(text){
+      if(!text.trim()) return;
       if(!curPage) newPage(fallbackTitle);
       if(!curSection) newSection(null);
-    }
-    // Preserve formatting: bold + relative font size as HTML
-    function lineToHtml(l){
-      var t = escapeHtml((l.text || "").trim());
-      if(!t) return "";
-      var html = t;
-      if(l.bold || l.size >= largeMin) html = "<b>" + html + "</b>";
-      // keep larger titles visually bigger (relative to body)
-      if(l.size >= headingMin){
-        var scale = Math.min(1.35, Math.max(1.05, l.size / baseline));
-        html = '<span style="font-size:' + scale.toFixed(2) + 'em">' + html + "</span>";
-      }
-      return html;
-    }
-    var lastPushedPlain = "";
-    function normLine(t){ return String(t||"").replace(/\s+/g," ").trim().toLowerCase(); }
-    function pushBlock(html){
-      if(!html || !stripHtml(html).trim()) return;
-      var plain = normLine(stripHtml(html));
-      // منع تكرار نفس السطر مرتين متتاليتين (مشكلة شائعة في PDF)
-      if(plain && plain === lastPushedPlain) return;
-      lastPushedPlain = plain;
-      ensureSection();
-      curSection.blocks.push(html);
+      curSection.blocks.push(escapeHtml(text.trim()));
     }
 
     pageLinesList.forEach(function(lines, pageIdx){
-      var bufferHtml = [];
-      var bufferPlainLen = 0;
+      var buffer = "";
       var sawHeadingThisPage = false;
-      var lastLinePlain = "";
-
-      function flushBuffer(){
-        if(!bufferHtml.length) return;
-        pushBlock(bufferHtml.join(" "));
-        bufferHtml = [];
-        bufferPlainLen = 0;
-      }
-
       lines.forEach(function(l){
-        var txt = (l.text || "").trim();
-        if(!txt) return;
-        var nrm = normLine(txt);
-        // تخطّي سطر مكرر حرفيًا من السطر السابق في نفس الصفحة
-        if(nrm && nrm === lastLinePlain) return;
-        lastLinePlain = nrm;
-
-        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 80 && !/^[0-9\s.\-–|]+$/.test(txt);
-        var isTitleLike = (l.bold || l.size >= largeMin) && txt.length <= 90 && !/[.!?؟]{2,}/.test(txt);
-
+        var txt = l.text.trim();
+        var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 70 && !/^[0-9\s.\-–|]+$/.test(txt);
         if(isHeading){
-          flushBuffer();
+          pushParagraph(buffer); buffer = "";
           if(!docHeading) docHeading = txt;
-          if(!curPage || (!sawHeadingThisPage && pageIdx > 0)) newPage(txt);
+          if(!curPage || (!sawHeadingThisPage && pageIdx>0)) newPage(txt);
           else if(!curPage) newPage(txt);
-          // لا نضع sub لو هو نفس عنوان الصفحة (يمنع التكرار في العرض)
-          var sub = (normLine(txt) === normLine(curPage.heading)) ? null : txt;
-          newSection(sub);
-          lastPushedPlain = normLine(txt);
+          newSection(txt);
           sawHeadingThisPage = true;
-          return;
+        } else {
+          buffer += (buffer ? " " : "") + txt;
+          if(buffer.length > 260){ pushParagraph(buffer); buffer=""; }
         }
-        if(isTitleLike){
-          flushBuffer();
-          pushBlock(lineToHtml(l));
-          return;
-        }
-        var html = lineToHtml(l);
-        if(txt.length <= 55 && /[:：]$/.test(txt)){
-          flushBuffer();
-          pushBlock(html);
-          return;
-        }
-        bufferHtml.push(html);
-        bufferPlainLen += txt.length + 1;
-        if(bufferPlainLen > 180) flushBuffer();
       });
-      flushBuffer();
+      pushParagraph(buffer);
     });
 
     if(rawPages.length === 0){ newPage(fallbackTitle); newSection(null); }
@@ -2495,13 +1987,7 @@
     if(pendingSeeded) return;
     pendingSeeded = true;
     pendingSharedBatch = SHARED_INDEX.map(function(it){
-      return {
-        key: it.key,
-        title: it.title,
-        subtitle: it.subtitle,
-        rawPages: SHARED_CONTENT[it.key],
-        selections: SHARED_SELECTIONS[it.key] || collectAllModeSelections(it.key)
-      };
+      return { key:it.key, title:it.title, subtitle:it.subtitle, rawPages: SHARED_CONTENT[it.key] };
     });
   }
   function upsertPendingShared(item){
@@ -2542,155 +2028,46 @@
     return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
   }
 
-  // نفس الاسم/الملف → نفس المفتاح → تحديث محتوى مع الحفاظ على التحديد
-  function resolveExistingMalzamaKey(r){
-    var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
-    var keyTitle = slugify(title);
-    var keyFile = slugify(r.fallbackTitle || title);
-    var candidates = [keyTitle, keyFile];
-    var index = getLibraryIndex();
-    for(var i=0;i<index.length;i++){
-      var e = index[i];
-      if(candidates.indexOf(e.key) >= 0) return { key:e.key, title:e.title||title, existed:true };
-      if(slugify(e.title||"") === keyTitle) return { key:e.key, title:e.title||title, existed:true };
-      if(e.subtitle && slugify(e.subtitle) === keyFile) return { key:e.key, title:e.title||title, existed:true };
-    }
-    for(var j=0;j<pendingSharedBatch.length;j++){
-      var p = pendingSharedBatch[j];
-      if(candidates.indexOf(p.key) >= 0) return { key:p.key, title:p.title||title, existed:true };
-      if(slugify(p.title||"") === keyTitle) return { key:p.key, title:p.title||title, existed:true };
-    }
-    // shared library on site
-    if(typeof SHARED_INDEX !== "undefined"){
-      for(var s=0;s<SHARED_INDEX.length;s++){
-        var sh = SHARED_INDEX[s];
-        if(candidates.indexOf(sh.key) >= 0) return { key:sh.key, title:sh.title||title, existed:true };
-        if(slugify(sh.title||"") === keyTitle) return { key:sh.key, title:sh.title||title, existed:true };
-      }
-    }
-    return { key:keyTitle, title:title, existed:false };
-  }
-
   function finishUploadBatch(results, isOfficial){
     var lastKey = null, lastTitle = null, lastSub = null;
-    var updatedCount = 0, newCount = 0;
     results.forEach(function(r){
-      var resolved = resolveExistingMalzamaKey(r);
-      var key = resolved.key;
-      var title = resolved.title || r.heading || r.fallbackTitle || "ملزمة جديدة";
-      // تحديث المحتوى فقط — التحديد (najm_sel_*) يفضل كما هو
+      var title = r.heading || r.fallbackTitle || "ملزمة جديدة";
+      var key = slugify(title);
       saveMalzamaContent(key, r.rawPages);
-      var keptSels = collectAllModeSelections(key);
-      var hasSels = ["headings","sentences","custom"].some(function(m){
-        return keptSels[m] && Object.keys(keptSels[m]).length > 0;
-      });
       if(isOfficial){
-        upsertPendingShared({
-          key: key,
-          title: title,
-          subtitle: r.fallbackTitle,
-          rawPages: r.rawPages,
-          selections: keptSels
-        });
+        upsertPendingShared({ key:key, title:title, subtitle:r.fallbackTitle, rawPages:r.rawPages });
       } else {
         var index = getLibraryIndex().filter(function(x){ return !x.shared; });
         if(!index.some(function(e){ return e.key===key; })){
           index.push({ key:key, title:title, subtitle:r.fallbackTitle });
           savePersonalIndex(index);
-        } else {
-          // حدّث العنوان الفرعي لو اتغير اسم الملف
-          index = index.map(function(e){
-            if(e.key===key) return { key:e.key, title:title, subtitle:r.fallbackTitle||e.subtitle };
-            return e;
-          });
-          savePersonalIndex(index);
         }
       }
-      if(resolved.existed) updatedCount++; else newCount++;
       lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
-      r._keptSels = hasSels;
     });
     setUploadStatus("");
     if(results.length===0) return;
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
       renderPendingList();
-      showToast(updatedCount
-        ? ("تم تحديث المحتوى ("+ar(updatedCount)+") مع الحفاظ على التحديد — نزّل library.json")
-        : ("اترفع "+ar(newCount)+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة"));
+      showToast("اترفع "+results.length+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة");
       renderHome();
     } else {
       $("modalUpload").classList.remove("show");
       renderHome();
-      showToast(updatedCount
-        ? ('تم تحديث "'+lastTitle+'" مع الحفاظ على التحديد')
-        : ('اتضافت "'+lastTitle+'" للملازم'));
+      showToast('اتضافت "'+lastTitle+'" للملازم');
       openUnit(lastKey, lastTitle, lastSub);
     }
   }
 
-  function buildLibraryItemsForExport(){
-    seedPendingFromShared();
-    // ابدأ من القائمة الرسمية المعلّقة
-    var byKey = {};
-    pendingSharedBatch.forEach(function(it){
-      byKey[it.key] = {
-        key: it.key,
-        title: it.title,
-        subtitle: it.subtitle,
-        rawPages: it.rawPages || SHARED_CONTENT[it.key] || getMalzamaContent(it.key),
-        selections: it.selections || collectAllModeSelections(it.key)
-      };
-    });
-    // أضف أي ملزمة محلية فيها إخفاء محفوظ (حتى لو مش معلّمة رسمية)
-    getLibraryIndex().forEach(function(entry){
-      var sels = collectAllModeSelections(entry.key);
-      var has = ["headings","sentences","custom"].some(function(m){ return Object.keys(sels[m]||{}).length > 0; });
-      var raw = getMalzamaContent(entry.key);
-      if(!raw) return;
-      if(byKey[entry.key]){
-        byKey[entry.key].selections = sels;
-        byKey[entry.key].rawPages = raw;
-        return;
-      }
-      if(has || entry.shared){
-        byKey[entry.key] = {
-          key: entry.key,
-          title: entry.title,
-          subtitle: entry.subtitle,
-          rawPages: raw,
-          selections: sels
-        };
-      }
-    });
-    // الملزمة المفتوحة حاليًا لو فيها إخفاء
-    if(state.malzamaKey && RAW_PAGES){
-      var selsNow = collectAllModeSelections(state.malzamaKey);
-      byKey[state.malzamaKey] = {
-        key: state.malzamaKey,
-        title: state.malzamaTitle || state.malzamaKey,
-        subtitle: state.malzamaSub || "",
-        rawPages: RAW_PAGES,
-        selections: selsNow
-      };
-    }
-    return Object.keys(byKey).map(function(k){ return byKey[k]; });
-  }
-
   function downloadLibraryJson(){
-    var items = buildLibraryItemsForExport();
-    if(!items.length){
-      showToast("مفيش ملازم للتصدير — ارفع ملزمة وحدد إخفاء الأول");
-      return;
-    }
-    var payload = { items: items };
+    var payload = { items: pendingSharedBatch };
     var blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url; a.download = "library.json";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
-    showToast("اتنزل library.json ("+ar(items.length)+" ملزمة) — ارفعه على GitHub جنب index.html");
   }
 
   function resetApp(){
@@ -2707,111 +2084,16 @@
     setTimeout(function(){ location.reload(); }, 600);
   }
 
-  /* ---------- تحرير الملزمة: نص / مسافات / حذف صفحة ---------- */
-  function persistRawAndRebuild(){
-    if(!state.malzamaKey || !RAW_PAGES) return;
-    saveMalzamaContent(state.malzamaKey, RAW_PAGES);
-    // لو رسمية معلّقة حدّث الدفعة
-    var idx = pendingSharedBatch.findIndex(function(x){ return x.key===state.malzamaKey; });
-    if(idx >= 0) pendingSharedBatch[idx].rawPages = RAW_PAGES;
-    loadProgress(false);
-    renderPage();
-  }
-
-  function getRawBlockRef(blockKey){
-    // blockKey = "pi_si_bi"
-    var parts = String(blockKey).split("_");
-    if(parts.length < 3) return null;
-    var pi = +parts[0], si = +parts[1], bi = +parts[2];
-    if(!RAW_PAGES[pi] || !RAW_PAGES[pi].sections[si]) return null;
-    return { pi:pi, si:si, bi:bi, page:RAW_PAGES[pi], sec:RAW_PAGES[pi].sections[si] };
-  }
-
-  function startEditCurrentPageText(){
-    if(!MODEL || !MODEL.pages[state.page]) return;
-    state.editPick = true;
-    showToast("اضغط على الفقرة اللي عايز تعدّلها");
-    renderPage();
-  }
-  function editBlockByKey(blockKey){
-    var ref = getRawBlockRef(blockKey);
-    if(!ref){ showToast("مقدرش ألاقي الفقرة"); return; }
-    var current = stripHtml(ref.sec.blocks[ref.bi] || "");
-    var next = prompt("عدّل النص — تقدر تضيف/تمسح حروف ومسافات:", current);
-    state.editPick = false;
-    if(next === null){ renderPage(); return; }
-    next = String(next).replace(/\r\n/g, "\n");
-    var wasBold = /<b>/i.test(ref.sec.blocks[ref.bi]||"");
-    // احتفظ بالصور لو موجودة في الفقرة
-    var imgs = [];
-    var tmp = document.createElement("div");
-    tmp.innerHTML = ref.sec.blocks[ref.bi] || "";
-    tmp.querySelectorAll("img").forEach(function(im){ imgs.push(im.outerHTML); });
-    var html = wasBold ? ("<b>"+escapeHtml(next.trim())+"</b>") : escapeHtml(next.trim());
-    if(imgs.length) html += imgs.join("");
-    ref.sec.blocks[ref.bi] = html;
-    persistRawAndRebuild();
-    showToast("تم تعديل النص");
-  }
-
-  function normalizeSpacesOnPage(mode){
-    // mode: 'add' inserts space between stuck Arabic/Latin tokens; 'del' collapses multi-spaces
-    if(!MODEL || !MODEL.pages[state.page] || !RAW_PAGES[state.page]) return;
-    var page = RAW_PAGES[state.page];
-    var changed = 0;
-    (page.sections||[]).forEach(function(sec){
-      sec.blocks = (sec.blocks||[]).map(function(html){
-        var plain = stripHtml(html);
-        var next = plain;
-        if(mode === "del"){
-          next = plain.replace(/[ \t\u00A0]{2,}/g, " ");
-        } else {
-          // أضف مسافة بين حرف عربي/لاتيني ملتصق برقم أو كلمة لاتينية ملتصقة بعربية
-          next = plain
-            .replace(/([\u0600-\u06FF])([A-Za-z0-9])/g, "$1 $2")
-            .replace(/([A-Za-z0-9])([\u0600-\u06FF])/g, "$1 $2")
-            .replace(/([\u0600-\u06FF])([^\s\u0600-\u06FF\d\.,،:;])/g, "$1 $2");
-        }
-        if(next !== plain){
-          changed++;
-          var wasBold = /<b>/i.test(html);
-          return wasBold ? ("<b>"+escapeHtml(next)+"</b>") : escapeHtml(next);
-        }
-        return html;
-      });
-    });
-    if(!changed){ showToast(mode==="del" ? "مفيش مسافات زيادة" : "مفيش كلمات محتاجة مسافة"); return; }
-    persistRawAndRebuild();
-    showToast(mode==="del" ? ("اتمسحت مسافات زيادة في "+ar(changed)+" فقرة") : ("اتظبطت مسافات في "+ar(changed)+" فقرة"));
-  }
-
-  function deleteCurrentPage(){
-    if(!RAW_PAGES || RAW_PAGES.length <= 1){ showToast("مفيش غير صفحة واحدة — مش هنمسحها"); return; }
-    if(!confirm("تحذف الصفحة الحالية رقم "+ar(state.page+1)+"؟")) return;
-    RAW_PAGES.splice(state.page, 1);
-    if(state.page >= RAW_PAGES.length) state.page = Math.max(0, RAW_PAGES.length-1);
-    persistRawAndRebuild();
-    showToast("اتمسحت الصفحة");
-  }
-
   /* ---------- Wiring ---------- */
   $("btnTheme").addEventListener("click", toggleTheme);
   $("btnInfo").addEventListener("click", function(){ $("modalInfo").classList.add("show"); });
-  function goHome(){ switchView("home"); renderHome(); }
-  $("btnHome").addEventListener("click", goHome);
-  var btnUnitHome = $("btnUnitHome");
-  if(btnUnitHome) btnUnitHome.addEventListener("click", goHome);
+  $("btnHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
   document.querySelectorAll("[data-close]").forEach(function(x){ x.addEventListener("click", function(){ $(x.dataset.close).classList.remove("show"); }); });
   document.querySelectorAll(".modal-overlay").forEach(function(ov){ ov.addEventListener("click", function(e){ if(e.target===ov) ov.classList.remove("show"); }); });
 
   document.querySelectorAll(".mode-btn").forEach(function(btn){ btn.addEventListener("click", function(){ setMode(btn.dataset.mode); }); });
   $("btnPrevPage").addEventListener("click", function(){ if(state.page>0){ state.page--; saveProgress(); renderPage(); } });
   $("btnNextPage").addEventListener("click", function(){ if(state.page<MODEL.pages.length-1){ state.page++; saveProgress(); renderPage(); } });
-
-  if($("btnEditPageText")) $("btnEditPageText").addEventListener("click", startEditCurrentPageText);
-  if($("btnAddSpace")) $("btnAddSpace").addEventListener("click", function(){ normalizeSpacesOnPage("add"); });
-  if($("btnDelSpace")) $("btnDelSpace").addEventListener("click", function(){ normalizeSpacesOnPage("del"); });
-  if($("btnDeletePage")) $("btnDeletePage").addEventListener("click", deleteCurrentPage);
 
   $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
   $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
@@ -2837,172 +2119,54 @@
     e.target.value = "";
   });
   $("downloadLibrary").addEventListener("click", downloadLibraryJson);
-  function bindExport(id){
-    var el = $(id);
-    if(el) el.addEventListener("click", function(){
-      downloadLibraryJson();
-      var m = $("modalExportDone");
-      if(m) m.classList.remove("show");
-    });
-  }
-  bindExport("btnExportStudents");
-  bindExport("btnExportFromSettings");
-  bindExport("btnDownloadFromModal");
-  // زر JSON مش للطلاب — فقط بعد الحفظ / الإعدادات / نافذة التصدير
   $("btnSettings").addEventListener("click", function(){ $("modalSettings").classList.add("show"); });
   $("btnResetApp").addEventListener("click", resetApp);
 
-  // Selection buttons — custom / sentences / headings (tap/drag hide)
-  function phrasesFromCurrentSelection(){
-    var phrases = [];
-    var seen = {};
-    function addPhrase(ph){
-      ph = String(ph||"").replace(/\s+/g," ").trim();
-      if(ph.length < 2) return;
-      var n = normExcludeText(ph);
-      if(seen[n]) return;
-      seen[n] = true;
-      phrases.push(ph);
-    }
-    // 1) Prefer live DOM words (same indices used while selecting)
-    var wrap = $("docWrap");
-    if(wrap){
-      var byBlock = {};
-      wrap.querySelectorAll(".selectable-word").forEach(function(sp){
-        var bk = sp.dataset.blockKey;
-        if(!byBlock[bk]) byBlock[bk] = [];
-        byBlock[bk][+sp.dataset.wordIdx] = (sp.textContent||"").trim();
-      });
-      Object.keys(state.customSelected || {}).forEach(function(k){
-        if(k.indexOf("|w|") < 0) return;
-        var p = k.split("|");
-        // key = blockKey|w|a|b  — blockKey itself may contain underscores
-        var a = +p[p.length-2], b = +p[p.length-1];
-        if(isNaN(a) || isNaN(b)) return;
-        var blockKey = p.slice(0, p.length-3).join("|");
-        // fix: format is blockKey + "|w|" + lo + "|" + hi
-        var wi = k.lastIndexOf("|w|");
-        if(wi < 0) return;
-        blockKey = k.slice(0, wi);
-        var rest = k.slice(wi+3).split("|");
-        a = +rest[0]; b = +rest[1];
-        if(isNaN(a) || isNaN(b)) return;
-        var words = byBlock[blockKey] || [];
-        if(!words.length && MODEL){
-          // fallback from model
-          MODEL.pages.forEach(function(pg){
-            pg.sections.forEach(function(sec){
-              sec.blocks.forEach(function(block){
-                if(block.key === blockKey){
-                  words = splitIntoWords(block.plainText || stripHtml(block.originalHtml || block.html || ""));
-                }
-              });
-            });
-          });
-        }
-        if(!words.length) return;
-        var lo = Math.min(a,b), hi = Math.max(a,b);
-        var exp = expandBilingualRange(words.filter(Boolean), lo, hi);
-        var parts = [];
-        for(var i=exp[0];i<=exp[1];i++){ if(words[i]) parts.push(words[i]); }
-        addPhrase(parts.join(" "));
-      });
-    }
-    // 2) Fallback: model plain text if DOM empty
-    if(!phrases.length && MODEL){
-      MODEL.pages.forEach(function(pg){
-        pg.sections.forEach(function(sec){
-          sec.blocks.forEach(function(block){
-            var words = splitIntoWords(block.plainText || stripHtml(block.originalHtml || block.html || ""));
-            if(!words.length) return;
-            Object.keys(state.customSelected || {}).forEach(function(k){
-              if(k.indexOf(block.key + "|w|") !== 0) return;
-              var p = k.slice(block.key.length + 3).split("|");
-              var a = +p[0], b = +p[1];
-              if(isNaN(a) || isNaN(b)) return;
-              var exp = expandBilingualRange(words, Math.min(a,b), Math.max(a,b));
-              addPhrase(words.slice(exp[0], exp[1]+1).join(" "));
-            });
-          });
-        });
-      });
-    }
-    return phrases;
-  }
-
+  // Custom mode selection buttons
   $("btnStartSelect").addEventListener("click", function(){
-    if(state.mode !== "custom" && state.mode !== "sentences" && state.mode !== "headings") return;
+    if(state.mode !== "custom") return;
     state.selecting = true;
-    state.customSelected = loadCustomSelection(state.malzamaKey, state.mode);
+    state.customSelected = loadCustomSelection(state.malzamaKey); // start from saved
     $("btnStartSelect").classList.add("hidden");
     $("btnSaveCustom").classList.remove("hidden");
     $("btnClearCustom").classList.remove("hidden");
     var count = Object.keys(state.customSelected).length;
-    $("customSelectCount").textContent = count ? ar(count) + " جزء — كمّل التحديد في كل الصفحات ثم احفظ مرة" : "تنقّل بين الصفحات · حدّد · احفظ مرة واحدة";
-    showToast("تنقّل بين الصفحات وحدد ما تشاء — احفظ مرة واحدة في الآخر");
+    $("customSelectCount").textContent = count ? ar(count) + " جزء محدد" : "مرّر على الكلمات أو اضغط مرتين للجملة";
+    showToast("مرّر بإصبعك على الكلمات — أو اضغط مرتين للجملة كاملة");
     renderPage();
   });
   $("btnSaveCustom").addEventListener("click", function(){
-    if(state.mode !== "custom" && state.mode !== "sentences" && state.mode !== "headings") return;
-    var count = Object.keys(state.customSelected || {}).length;
-    if(!count){
-      showToast("مفيش حاجة محددة — ظلّل كلمة أو اسحب ثم احفظ");
-      return;
-    }
-    saveCustomSelection(state.malzamaKey, state.customSelected, state.mode);
-    // Keep official batch in sync so library.json export includes hides
-    if(state.isShared || pendingSharedBatch.some(function(x){ return x.key===state.malzamaKey; })){
-      var idx = pendingSharedBatch.findIndex(function(x){ return x.key===state.malzamaKey; });
-      if(idx >= 0){
-        pendingSharedBatch[idx].selections = collectAllModeSelections(state.malzamaKey);
-      }
-    }
+    if(state.mode !== "custom") return;
+    saveCustomSelection(state.malzamaKey, state.customSelected);
     state.selecting = false;
-    state.revealedIds = {};
-    state.blockRatings = {};
-    state.page = 0;
-    if(state.mode === "headings") state.seed = 1;
-    else state.seed = Math.floor(Math.random()*1e9)+1;
-    MODEL = buildModel(RAW_PAGES, state.mode, state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
+    // rebuild model with the new selection and reset progress for this mode
+    state.revealedIds = {}; state.blockRatings = {}; state.page = 0;
+    state.seed = Math.floor(Math.random()*1e9)+1;
+    MODEL = buildModel(RAW_PAGES, "custom", state.seed, state.customSelected, loadExcludeSet(state.malzamaKey));
     saveProgress();
     $("btnStartSelect").classList.remove("hidden");
     $("btnSaveCustom").classList.add("hidden");
     $("btnClearCustom").classList.add("hidden");
-    $("customSelectCount").textContent = "محفوظ: " + ar(count) + " جزء";
-    var exp = $("btnExportStudents");
-    if(exp) exp.classList.remove("hidden");
-    showToast("اتحفظ "+ar(count)+" جزء");
+    var count = Object.keys(state.customSelected).length;
+    $("customSelectCount").textContent = count ? "محفوظ: " + ar(count) + " جزء" : "";
+    showToast(count ? "تم حفظ التخصيص (" + ar(count) + " جزء)" : "مفيش حاجة محددة");
     renderPage();
-    // نافذة واضحة للتنزيل — مستحيل تتخطّاها
-    $("modalExportDone").classList.add("show");
   });
   $("btnClearCustom").addEventListener("click", function(){
     if(!confirm("تمسح كل التحديد الحالي؟")) return;
     state.customSelected = {};
-    saveCustomSelection(state.malzamaKey, {}, state.mode);
-    $("customSelectCount").textContent = "نقرة = كلمة · اسحب وأفلت = عدة كلمات";
+    saveCustomSelection(state.malzamaKey, {});
+    $("customSelectCount").textContent = "مرّر على الكلمات أو اضغط مرتين للجملة";
     document.querySelectorAll(".selectable-word.selected").forEach(function(el){ el.classList.remove("selected"); });
     showToast("تم مسح التحديد");
   });
 
-  // ابدأ الاختبار: reset progress only — does NOT erase saved hides
+  // Restart button (any mode): reset progress + new random hides for headings/sentences
   $("btnRestartUnit").addEventListener("click", function(){
-    if(state.selecting){ showToast("احفظ التحديد الأول أو ألغِه قبل ما تبدأ الاختبار"); return; }
-    if(MODEL && MODEL.allIds.length === 0){
-      showToast("حدّد أجزاء للإخفاء واحفظها الأول — من «① ابدأ التحديد»");
-      var btn = $("btnStartSelect");
-      if(btn){ btn.style.boxShadow = "0 0 0 3px rgba(224,182,47,.85)"; setTimeout(function(){ btn.style.boxShadow=""; }, 3000); }
-      return;
-    }
-    if(!confirm("بدء الاختبار من الأول؟ هيتصفّر التقدم فقط (التحديد المحفوظ يفضل).")) return;
-    setMode(state.mode, true, true);
-    var firstQ = findFirstPageWithBlanks();
-    state.page = firstQ;
-    saveProgress();
-    renderPage();
-    showToast(firstQ > 0
-      ? ("يلا — من أول سؤال (صفحة " + ar(firstQ+1) + ")")
-      : "يلا — ابدأ الاختبار ▶️");
+    if(state.selecting){ showToast("احفظ أو ألغِ التحديد الأول"); return; }
+    if(!confirm("إعادة من جديد؟ هيتصفّر التقدم" + (state.mode !== "custom" ? " ويتخفي أجزاء عشوائية جديدة" : "") + ".")) return;
+    setMode(state.mode, true, true); // reshuffle=true
+    showToast(state.mode === "custom" ? "تم الإعادة من الأول" : "محاولة جديدة — أجزاء مختلفة اتخفت");
   });
 
   loadTheme();
