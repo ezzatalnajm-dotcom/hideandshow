@@ -210,7 +210,7 @@
   .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .review-item .rev-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .doc-fig{margin:8px 0;text-align:center;}
-  .doc-fig img,.doc-block img{max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(10,27,46,.08);display:block;margin:8px auto;}
+  .doc-fig img,.doc-block img{max-width:100%;height:auto;min-height:80px;border-radius:10px;border:1px solid rgba(10,27,46,.08);display:block;margin:8px auto;background:rgba(128,128,128,.08);}
   .doc-fig .cap{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700;}
   .block-edit-menu{display:flex;gap:8px;flex-wrap:wrap;margin:6px 16px 10px;padding:8px;background:var(--card);border:1px solid rgba(224,182,47,.45);border-radius:12px;box-shadow:0 4px 14px rgba(10,27,46,.12);}
   .block-edit-menu button{border:none;background:rgba(224,182,47,.15);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:800;cursor:pointer;}
@@ -601,7 +601,9 @@
     try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
     // also drop any leftover reference to the old built-in seed ملزمة ١
     personal = personal.filter(function(x){ return x.key !== "seed_u1l1"; });
-    var sharedTagged = SHARED_INDEX.map(function(x){ return Object.assign({shared:true}, x); });
+    var hiddenShared = {};
+    try{ hiddenShared = JSON.parse(localStorage.getItem("najm_hidden_shared")||"{}") || {}; }catch(e){}
+    var sharedTagged = SHARED_INDEX.filter(function(x){ return !hiddenShared[x.key]; }).map(function(x){ return Object.assign({shared:true}, x); });
     var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
     return sharedTagged.concat(personalTagged);
   }
@@ -1320,9 +1322,8 @@
       var card = document.createElement("div");
       card.className = "malzama-card";
       var progTxt = comp.total===null ? "لسه ما بدأتش" : (comp.done+"/"+comp.total+" — "+comp.pct+"٪");
-      var delBtn = entry.shared
-        ? '<button class="malzama-del" title="ملزمة رسمية — بتتشال من ملف المكتبة نفسه" disabled style="opacity:.35;cursor:default;">📌</button>'
-        : '<button class="malzama-del" data-key="'+entry.key+'" title="حذف">🗑️</button>';
+      // حذف ظاهر للكل على جهازك: شخصية تتشال محليًا، رسمية تتشال من الدفعة وتحتاج إعادة تصدير library.json
+      var delBtn = '<button class="malzama-del" data-key="'+entry.key+'" data-shared="'+(entry.shared?"1":"0")+'" title="'+(entry.shared?"احذف من الرسمية (ثم صدّر library.json)":"حذف")+'" >🗑️</button>';
       var modesHtml =
         '<div class="ready-modes">' +
           '<span class="'+(ready.headings?"on":"off")+'">'+(ready.headings?"✅":"⚪")+' عناوين</span>' +
@@ -1334,19 +1335,35 @@
           '<div class="malzama-num">'+ar(i+1)+'</div>' +
           '<div class="malzama-info">' +
             '<div class="t"><span>'+escapeHtml(entry.title)+'</span><span class="ready-badge '+ready.status+'">'+ready.label+'</span></div>' +
-            '<div class="s">'+escapeHtml(entry.subtitle||"")+(entry.subtitle?" · ":"")+progTxt+'</div>' +
+            '<div class="s">'+escapeHtml(entry.subtitle||"")+(entry.subtitle?" · ":"")+progTxt+(entry.shared?" · 📌 رسمية":"")+'</div>' +
             modesHtml +
           '</div>' +
         '</div>' + delBtn;
       card.querySelector(".malzama-main").addEventListener("click", function(){ openUnit(entry.key, entry.title, entry.subtitle, !!entry.shared); });
       var delEl = card.querySelector(".malzama-del");
-      if(delEl && !entry.shared){
+      if(delEl){
         delEl.addEventListener("click", function(e){
           e.stopPropagation();
-          if(confirm('تحذف "'+entry.title+'" من القائمة؟ (التقدم المحفوظ هيرجع لو رفعتها تاني بنفس الاسم)')){
+          var isShared = delEl.getAttribute("data-shared") === "1";
+          var msg = isShared
+            ? 'تحذف "'+entry.title+'" من الملازم الرسمية؟\nهتتشال من جهازك، وعشان تتشال من الموقع لازم تنزّل library.json وترفعه على GitHub.'
+            : 'تحذف "'+entry.title+'" من القائمة؟';
+          if(!confirm(msg)) return;
+          seedPendingFromShared();
+          pendingSharedBatch = pendingSharedBatch.filter(function(x){ return x.key !== entry.key; });
+          // إخفاء محلي دائم للمفتاح ده لحد ما يتصدّر ملف جديد
+          try{
+            var hidden = {};
+            try{ hidden = JSON.parse(localStorage.getItem("najm_hidden_shared")||"{}") || {}; }catch(err){}
+            hidden[entry.key] = true;
+            localStorage.setItem("najm_hidden_shared", JSON.stringify(hidden));
+          }catch(err){}
+          if(!isShared){
             savePersonalIndex(getLibraryIndex().filter(function(x){ return !x.shared; }).filter(function(x){ return x.key!==entry.key; }));
-            renderHome();
           }
+          renderPendingList();
+          renderHome();
+          showToast(isShared ? "اتشالت من جهازك — نزّل library.json وارفعه عشان الطلاب" : "اتمسحت");
         });
       }
       list.appendChild(card);
@@ -1379,19 +1396,18 @@
     switchView("unit");
     updateReviewBadge();
     setMode("headings", true);
-    // ابدأ من أول صفحة فيها سؤال (جزء مخفي)
-    var firstQ = findFirstPageWithBlanks();
-    if(firstQ > 0){
-      state.page = firstQ;
-      saveProgress();
-      renderPage();
-    }
+    // دائمًا نفتح من الصفحة ١ عشان الرسوم العلمية تظهر (القفز للسؤال عند «ابدأ الاختبار» فقط)
+    state.page = 0;
+    saveProgress();
+    renderPage();
     var readySel = loadCustomSelection(key, "headings");
     var hasHides = readySel && Object.keys(readySel).length > 0;
+    var imgInContent = 0;
+    try{ JSON.stringify(raw).replace(/<img/gi, function(){ imgInContent++; return ""; }); }catch(e){}
     if(hasHides){
       setTimeout(function(){
-        showToast(firstQ > 0
-          ? ("بدأنا من أول صفحة فيها سؤال — صفحة " + ar(firstQ+1))
+        showToast(imgInContent
+          ? ("جاهز · 🖼️ "+ar(imgInContent)+" صورة في الصفحة ١ — «ابدأ الاختبار» ينقلك لأول سؤال")
           : "الإخفاء جاهز — اضغط «▶️ ابدأ الاختبار»");
       }, 300);
     } else if(!state.isShared){
@@ -1662,6 +1678,18 @@
       note.style.cssText = "padding:12px 16px;line-height:1.8;text-align:right;";
       note.innerHTML = "لسه ما فيش أجزاء مخفية في المود ده — اضغط «① ابدأ التحديد» أو عدّل النص من الشريط فوق.";
       docCard.appendChild(note);
+    }
+    // لو الصفحة الحالية مفيهاش صور بس الملف فيه — تلميح
+    if(state.page > 0 && RAW_PAGES){
+      var pageHasImg = /<img/i.test(JSON.stringify(MODEL.pages[state.page]||{}));
+      var docHasImg = /<img/i.test(JSON.stringify(RAW_PAGES));
+      if(docHasImg && !pageHasImg){
+        var tip = document.createElement("div");
+        tip.className = "empty-note";
+        tip.style.cssText = "padding:10px 14px;text-align:right;color:var(--gold-600);font-weight:700;";
+        tip.innerHTML = "🖼️ الرسوم في صفحات تانية — ارجع للصفحة ١ أو تنقّل بالأسهم";
+        docCard.appendChild(tip);
+      }
     }
 
     // Selecting UI (word tap/drag) in custom OR sentences mode
@@ -2097,15 +2125,16 @@
       item.className = "review-item";
       var has = hasVoiceRec(k);
       var text = map[k].text || "";
+      // نفس أسلوب الاختبار: مخفي (blur) → إظهار بالنقر
       item.innerHTML =
         '<div class="rev-row">'+
-          '<div class="txt rev-hidden" data-full="1" title="اضغط للإظهار">'+escapeHtml(text)+'</div>'+
+          '<div class="txt rev-hidden" title="اضغط زي الاختبار للإظهار"><span class="blank">'+escapeHtml(text)+'</span></div>'+
         '</div>'+
         '<div class="rev-actions">'+
-          '<button type="button" class="rev-reveal">👁 إظهار</button>'+
+          '<button type="button" class="rev-reveal">👁 إظهار الإجابة</button>'+
           '<span class="voice-btns">'+
-            '<button type="button" class="mic-mini" data-key="'+k+'" title="اضغط واستمر">🎤</button>'+
-            '<button type="button" class="spk-mini" data-key="'+k+'" title="اسمع" '+(has?"":"disabled")+'>🔊</button>'+
+            '<button type="button" class="mic-mini" data-key="'+k+'" title="اضغط واستمر">🎤 اضغط واستمر</button>'+
+            '<button type="button" class="spk-mini" data-key="'+k+'" title="اسمع" '+(has?"":"disabled")+'>🔊 اسمع</button>'+
           '</span>'+
           '<button type="button" class="done-rev" data-key="'+k+'">✓ خلصت</button>'+
         '</div>';
@@ -2113,6 +2142,8 @@
       function revealRev(){
         txtEl.classList.remove("rev-hidden");
         txtEl.classList.add("rev-shown");
+        var b = txtEl.querySelector(".blank");
+        if(b) b.classList.add("revealed");
       }
       item.querySelector(".rev-reveal").addEventListener("click", revealRev);
       txtEl.addEventListener("click", revealRev);
@@ -2195,11 +2226,68 @@
   }
   function runsToPlainText(runs){ return runs.map(function(r){ return r.text; }).join(""); }
 
+  function splitHtmlIntoTextAndFigBlocks(html){
+    // كل رسم يبقى فقرة منفصلة عشان يتتحذف لوحده، والنص لوحده
+    if(!html) return [];
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    var blocks = [];
+    var textBuf = "";
+    function flushText(){
+      var t = textBuf.replace(/\s+/g," ").trim();
+      if(t) blocks.push(t.indexOf("<")>=0 ? textBuf.trim() : escapeHtml(t));
+      // لو textBuf فيه HTML غني
+      if(!t && textBuf.trim() && /<[a-z]/i.test(textBuf)) blocks.push(textBuf.trim());
+      textBuf = "";
+    }
+    // أبسط: استخرج كل img كبلوك، والباقي كنص
+    var imgs = tmp.querySelectorAll("img");
+    if(!imgs.length){
+      if(html.trim()) blocks.push(html);
+      return blocks;
+    }
+    // انسخ HTML واقطع عند كل صورة
+    var clone = tmp.cloneNode(true);
+    var parts = [];
+    function walk(node){
+      if(node.nodeType === 3){
+        textBuf += node.textContent || "";
+      } else if(node.nodeType === 1){
+        if(node.tagName === "IMG"){
+          var src = node.getAttribute("src")||"";
+          if(src){
+            var t = (textBuf||"").replace(/\s+/g," ").trim();
+            if(t){
+              // احتفظ بتنسيق بسيط
+              var bold = /<b>/i.test(html) && t.length < 120;
+              parts.push(bold ? ("<b>"+escapeHtml(t)+"</b>") : escapeHtml(t));
+            }
+            textBuf = "";
+            parts.push('<div class="doc-fig"><img src="'+src+'" alt="رسم علمي"></div>');
+          }
+          return;
+        }
+        Array.prototype.forEach.call(node.childNodes, walk);
+      }
+    }
+    walk(clone);
+    var tEnd = (textBuf||"").replace(/\s+/g," ").trim();
+    if(tEnd) parts.push(escapeHtml(tEnd));
+    return parts.length ? parts : (html.trim() ? [html] : []);
+  }
+
   function docxParagraphsToRawPages(paragraphs, fallbackTitle){
     // paragraphs: [{ level:0|1|2|.. (0=Title/H1, 1=H2-ish sub, null=body), html, text }]
     var pages = [], docHeading = null, curPage = null, curSection = null;
     function newPage(h){ curPage = { heading:h, sections:[] }; pages.push(curPage); }
     function newSection(sub){ curSection = { sub:sub, blocks:[] }; curPage.sections.push(curSection); }
+    function pushBodyHtml(html){
+      if(!curPage) newPage(docHeading || fallbackTitle);
+      if(!curSection) newSection(null);
+      splitHtmlIntoTextAndFigBlocks(html).forEach(function(b){
+        if(b && String(b).trim()) curSection.blocks.push(b);
+      });
+    }
 
     paragraphs.forEach(function(p){
       var hasImg = !!(p.html && /<img\s/i.test(p.html));
@@ -2208,13 +2296,14 @@
       if(p.level === 1 && p.text.trim()){
         if(!docHeading) docHeading = p.text.trim();
         newPage(p.text.trim()); newSection(null);
+        // لو العنوان معه صورة (نادر) أضفها بعدين
+        if(hasImg) pushBodyHtml(p.html);
       } else if(p.level && p.level >= 2 && p.text.trim()){
         if(!curPage) newPage(docHeading || fallbackTitle);
         newSection(p.text.trim());
+        if(hasImg) pushBodyHtml(p.html);
       } else {
-        if(!curPage) newPage(docHeading || fallbackTitle);
-        if(!curSection) newSection(null);
-        if(p.html) curSection.blocks.push(p.html);
+        if(p.html) pushBodyHtml(p.html);
       }
     });
     if(pages.length === 0){ newPage(fallbackTitle); newSection(null); }
@@ -2344,20 +2433,16 @@
             }
             return { level: level, html: html, text: text };
           });
-          // ضمان: كل صور media تظهر في أول المستند لو ما اتربطتش بفقرة
+          // صور media ما ارتبطتش بفقرة → كل صورة فقرة منفصلة في النهاية (مش جاليري واحد)
           var extraImgs = 0;
-          var galleryHtml = "";
           Object.keys(mediaByPath).forEach(function(k){
             if(!/^media\//i.test(k)) return;
             var src = mediaByPath[k];
             if(!src || usedSrc[src]) return;
             usedSrc[src] = true;
             extraImgs++;
-            galleryHtml += imgHtmlFromSrc(src);
+            paragraphs.push({ level:null, html: imgHtmlFromSrc(src), text: "" });
           });
-          if(galleryHtml){
-            paragraphs.unshift({ level:null, html: '<div class="doc-fig"><b>الرسوم العلمية</b></div>' + galleryHtml, text: "الرسوم العلمية" });
-          }
           var imgCount = Object.keys(usedSrc).length;
           // ضغط الصور
           var uniq = Object.keys(usedSrc);
@@ -2397,26 +2482,66 @@
      no AI call, no backend). Groups text items into lines by their
      vertical position, then classifies a short line in a larger-than-
      usual font as a heading; everything else merges into paragraphs. */
+  function renderPdfPageToDataUrl(page, maxW){
+    maxW = maxW || 900;
+    var base = page.getViewport({ scale: 1 });
+    var scale = Math.min(2, maxW / (base.width || maxW));
+    var viewport = page.getViewport({ scale: scale });
+    var canvas = document.createElement("canvas");
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    var ctx = canvas.getContext("2d");
+    return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function(){
+      try{ return canvas.toDataURL("image/jpeg", 0.72); }
+      catch(e){ return null; }
+    }).catch(function(){ return null; });
+  }
+
   function handlePdf(file){
     return new Promise(function(resolve, reject){
       var reader = new FileReader();
       reader.onload = function(e){
         var typedarray = new Uint8Array(e.target.result);
         pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
-          var pageLinesList = [], pending = Promise.resolve();
+          var pageLinesList = [], pageImages = [], pending = Promise.resolve();
           for(var i=1;i<=pdf.numPages;i++){
             (function(pageNum){
               pending = pending.then(function(){
-                return pdf.getPage(pageNum).then(function(page){ return page.getTextContent(); })
-                  .then(function(tc){ pageLinesList.push(groupIntoLines(tc.items)); });
+                return pdf.getPage(pageNum).then(function(page){
+                  return page.getTextContent().then(function(tc){
+                    pageLinesList.push(groupIntoLines(tc.items));
+                    return renderPdfPageToDataUrl(page, 900).then(function(dataUrl){
+                      pageImages.push(dataUrl);
+                    });
+                  });
+                });
               });
             })(i);
           }
-          return pending.then(function(){ return pageLinesList; });
-        }).then(function(pageLinesList){
-          var cleaned = filterNoiseLines(pageLinesList);
+          return pending.then(function(){ return { pageLinesList: pageLinesList, pageImages: pageImages }; });
+        }).then(function(pack){
+          var cleaned = filterNoiseLines(pack.pageLinesList);
           var parsed = pdfLinesToRawPages(cleaned, file.name.replace(/\.pdf$/i,""));
-          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.pdf$/i,""), heading: parsed.heading });
+          // إدراج صورة كل صفحة PDF كفقرة منفصلة في أول محتوى الصفحة (الرسم في مكانه)
+          var rawPages = parsed.rawPages || [];
+          pack.pageImages.forEach(function(src, idx){
+            if(!src) return;
+            if(!rawPages[idx]){
+              rawPages[idx] = { heading: file.name.replace(/\.pdf$/i,"") + " — " + (idx+1), sections: [{ sub:null, blocks:[] }] };
+            }
+            if(!rawPages[idx].sections || !rawPages[idx].sections.length){
+              rawPages[idx].sections = [{ sub:null, blocks:[] }];
+            }
+            var fig = '<div class="doc-fig"><img src="'+src+'" alt="رسم صفحة '+ (idx+1) +'"></div>';
+            // أول بلوك في أول سكشن = الرسم
+            rawPages[idx].sections[0].blocks.unshift(fig);
+          });
+          resolve({
+            rawPages: rawPages,
+            fallbackTitle: file.name.replace(/\.pdf$/i,""),
+            heading: parsed.heading,
+            imgCount: pack.pageImages.filter(Boolean).length
+          });
         }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + err.message); });
       };
       reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
@@ -2647,7 +2772,9 @@
   function seedPendingFromShared(){
     if(pendingSeeded) return;
     pendingSeeded = true;
-    pendingSharedBatch = SHARED_INDEX.map(function(it){
+    var hiddenShared = {};
+    try{ hiddenShared = JSON.parse(localStorage.getItem("najm_hidden_shared")||"{}") || {}; }catch(e){}
+    pendingSharedBatch = SHARED_INDEX.filter(function(it){ return !hiddenShared[it.key]; }).map(function(it){
       return {
         key: it.key,
         title: it.title,
