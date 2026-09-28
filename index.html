@@ -2241,89 +2241,80 @@
           var docXmlP = zip.file("word/document.xml") ? zip.file("word/document.xml").async("text") : Promise.reject("مش ملف Word سليم");
           var stylesXmlP = zip.file("word/styles.xml") ? zip.file("word/styles.xml").async("text") : Promise.resolve(null);
           var relsXmlP = zip.file("word/_rels/document.xml.rels") ? zip.file("word/_rels/document.xml.rels").async("text") : Promise.resolve(null);
-          var mediaMap = {}; // path relative to word/ → dataUrl
+          // كل ملفات الوسائط + دعم صيغ المتصفح فقط
+          var mediaByPath = {}; // media/image1.png -> dataUrl
           var mediaJobs = [];
+          var unsupportedMedia = 0;
           Object.keys(zip.files).forEach(function(path){
-            if(/^word\/media\//i.test(path) && !zip.files[path].dir){
-              mediaJobs.push(zip.files[path].async("base64").then(function(b64){
-                var rel = path.replace(/^word\//i, ""); // media/image1.png
-                var name = path.split("/").pop();
-                var ext = (name.split(".").pop()||"png").toLowerCase();
-                var mime = ext==="png"?"image/png":(ext==="jpg"||ext==="jpeg")?"image/jpeg":ext==="gif"?"image/gif":ext==="webp"?"image/webp":"image/png";
-                var dataUrl = "data:"+mime+";base64,"+b64;
-                mediaMap[rel] = dataUrl;
-                mediaMap[rel.replace(/^media\//i,"")] = dataUrl;
-                mediaMap[name] = dataUrl;
-                mediaMap["media/"+name] = dataUrl;
-              }).catch(function(){}));
+            if(!/^word\/media\//i.test(path) || zip.files[path].dir) return;
+            var name = path.split("/").pop();
+            var ext = (name.split(".").pop()||"").toLowerCase();
+            if(ext === "emf" || ext === "wmf" || ext === "emz" || ext === "wmz"){
+              unsupportedMedia++;
+              return;
             }
+            var mime = ext==="png"?"image/png":(ext==="jpg"||ext==="jpeg")?"image/jpeg":ext==="gif"?"image/gif":ext==="webp"?"image/webp":ext==="bmp"?"image/bmp":null;
+            if(!mime){ unsupportedMedia++; return; }
+            mediaJobs.push(zip.files[path].async("base64").then(function(b64){
+              var rel = path.replace(/^word\//i, "");
+              var dataUrl = "data:"+mime+";base64,"+b64;
+              mediaByPath[rel] = dataUrl;
+              mediaByPath[name] = dataUrl;
+              mediaByPath["media/"+name] = dataUrl;
+            }).catch(function(){}));
           });
           return Promise.all([docXmlP, stylesXmlP, relsXmlP, Promise.all(mediaJobs)]).then(function(res){
-            return { docXml: res[0], stylesXml: res[1], relsXml: res[2], mediaMap: mediaMap };
+            return { docXml: res[0], stylesXml: res[1], relsXml: res[2], mediaByPath: mediaByPath, unsupportedMedia: unsupportedMedia };
           });
         }).then(function(pack){
-          var docXml = pack.docXml, stylesXml = pack.stylesXml, relsXml = pack.relsXml, mediaMap = pack.mediaMap || {};
-          // rId → media path
+          var docXml = pack.docXml, stylesXml = pack.stylesXml, relsXml = pack.relsXml;
+          var mediaByPath = pack.mediaByPath || {};
+          var unsupportedMedia = pack.unsupportedMedia || 0;
           var ridToTarget = {};
           if(relsXml){
             var relsDoc = new DOMParser().parseFromString(relsXml, "application/xml");
             var relNodes = relsDoc.getElementsByTagName("Relationship");
             Array.prototype.forEach.call(relNodes, function(rel){
               var id = rel.getAttribute("Id");
-              var target = rel.getAttribute("Target") || "";
-              var type = rel.getAttribute("Type") || "";
-              if(!id || !target) return;
-              if(/image/i.test(type) || /media\//i.test(target)){
-                ridToTarget[id] = target.replace(/^\//, "").replace(/^word\//i, "");
-              }
+              var target = (rel.getAttribute("Target") || "").replace(/^\//, "").replace(/^word\//i, "");
+              if(id && target) ridToTarget[id] = target;
             });
           }
-          var headingLevels = loadHeadingStyleLevels(stylesXml);
-          var doc = new DOMParser().parseFromString(docXml, "application/xml");
-          var bodyParas = wEls(doc, "p");
-          var A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
-          var R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-          var V_NS = "urn:schemas-microsoft-com:vml";
+          function resolveRid(rid){
+            if(!rid) return null;
+            var target = ridToTarget[rid];
+            if(!target) return null;
+            return mediaByPath[target] || mediaByPath[target.replace(/^media\//i,"")] || mediaByPath[target.split("/").pop()] || null;
+          }
           function imgHtmlFromSrc(src){
             if(!src) return "";
             return '<div class="doc-fig"><img src="'+src+'" alt="رسم علمي"></div>';
           }
           function imagesHtmlInPara(pEl){
-            var html = "";
-            var seen = {};
-            function addByRid(rid){
+            var html = "", seen = {};
+            function addRid(rid){
               if(!rid || seen[rid]) return;
               seen[rid] = true;
-              var target = ridToTarget[rid];
-              if(!target) return;
-              var src = mediaMap[target] || mediaMap[target.replace(/^media\//i,"")] || mediaMap[target.split("/").pop()];
+              var src = resolveRid(rid);
               if(src) html += imgHtmlFromSrc(src);
             }
-            // DrawingML blips
-            var blips = pEl.getElementsByTagNameNS(A_NS, "blip");
-            Array.prototype.forEach.call(blips, function(blip){
-              var embed = blip.getAttributeNS(R_NS, "embed") || blip.getAttribute("r:embed") || blip.getAttribute("embed");
-              addByRid(embed);
+            var all = pEl.getElementsByTagName("*");
+            Array.prototype.forEach.call(all, function(el){
+              var ln = (el.localName || "").toLowerCase();
+              if(ln === "blip"){
+                addRid(el.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","embed")
+                  || el.getAttribute("r:embed") || el.getAttribute("embed"));
+              }
+              if(ln === "imagedata"){
+                addRid(el.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id")
+                  || el.getAttribute("r:id") || el.getAttribute("id"));
+              }
             });
-            // VML imagedata (older Word)
-            var vml = pEl.getElementsByTagNameNS(V_NS, "imagedata");
-            Array.prototype.forEach.call(vml, function(im){
-              var rid = im.getAttributeNS(R_NS, "id") || im.getAttribute("r:id") || im.getAttribute("id");
-              addByRid(rid);
-            });
-            // أي a:blip بدون namespace (بعض الملفات)
-            if(!html){
-              var all = pEl.getElementsByTagName("*");
-              Array.prototype.forEach.call(all, function(el){
-                var ln = (el.localName || el.tagName || "").toLowerCase();
-                if(ln === "blip"){
-                  var emb = el.getAttributeNS(R_NS, "embed") || el.getAttribute("r:embed") || el.getAttribute("embed");
-                  addByRid(emb);
-                }
-              });
-            }
             return html;
           }
+          var headingLevels = loadHeadingStyleLevels(stylesXml);
+          var doc = new DOMParser().parseFromString(docXml, "application/xml");
+          var bodyParas = wEls(doc, "p");
           var usedSrc = {};
           var paragraphs = bodyParas.map(function(pEl){
             var pPr = pEl.getElementsByTagNameNS(WNS,"pPr")[0];
@@ -2349,39 +2340,45 @@
             }
             return { level: level, html: html, text: text };
           });
-          // صور لم تُربط بفقرة — أضفها في الآخر
-          Object.keys(mediaMap).forEach(function(k){
+          // أي صورة في media لم تُدرج — أضفها في النهاية (ضمان الظهور)
+          var extraImgs = 0;
+          Object.keys(mediaByPath).forEach(function(k){
+            if(k.indexOf("/") === -1) return; // تخطّي المفاتيح المختصرة لتجنب التكرار
             if(!/^media\//i.test(k)) return;
-            var src = mediaMap[k];
+            var src = mediaByPath[k];
             if(src && !usedSrc[src]){
               usedSrc[src] = true;
+              extraImgs++;
               paragraphs.push({ level:null, html: imgHtmlFromSrc(src), text:"" });
             }
           });
-          // ضغط كل الصور قبل الحفظ
-          var allSrc = [];
-          paragraphs.forEach(function(p){
-            if(!p.html) return;
-            p.html.replace(/src="(data:image[^"]+)"/g, function(_, s){ allSrc.push(s); return _; });
-          });
-          var uniq = [];
-          var seenU = {};
-          allSrc.forEach(function(s){ if(!seenU[s]){ seenU[s]=true; uniq.push(s); } });
+          var imgCount = Object.keys(usedSrc).length;
+          // ضغط الصور
+          var uniq = Object.keys(usedSrc);
+          function finish(paras){
+            var parsed = docxParagraphsToRawPages(paras, file.name.replace(/\.docx$/i,""));
+            resolve({
+              rawPages: parsed.rawPages,
+              fallbackTitle: file.name.replace(/\.docx$/i,""),
+              heading: parsed.heading,
+              imgCount: imgCount,
+              unsupportedMedia: unsupportedMedia,
+              extraImgs: extraImgs
+            });
+          }
+          if(!uniq.length){
+            finish(paragraphs);
+            return;
+          }
           Promise.all(uniq.map(function(s){ return compressDataUrl(s, 900); })).then(function(compressed){
             var mapC = {};
             uniq.forEach(function(s, i){ mapC[s] = compressed[i] || s; });
             paragraphs.forEach(function(p){
               if(!p.html) return;
-              p.html = p.html.replace(/src="(data:image[^"]+)"/g, function(_, s){
-                return 'src="'+(mapC[s]||s)+'"';
-              });
+              p.html = p.html.replace(/src="(data:image[^"]+)"/g, function(_, s){ return 'src="'+(mapC[s]||s)+'"'; });
             });
-            var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
-            resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
-          }).catch(function(){
-            var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
-            resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
-          });
+            finish(paragraphs);
+          }).catch(function(){ finish(paragraphs); });
         }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
       };
       reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
@@ -2759,6 +2756,12 @@
       if(resolved.existed) updatedCount++; else newCount++;
       lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
       r._keptSels = hasSels;
+      // تشخيص الصور
+      if(typeof r.imgCount === "number"){
+        if(r.imgCount > 0) showToast("تم استخراج "+ar(r.imgCount)+" صورة من الملف");
+        else if(r.unsupportedMedia > 0) showToast("الصور بصيغة قديمة (EMF/WMF) والمتصفح مش بيعرضها — حوّلها PNG في Word");
+        else showToast("مفيش صور مضمّنة في الملف ده");
+      }
     });
     setUploadStatus("");
     if(results.length===0) return;
