@@ -212,7 +212,8 @@
   .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .review-item .rev-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .doc-fig{margin:8px 0;text-align:center;}
-  .doc-fig img,.doc-block img{max-width:100%;height:auto;min-height:80px;border-radius:10px;border:1px solid rgba(10,27,46,.08);display:block;margin:8px auto;background:rgba(128,128,128,.08);}
+  .doc-fig{display:block !important;visibility:visible !important;opacity:1 !important;}
+  .doc-fig img,.doc-block img{max-width:100%;width:auto;height:auto;min-height:60px;max-height:70vh;border-radius:10px;border:1px solid rgba(10,27,46,.12);display:block !important;visibility:visible !important;opacity:1 !important;margin:10px auto;background:rgba(128,128,128,.06);object-fit:contain;}
   .doc-fig .cap{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700;}
   .block-edit-menu{display:flex;gap:8px;flex-wrap:wrap;margin:6px 16px 10px;padding:8px;background:var(--card);border:1px solid rgba(224,182,47,.45);border-radius:12px;box-shadow:0 4px 14px rgba(10,27,46,.12);}
   .block-edit-menu button{border:none;background:rgba(224,182,47,.15);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:800;cursor:pointer;}
@@ -601,12 +602,14 @@
   function getLibraryIndex(){
     var personal = [];
     try{ var raw = localStorage.getItem(LIB_INDEX_KEY); if(raw) personal = JSON.parse(raw); }catch(e){}
-    // also drop any leftover reference to the old built-in seed ملزمة ١
     personal = personal.filter(function(x){ return x.key !== "seed_u1l1"; });
     var hiddenShared = {};
     try{ hiddenShared = JSON.parse(localStorage.getItem("najm_hidden_shared")||"{}") || {}; }catch(e){}
     var sharedTagged = SHARED_INDEX.filter(function(x){ return !hiddenShared[x.key]; }).map(function(x){ return Object.assign({shared:true}, x); });
-    var personalTagged = personal.map(function(x){ return Object.assign({shared:false}, x); });
+    var seen = {};
+    sharedTagged.forEach(function(x){ seen[x.key] = true; });
+    // شخصية فقط لو مش موجودة كرسمية (منع التكرار)
+    var personalTagged = personal.filter(function(x){ return !seen[x.key]; }).map(function(x){ return Object.assign({shared:false}, x); });
     return sharedTagged.concat(personalTagged);
   }
   function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
@@ -1019,7 +1022,7 @@
         blocksInfo.forEach(function(bi2){
           // Shared manual hide: custom + headings + sentences (word ranges the user saved)
           if(mode === "custom" || mode === "headings" || mode === "sentences"){
-            if(isPromoOrVerse(stripHtml(bi2.html))){
+            if(isPromoOrVerse(stripHtml(bi2.html)) && !/<img/i.test(bi2.html||"")){
               unitByBlockKey[bi2.key] = { renderHtml: "", blankIds: [] };
             } else {
               var wb = wordsWithBold(bi2.html);
@@ -1518,12 +1521,19 @@
   // مهم: نستخدم wordsWithBold عشان ما يفصلش «ال» عن الكلمة أثناء التحديد
   function renderSelectableBlock(bd, block){
     var src = block.originalHtml || block.html || escapeHtml(block.plainText || "");
-    // تجاهل الصور داخل التحديد — تظهر كـ img منفصلة تحت
     var tmp = document.createElement("div");
     tmp.innerHTML = src;
+    // احتفظ بالصور — هنعرضها تحت كلمات التحديد
+    var imgsHtml = "";
+    tmp.querySelectorAll("img").forEach(function(im){
+      var s = im.getAttribute("src") || "";
+      if(s) imgsHtml += '<div class="doc-fig"><img src="'+s+'" alt="رسم علمي" loading="lazy"></div>';
+    });
     tmp.querySelectorAll("img, .doc-fig").forEach(function(n){ n.remove(); });
     var wordList = wordsWithBold(tmp.innerHTML);
     if(wordList.length === 0){
+      // فقرة صورة فقط أو فاضية
+      if(imgsHtml){ bd.innerHTML = imgsHtml; return; }
       var plain = fixBrokenArabicText(block.plainText || stripHtml(src) || "");
       bd.textContent = plain;
       return;
@@ -1551,6 +1561,12 @@
       bd.appendChild(document.createTextNode(" "));
     });
     bd.dataset.wordCount = wordList.length;
+    // الصور تحت النص دايمًا (تحديد أو اختبار)
+    if(imgsHtml){
+      var hold = document.createElement("div");
+      hold.innerHTML = imgsHtml;
+      while(hold.firstChild) bd.appendChild(hold.firstChild);
+    }
   }
 
   var _selDrag = {
@@ -1723,6 +1739,25 @@
     var docCard = document.createElement("div");
     docCard.className = "doc-card" + (state.selecting ? " selecting-mode" : "");
     docCard.innerHTML = '<div class="doc-heading"><span class="star">⭐</span>' + page.heading + '</div>';
+    // شريط سريع بعدد الرسوم في الصفحة
+    (function(){
+      var imgN = 0;
+      try{
+        page.sections.forEach(function(sec){
+          sec.blocks.forEach(function(b){
+            var h = (b && (b.html || b.originalHtml)) || "";
+            h.replace(/<img/gi, function(){ imgN++; return ""; });
+          });
+        });
+      }catch(e){}
+      if(imgN > 0){
+        var bar = document.createElement("div");
+        bar.className = "empty-note";
+        bar.style.cssText = "padding:8px 14px;text-align:right;color:var(--gold-600);font-weight:800;font-size:12.5px;";
+        bar.textContent = "🖼️ هذه الصفحة فيها " + ar(imgN) + " رسم علمي";
+        docCard.appendChild(bar);
+      }
+    })();
     // تنبيه لو مفيش إخفاء — مع إظهار المحتوى للتعديل والقراءة
     if((state.mode === "custom" || state.mode === "headings" || state.mode === "sentences") && !state.selecting && MODEL.allIds.length === 0){
       var note = document.createElement("div");
@@ -1770,7 +1805,22 @@
         if(useClean){
           renderSelectableBlock(bd, block);
         } else {
-          bd.innerHTML = block.html;
+          bd.innerHTML = block.html || "";
+          // لو الفقرة صورة فقط واتشال الـ html بالغلط، رجّع من originalHtml
+          if(!/<img/i.test(bd.innerHTML) && block.originalHtml && /<img/i.test(block.originalHtml)){
+            bd.innerHTML = (bd.innerHTML || "") + extractImgsHtml(block.originalHtml);
+          }
+          bd.querySelectorAll("img").forEach(function(im){
+            im.setAttribute("loading", "lazy");
+            im.onerror = function(){
+              im.style.display = "none";
+              var ph = document.createElement("div");
+              ph.className = "empty-note";
+              ph.style.cssText = "padding:10px;border:1px dashed rgba(217,130,43,.5);border-radius:8px;color:var(--warn);";
+              ph.textContent = "⚠️ الرسم موجود في الملف لكن المتصفح مقدرش يعرضه (جرّب إعادة رفع الملزمة)";
+              if(im.parentNode) im.parentNode.insertBefore(ph, im.nextSibling);
+            };
+          });
         }
         // وضع التعديل: ضغطة واحدة على الفقرة
         if(!useClean && state.editMode){
@@ -2479,11 +2529,29 @@
               var ln = (el.localName || "").toLowerCase();
               if(ln === "blip"){
                 addRid(el.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","embed")
-                  || el.getAttribute("r:embed") || el.getAttribute("embed"));
+                  || el.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","link")
+                  || el.getAttribute("r:embed") || el.getAttribute("r:link")
+                  || el.getAttribute("embed") || el.getAttribute("link"));
               }
               if(ln === "imagedata"){
                 addRid(el.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id")
-                  || el.getAttribute("r:id") || el.getAttribute("id"));
+                  || el.getAttribute("r:id") || el.getAttribute("id")
+                  || el.getAttribute("o:relid") || el.getAttribute("relid"));
+              }
+              // بعض الملفات تخزّن المرجع على عنصر drawing/pic
+              if(ln === "drawing" || ln === "pict" || ln === "pic"){
+                var nested = el.getElementsByTagName("*");
+                Array.prototype.forEach.call(nested, function(n2){
+                  var ln2 = (n2.localName || "").toLowerCase();
+                  if(ln2 === "blip"){
+                    addRid(n2.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","embed")
+                      || n2.getAttribute("r:embed") || n2.getAttribute("embed"));
+                  }
+                  if(ln2 === "imagedata"){
+                    addRid(n2.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships","id")
+                      || n2.getAttribute("r:id") || n2.getAttribute("id"));
+                  }
+                });
               }
             });
             return html;
@@ -2575,8 +2643,11 @@
     canvas.height = Math.floor(viewport.height);
     var ctx = canvas.getContext("2d");
     return page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function(){
-      try{ return canvas.toDataURL("image/jpeg", 0.52); }
-      catch(e){ return null; }
+      try{
+        var url = canvas.toDataURL("image/jpeg", 0.55);
+        if(url && url.length > 500) return url;
+        return canvas.toDataURL("image/png");
+      } catch(e){ return null; }
     }).catch(function(){ return null; });
   }
 
@@ -2947,7 +3018,20 @@
       var hasSels = ["headings","sentences","custom"].some(function(m){
         return keptSels[m] && Object.keys(keptSels[m]).length > 0;
       });
+      // دائمًا تظهر في الصفحة الرئيسية (شخصية على الجهاز)
+      var index = getLibraryIndex().filter(function(x){ return !x.shared; });
+      if(!index.some(function(e){ return e.key===key; })){
+        index.push({ key:key, title:title, subtitle:r.fallbackTitle });
+        savePersonalIndex(index);
+      } else {
+        index = index.map(function(e){
+          if(e.key===key) return { key:e.key, title:title, subtitle:r.fallbackTitle||e.subtitle };
+          return e;
+        });
+        savePersonalIndex(index);
+      }
       if(isOfficial){
+        // دفعة التصدير + ظهور فوري في القائمة (الشخصية تضمن البقاء بعد تحديث الصفحة)
         upsertPendingShared({
           key: key,
           title: title,
@@ -2955,18 +3039,15 @@
           rawPages: r.rawPages,
           selections: keptSels
         });
-      } else {
-        var index = getLibraryIndex().filter(function(x){ return !x.shared; });
-        if(!index.some(function(e){ return e.key===key; })){
-          index.push({ key:key, title:title, subtitle:r.fallbackTitle });
-          savePersonalIndex(index);
+        SHARED_CONTENT[key] = r.rawPages;
+        var inShared = SHARED_INDEX.some(function(x){ return x.key===key; });
+        if(!inShared){
+          SHARED_INDEX.push({ key:key, title:title, subtitle:r.fallbackTitle||"" });
         } else {
-          // حدّث العنوان الفرعي لو اتغير اسم الملف
-          index = index.map(function(e){
-            if(e.key===key) return { key:e.key, title:title, subtitle:r.fallbackTitle||e.subtitle };
-            return e;
+          SHARED_INDEX = SHARED_INDEX.map(function(x){
+            if(x.key===key) return { key:key, title:title, subtitle:r.fallbackTitle||x.subtitle||"" };
+            return x;
           });
-          savePersonalIndex(index);
         }
       }
       if(resolved.existed) updatedCount++; else newCount++;
@@ -2987,10 +3068,12 @@
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
       renderPendingList();
+      $("modalUpload").classList.remove("show");
+      renderHome();
       showToast((updatedCount
         ? ("تم تحديث المحتوى ("+ar(updatedCount)+") مع الحفاظ على التحديد")
-        : ("اترفع "+ar(newCount)+" ملزمة رسمية")) + imgNote);
-      renderHome();
+        : ("اترفع "+ar(newCount)+" ملزمة رسمية")) + imgNote + " — ظاهرة في القائمة");
+      if(lastKey) openUnit(lastKey, lastTitle, lastSub);
     } else {
       $("modalUpload").classList.remove("show");
       renderHome();
