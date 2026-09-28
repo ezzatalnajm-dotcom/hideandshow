@@ -369,9 +369,10 @@
       <input type="checkbox" id="officialCheck"> دي ملازم رسمية (هتتضاف لملف المكتبة المشتركة اللي بترفعه مع الموقع)
     </label>
     <div class="file-choice">
-      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز (Word أو PDF)</button>
+      <button id="pickFile">📄 اختيار ملف/ملفات من الجهاز (Word .docx أو PDF)</button>
+      <p style="font-size:12px;color:var(--muted);margin:8px 0 0;line-height:1.6;">⚠️ ملف <b>.doc</b> القديم مش مدعوم — من Word: حفظ باسم → <b>Word Document (.docx)</b></p>
     </div>
-    <input type="file" id="fileInput" accept=".docx,.pdf" multiple class="hidden">
+    <input type="file" id="fileInput" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple class="hidden">
     <p id="uploadStatus" style="display:none;"></p>
     <div id="exportBox" class="hidden" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(10,27,46,.1);">
       <div class="export-steps">
@@ -3071,21 +3072,45 @@
     });
   }
 
+  function detectFileKind(file){
+    var name = (file && file.name) || "";
+    var mime = (file && file.type) || "";
+    if(/\.docx$/i.test(name) || /wordprocessingml/i.test(mime)) return "docx";
+    if(/\.pdf$/i.test(name) || mime === "application/pdf") return "pdf";
+    if(/\.doc$/i.test(name) && !/\.docx$/i.test(name)) return "doc_old";
+    return "unknown";
+  }
   function processFiles(files){
     var isOfficial = $("officialCheck").checked;
     var queue = Promise.resolve();
     var results = [];
+    var errors = [];
     Array.prototype.forEach.call(files, function(file){
       queue = queue.then(function(){
         setUploadStatus("بيتقرا: " + file.name + "...");
-        var task = /\.docx$/i.test(file.name) ? handleDocx(file)
-                  : /\.pdf$/i.test(file.name) ? handlePdf(file)
-                  : Promise.reject("الصيغة دي مش مدعومة: " + file.name);
-        return task.then(function(r){ results.push(r); })
-          .catch(function(err){ showToast(typeof err==="string"?err:"حصل خطأ في: "+file.name); });
+        var kind = detectFileKind(file);
+        var task;
+        if(kind === "docx") task = handleDocx(file);
+        else if(kind === "pdf") task = handlePdf(file);
+        else if(kind === "doc_old") task = Promise.reject("الملف \""+file.name+"\" بصيغة Word قديمة (.doc).\nاحفظه من Word كـ «Word Document (.docx)» ثم ارفعه.");
+        else task = Promise.reject("الصيغة مش مدعومة: " + file.name + "\nالمدعوم: Word (.docx) أو PDF فقط.");
+        return task.then(function(r){
+          if(r && r.rawPages) results.push(r);
+          else errors.push(file.name + ": مفيش محتوى مقروء");
+        }).catch(function(err){
+          var msg = typeof err==="string" ? err : ("حصل خطأ في: "+file.name+(err&&err.message?(" — "+err.message):""));
+          errors.push(msg);
+          showToast(msg.split("\n")[0]);
+          setUploadStatus("⚠️ " + msg);
+        });
       });
     });
-    return queue.then(function(){ return { results:results, isOfficial:isOfficial }; });
+    return queue.then(function(){
+      if(!results.length && errors.length){
+        setUploadStatus("⚠️ فشل الرفع:\n" + errors.join("\n"));
+      }
+      return { results:results, isOfficial:isOfficial, errors:errors };
+    });
   }
 
   // نفس الاسم/الملف → نفس المفتاح → تحديث محتوى مع الحفاظ على التحديد
@@ -3166,8 +3191,12 @@
       lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
       r._keptSels = hasSels;
     });
+    if(results.length===0){
+      setUploadStatus("⚠️ مفيش ملزمة اتضافت — تأكد إن الملف .docx أو PDF وسليم");
+      showToast("مفيش ملزمة اتضافت — جرّب ملف .docx أو PDF");
+      return;
+    }
     setUploadStatus("");
-    if(results.length===0) return;
     // ملخص الصور من كل الملفات المرفوعة
     var totalImgs = 0, totalUnsup = 0;
     results.forEach(function(r){
