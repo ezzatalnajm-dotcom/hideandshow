@@ -209,8 +209,8 @@
   .review-item .txt.rev-shown{filter:none;background:rgba(46,158,91,.12);border-radius:6px;padding:4px 6px;}
   .review-item button{border:none;background:rgba(46,158,91,.15);color:var(--ok);border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
   .review-item .rev-actions{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
-  .doc-fig{margin:8px 16px;text-align:center;}
-  .doc-fig img{max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(10,27,46,.08);}
+  .doc-fig{margin:8px 0;text-align:center;}
+  .doc-fig img,.doc-block img{max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(10,27,46,.08);display:block;margin:8px auto;}
   .doc-fig .cap{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700;}
   .edit-bar{margin:8px 18px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
   .edit-bar button{border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;}
@@ -275,9 +275,7 @@
       <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · اختبر</span></button>
     </div>
     <div class="edit-bar" id="editBar">
-      <button type="button" id="btnEditPageText" title="عدّل نص الفقرة">✏️ تعديل النص</button>
-      <button type="button" id="btnAddSpace" title="أضف مسافة بين كلمتين">␣+ مسافة</button>
-      <button type="button" id="btnDelSpace" title="احذف مسافة زائدة">␣− حذف مسافة</button>
+      <span style="font-size:11.5px;color:var(--muted);font-weight:700;">اضغط مطوّل ثانيتين على فقرة للتعديل أو الحذف</span>
       <button type="button" id="btnDeletePage" title="احذف الصفحة الحالية" style="color:var(--danger);">🗑️ حذف الصفحة</button>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
@@ -439,12 +437,40 @@
       .replace(/\s+/g,"_").replace(/[^\u0600-\u06FFa-z0-9_]/g,"").slice(0,60) || ("m_"+Date.now());
   }
   function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  // إصلاح تقطيع عربي شائع بسبب الخط: «ال وظيفة» → «الوظيفة»، «ا لتركيب» → «التركيب»
+  function mergeBrokenArabicWords(words){
+    if(!words || !words.length) return words || [];
+    var out = [];
+    for(var i=0;i<words.length;i++){
+      var w = words[i];
+      var next = words[i+1];
+      if(next && /^[\u0600-\u06FF]/.test(next)){
+        if(w === "ال" || w === "أل" || w === "الـ"){
+          out.push(w.replace(/ـ/g,"") + next);
+          i++;
+          continue;
+        }
+        // حرف عربي مفرد (مش «و») ملتصق بالكلمة التالية
+        if(/^[\u0600-\u06FF]$/.test(w) && w !== "و"){
+          out.push(w + next);
+          i++;
+          continue;
+        }
+      }
+      out.push(w);
+    }
+    return out;
+  }
+  function fixBrokenArabicText(text){
+    if(!text) return text;
+    var words = String(text).replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g,"").split(/\s+/).filter(Boolean);
+    return mergeBrokenArabicWords(words).join(" ");
+  }
   // Split text into words on whitespace only — never break an Arabic word in the middle
   function splitIntoWords(text){
     if(!text || !text.trim()) return [];
-    // Normalize tatweel and zero-width chars so they don't create fake splits
     var cleaned = text.replace(/[\u0640\u200c\u200d\u200e\u200f\ufeff]/g, "").trim();
-    return cleaned.split(/\s+/).filter(function(w){ return w.length > 0; });
+    return mergeBrokenArabicWords(cleaned.split(/\s+/).filter(function(w){ return w.length > 0; }));
   }
   // كلمات مع علامة السميك — نفصل على المسافات الحقيقية فقط
   // حتى لو Word قسّم الكلمة على أكتر من run (جزء bold وجزء عادي)
@@ -479,7 +505,26 @@
       }
     });
     flush();
-    return list;
+    // دمج «ال» + الكلمة / حرف مفرد + الكلمة
+    var merged = [];
+    for(var i=0;i<list.length;i++){
+      var w = list[i];
+      var next = list[i+1];
+      if(next && /^[\u0600-\u06FF]/.test(next.text)){
+        if(w.text === "ال" || w.text === "أل" || w.text === "الـ"){
+          merged.push({ text: w.text.replace(/ـ/g,"") + next.text, bold: w.bold || next.bold });
+          i++;
+          continue;
+        }
+        if(/^[\u0600-\u06FF]$/.test(w.text) && w.text !== "و"){
+          merged.push({ text: w.text + next.text, bold: w.bold || next.bold });
+          i++;
+          continue;
+        }
+      }
+      merged.push(w);
+    }
+    return merged;
   }
   function formatWordHtml(w){
     var t = escapeHtml(w.text || w);
@@ -1608,10 +1653,9 @@
         } else {
           bd.innerHTML = block.html;
         }
-        if(state.editPick){
-          bd.style.outline = "2px dashed rgba(224,182,47,.7)";
-          bd.style.cursor = "pointer";
-          bd.addEventListener("click", function(){ editBlockByKey(block.key); });
+        // ضغط مطوّل ثانيتين → تعديل أو حذف الفقرة
+        if(!useClean){
+          bindLongPressEdit(bd, block.key);
         }
         docCard.appendChild(bd);
         // رسوم علمية مرفقة مع بياناتها (لو موجودة في الفقرة أو page.figures)
@@ -2151,65 +2195,104 @@
         JSZip.loadAsync(e.target.result).then(function(zip){
           var docXmlP = zip.file("word/document.xml") ? zip.file("word/document.xml").async("text") : Promise.reject("مش ملف Word سليم");
           var stylesXmlP = zip.file("word/styles.xml") ? zip.file("word/styles.xml").async("text") : Promise.resolve(null);
-          // استخراج الصور العلمية من word/media
-          var mediaMap = {};
+          var relsXmlP = zip.file("word/_rels/document.xml.rels") ? zip.file("word/_rels/document.xml.rels").async("text") : Promise.resolve(null);
+          var mediaMap = {}; // path relative to word/ → dataUrl
           var mediaJobs = [];
           Object.keys(zip.files).forEach(function(path){
             if(/^word\/media\//i.test(path) && !zip.files[path].dir){
               mediaJobs.push(zip.files[path].async("base64").then(function(b64){
+                var rel = path.replace(/^word\//i, ""); // media/image1.png
                 var name = path.split("/").pop();
                 var ext = (name.split(".").pop()||"png").toLowerCase();
                 var mime = ext==="png"?"image/png":(ext==="jpg"||ext==="jpeg")?"image/jpeg":ext==="gif"?"image/gif":ext==="webp"?"image/webp":"image/png";
                 var dataUrl = "data:"+mime+";base64,"+b64;
+                mediaMap[rel] = dataUrl;
+                mediaMap[rel.replace(/^media\//i,"")] = dataUrl;
                 mediaMap[name] = dataUrl;
                 mediaMap["media/"+name] = dataUrl;
-                mediaMap[path.replace(/^word\//,"")] = dataUrl;
               }).catch(function(){}));
             }
           });
-          return Promise.all([docXmlP, stylesXmlP, Promise.all(mediaJobs)]).then(function(res){
-            return { docXml: res[0], stylesXml: res[1], mediaMap: mediaMap };
+          return Promise.all([docXmlP, stylesXmlP, relsXmlP, Promise.all(mediaJobs)]).then(function(res){
+            return { docXml: res[0], stylesXml: res[1], relsXml: res[2], mediaMap: mediaMap };
           });
         }).then(function(pack){
-          var docXml = pack.docXml, stylesXml = pack.stylesXml, mediaMap = pack.mediaMap || {};
+          var docXml = pack.docXml, stylesXml = pack.stylesXml, relsXml = pack.relsXml, mediaMap = pack.mediaMap || {};
+          // rId → media path
+          var ridToTarget = {};
+          if(relsXml){
+            var relsDoc = new DOMParser().parseFromString(relsXml, "application/xml");
+            var relNodes = relsDoc.getElementsByTagName("Relationship");
+            Array.prototype.forEach.call(relNodes, function(rel){
+              var id = rel.getAttribute("Id");
+              var target = rel.getAttribute("Target") || "";
+              var type = rel.getAttribute("Type") || "";
+              if(!id || !target) return;
+              if(/image/i.test(type) || /media\//i.test(target)){
+                ridToTarget[id] = target.replace(/^\//, "").replace(/^word\//i, "");
+              }
+            });
+          }
           var headingLevels = loadHeadingStyleLevels(stylesXml);
           var doc = new DOMParser().parseFromString(docXml, "application/xml");
           var bodyParas = wEls(doc, "p");
           var A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main";
           var R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-          function imagesInPara(pEl){
+          var V_NS = "urn:schemas-microsoft-com:vml";
+          function imgHtmlFromSrc(src){
+            if(!src) return "";
+            return '<div class="doc-fig"><img src="'+src+'" alt="رسم علمي"></div>';
+          }
+          function imagesHtmlInPara(pEl){
             var html = "";
+            var seen = {};
+            function addByRid(rid){
+              if(!rid || seen[rid]) return;
+              seen[rid] = true;
+              var target = ridToTarget[rid];
+              if(!target) return;
+              var src = mediaMap[target] || mediaMap[target.replace(/^media\//i,"")] || mediaMap[target.split("/").pop()];
+              if(src) html += imgHtmlFromSrc(src);
+            }
+            // DrawingML blips
             var blips = pEl.getElementsByTagNameNS(A_NS, "blip");
             Array.prototype.forEach.call(blips, function(blip){
-              var embed = blip.getAttributeNS(R_NS, "embed") || blip.getAttribute("r:embed");
-              // fall back: any image by scanning media (order-based last resort skipped)
-              if(!embed) return;
-              // relationships are complex — try match by index/name in mediaMap
+              var embed = blip.getAttributeNS(R_NS, "embed") || blip.getAttribute("r:embed") || blip.getAttribute("embed");
+              addByRid(embed);
             });
-            // أبسط: لو الفقرة فيها drawing و عندنا صور، نرفق كل الصور غير المستخدمة لاحقًا
+            // VML imagedata (older Word)
+            var vml = pEl.getElementsByTagNameNS(V_NS, "imagedata");
+            Array.prototype.forEach.call(vml, function(im){
+              var rid = im.getAttributeNS(R_NS, "id") || im.getAttribute("r:id") || im.getAttribute("id");
+              addByRid(rid);
+            });
+            // أي a:blip بدون namespace (بعض الملفات)
+            if(!html){
+              var all = pEl.getElementsByTagName("*");
+              Array.prototype.forEach.call(all, function(el){
+                var ln = (el.localName || el.tagName || "").toLowerCase();
+                if(ln === "blip"){
+                  var emb = el.getAttributeNS(R_NS, "embed") || el.getAttribute("r:embed") || el.getAttribute("embed");
+                  addByRid(emb);
+                }
+              });
+            }
             return html;
           }
-          // ابنِ قائمة صور مرة واحدة وألصق كل صورة بعد أقرب فقرة نصية تالية (تقريبي)
-          var mediaList = Object.keys(mediaMap).filter(function(k){ return k.indexOf("/")===-1; });
-          var mediaIdx = 0;
+          var usedSrc = {};
           var paragraphs = bodyParas.map(function(pEl){
             var pPr = pEl.getElementsByTagNameNS(WNS,"pPr")[0];
             var styleEl = pPr ? pPr.getElementsByTagNameNS(WNS,"pStyle")[0] : null;
             var styleId = styleEl ? (wAttrVal(styleEl)||styleEl.getAttribute("w:val")) : null;
             var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
             var runs = paragraphToRuns(pEl);
-            var html = runsToHtml(runs);
-            var text = runsToPlainText(runs);
-            var hasDrawing = pEl.getElementsByTagNameNS(A_NS, "blip").length > 0
-              || pEl.getElementsByTagName("w:drawing").length > 0
-              || (pEl.getElementsByTagNameNS(WNS,"drawing")||[]).length > 0;
-            if(hasDrawing && mediaIdx < mediaList.length){
-              var src = mediaMap[mediaList[mediaIdx]];
-              mediaIdx++;
-              if(src){
-                // صورة + أي نص مرافق (بيانات الرسم) في نفس البلوك
-                html += (html?' ':'') + '<div class="doc-fig"><img src="'+src+'" alt="رسم"></div>';
-              }
+            var text = fixBrokenArabicText(runsToPlainText(runs));
+            var html = runsToHtml(runs.map(function(r){ return { text: fixBrokenArabicText(r.text), bold: r.bold }; }));
+            var imgs = imagesHtmlInPara(pEl);
+            if(imgs){
+              html += imgs;
+              // علّم المصادر المستخدمة
+              imgs.replace(/src="([^"]+)"/g, function(_, s){ usedSrc[s] = true; return _; });
             }
             if(!level && text.trim().length > 0 && text.trim().length <= 80){
               var tTrim = text.trim();
@@ -2222,14 +2305,16 @@
             }
             return { level: level, html: html, text: text };
           });
-          // أي صور متبقية في آخر الصفحة
-          if(mediaIdx < mediaList.length){
-            var rest = "";
-            for(; mediaIdx < mediaList.length; mediaIdx++){
-              rest += '<div class="doc-fig"><img src="'+mediaMap[mediaList[mediaIdx]]+'" alt="رسم"></div>';
+          // صور لم تُربط بفقرة — أضفها في الآخر
+          Object.keys(mediaMap).forEach(function(k){
+            if(k.indexOf("/") >= 0 && k.indexOf("media/") !== 0) return;
+            if(k.indexOf("/") >= 0 && !/^media\//i.test(k)) return;
+            var src = mediaMap[k];
+            if(src && !usedSrc[src] && /^media\//i.test(k)){
+              usedSrc[src] = true;
+              paragraphs.push({ level:null, html: imgHtmlFromSrc(src), text:"" });
             }
-            if(rest) paragraphs.push({ level:null, html:rest, text:"" });
-          }
+          });
           var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
           resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
         }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
@@ -2324,7 +2409,7 @@
         if(gap > Math.max(1.2, prev.size * 0.15)) parts.push(" ");
         parts.push(cur.str);
       }
-      var text = parts.join("").replace(/\s+/g, " ").trim();
+      var text = fixBrokenArabicText(parts.join("").replace(/\s+/g, " ").trim());
       return {
         y: line.y,
         size: line.size,
@@ -2727,22 +2812,14 @@
     return { pi:pi, si:si, bi:bi, page:RAW_PAGES[pi], sec:RAW_PAGES[pi].sections[si] };
   }
 
-  function startEditCurrentPageText(){
-    if(!MODEL || !MODEL.pages[state.page]) return;
-    state.editPick = true;
-    showToast("اضغط على الفقرة اللي عايز تعدّلها");
-    renderPage();
-  }
   function editBlockByKey(blockKey){
     var ref = getRawBlockRef(blockKey);
     if(!ref){ showToast("مقدرش ألاقي الفقرة"); return; }
     var current = stripHtml(ref.sec.blocks[ref.bi] || "");
     var next = prompt("عدّل النص — تقدر تضيف/تمسح حروف ومسافات:", current);
-    state.editPick = false;
-    if(next === null){ renderPage(); return; }
+    if(next === null) return;
     next = String(next).replace(/\r\n/g, "\n");
     var wasBold = /<b>/i.test(ref.sec.blocks[ref.bi]||"");
-    // احتفظ بالصور لو موجودة في الفقرة
     var imgs = [];
     var tmp = document.createElement("div");
     tmp.innerHTML = ref.sec.blocks[ref.bi] || "";
@@ -2754,35 +2831,50 @@
     showToast("تم تعديل النص");
   }
 
-  function normalizeSpacesOnPage(mode){
-    // mode: 'add' inserts space between stuck Arabic/Latin tokens; 'del' collapses multi-spaces
-    if(!MODEL || !MODEL.pages[state.page] || !RAW_PAGES[state.page]) return;
-    var page = RAW_PAGES[state.page];
-    var changed = 0;
-    (page.sections||[]).forEach(function(sec){
-      sec.blocks = (sec.blocks||[]).map(function(html){
-        var plain = stripHtml(html);
-        var next = plain;
-        if(mode === "del"){
-          next = plain.replace(/[ \t\u00A0]{2,}/g, " ");
-        } else {
-          // أضف مسافة بين حرف عربي/لاتيني ملتصق برقم أو كلمة لاتينية ملتصقة بعربية
-          next = plain
-            .replace(/([\u0600-\u06FF])([A-Za-z0-9])/g, "$1 $2")
-            .replace(/([A-Za-z0-9])([\u0600-\u06FF])/g, "$1 $2")
-            .replace(/([\u0600-\u06FF])([^\s\u0600-\u06FF\d\.,،:;])/g, "$1 $2");
-        }
-        if(next !== plain){
-          changed++;
-          var wasBold = /<b>/i.test(html);
-          return wasBold ? ("<b>"+escapeHtml(next)+"</b>") : escapeHtml(next);
-        }
-        return html;
-      });
-    });
-    if(!changed){ showToast(mode==="del" ? "مفيش مسافات زيادة" : "مفيش كلمات محتاجة مسافة"); return; }
+  function deleteBlockByKey(blockKey){
+    var ref = getRawBlockRef(blockKey);
+    if(!ref){ showToast("مقدرش ألاقي الفقرة"); return; }
+    if(!confirm("تحذف الفقرة دي؟")) return;
+    ref.sec.blocks.splice(ref.bi, 1);
+    // لو السكشن فاضي امسحه
+    if(!ref.sec.blocks.length && !ref.sec.sub){
+      ref.page.sections.splice(ref.si, 1);
+    }
     persistRawAndRebuild();
-    showToast(mode==="del" ? ("اتمسحت مسافات زيادة في "+ar(changed)+" فقرة") : ("اتظبطت مسافات في "+ar(changed)+" فقرة"));
+    showToast("اتمسحت الفقرة");
+  }
+
+  function bindLongPressEdit(el, blockKey){
+    if(!el || el._lpBound) return;
+    el._lpBound = true;
+    var timer = null;
+    var startX = 0, startY = 0;
+    function clearT(){ if(timer){ clearTimeout(timer); timer = null; } }
+    function onDown(e){
+      if(state.selecting) return;
+      var pt = e.touches && e.touches[0] ? e.touches[0] : e;
+      startX = pt.clientX; startY = pt.clientY;
+      clearT();
+      timer = setTimeout(function(){
+        timer = null;
+        el.style.outline = "2px solid var(--gold-500)";
+        var choice = prompt("الفقرة:\n1 = تعديل النص\n2 = حذف الفقرة\n(اكتب 1 أو 2)");
+        el.style.outline = "";
+        if(choice === "1") editBlockByKey(blockKey);
+        else if(choice === "2") deleteBlockByKey(blockKey);
+      }, 2000);
+    }
+    function onMove(e){
+      if(!timer) return;
+      var pt = e.touches && e.touches[0] ? e.touches[0] : e;
+      if(Math.abs(pt.clientX - startX) > 12 || Math.abs(pt.clientY - startY) > 12) clearT();
+    }
+    function onUp(){ clearT(); }
+    el.addEventListener("pointerdown", onDown);
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerup", onUp);
+    el.addEventListener("pointercancel", onUp);
+    el.addEventListener("pointerleave", onUp);
   }
 
   function deleteCurrentPage(){
@@ -2808,9 +2900,6 @@
   $("btnPrevPage").addEventListener("click", function(){ if(state.page>0){ state.page--; saveProgress(); renderPage(); } });
   $("btnNextPage").addEventListener("click", function(){ if(state.page<MODEL.pages.length-1){ state.page++; saveProgress(); renderPage(); } });
 
-  if($("btnEditPageText")) $("btnEditPageText").addEventListener("click", startEditCurrentPageText);
-  if($("btnAddSpace")) $("btnAddSpace").addEventListener("click", function(){ normalizeSpacesOnPage("add"); });
-  if($("btnDelSpace")) $("btnDelSpace").addEventListener("click", function(){ normalizeSpacesOnPage("del"); });
   if($("btnDeletePage")) $("btnDeletePage").addEventListener("click", deleteCurrentPage);
 
   $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
