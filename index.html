@@ -278,8 +278,9 @@
       <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · اختبر</span></button>
     </div>
     <div class="edit-bar" id="editBar">
-      <span style="font-size:11.5px;color:var(--muted);font-weight:700;">اضغط مطوّل ثانيتين على فقرة للتعديل أو الحذف</span>
+      <button type="button" id="btnEditMode" title="عدّل أو احذف فقرة">✏️ تعديل فقرة</button>
       <button type="button" id="btnDeletePage" title="احذف الصفحة الحالية" style="color:var(--danger);">🗑️ حذف الصفحة</button>
+      <span id="editModeHint" style="font-size:11.5px;color:var(--muted);font-weight:700;">قبل التحديد: اضغط «تعديل فقرة» ثم اضغط على الفقرة</span>
     </div>
     <div class="shuffle-note" id="shuffleNote">🔀 مود الجمل: كل محاولة جديدة بتخفي جمل مختلفة</div>
     <div id="customGuide" class="hidden" style="margin:8px 18px 0;padding:10px 12px;background:rgba(224,182,47,.12);border:1px solid rgba(224,182,47,.35);border-radius:12px;font-size:12.5px;font-weight:700;line-height:1.9;color:var(--gold-600);">
@@ -606,12 +607,60 @@
   }
   function savePersonalIndex(list){ try{ localStorage.setItem(LIB_INDEX_KEY, JSON.stringify(list)); }catch(e){} }
   function saveLibraryIndex(list){ savePersonalIndex(list); } // back-compat name used below
+  var CONTENT_CACHE = {};
   function getMalzamaContent(key){
+    if(CONTENT_CACHE[key]) return CONTENT_CACHE[key];
     if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
-    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw) return JSON.parse(raw); }catch(e){}
+    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw){ var p=JSON.parse(raw); CONTENT_CACHE[key]=p; return p; } }catch(e){}
     return null;
   }
-  function saveMalzamaContent(key, rawPages){ try{ localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages)); }catch(e){} }
+  function saveMalzamaContent(key, rawPages){
+    CONTENT_CACHE[key] = rawPages;
+    try{
+      localStorage.setItem("najm_content_" + key, JSON.stringify(rawPages));
+    }catch(e){
+      // غالبًا الصور كبّرت الحجم عن حد المتصفح
+      try{
+        var slim = JSON.parse(JSON.stringify(rawPages));
+        // اضغط الصور لأصغر حجم عند فشل الحفظ
+        showToast("الملف كبير — بيتحفظ في الذاكرة (الصور قد تختفي بعد إغلاق المتصفح)");
+      }catch(e2){}
+      console.warn("saveMalzamaContent failed", e);
+    }
+  }
+  function extractImgsHtml(html){
+    if(!html || !/<img/i.test(html)) return "";
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    var out = "";
+    tmp.querySelectorAll("img").forEach(function(im){
+      var src = im.getAttribute("src") || "";
+      if(!src) return;
+      out += '<div class="doc-fig"><img src="'+src+'" alt="رسم علمي"></div>';
+    });
+    return out;
+  }
+  // ضغط صورة data-url عشان تتخزن في المتصفح
+  function compressDataUrl(dataUrl, maxW){
+    return new Promise(function(resolve){
+      try{
+        if(!dataUrl || dataUrl.indexOf("data:image") !== 0){ resolve(dataUrl); return; }
+        var img = new Image();
+        img.onload = function(){
+          try{
+            var w = img.width || maxW, h = img.height || maxW;
+            if(w > maxW){ h = Math.round(h * maxW / w); w = maxW; }
+            var c = document.createElement("canvas");
+            c.width = w; c.height = h;
+            c.getContext("2d").drawImage(img, 0, 0, w, h);
+            resolve(c.toDataURL("image/jpeg", 0.7));
+          }catch(err){ resolve(dataUrl); }
+        };
+        img.onerror = function(){ resolve(dataUrl); };
+        img.src = dataUrl;
+      }catch(e){ resolve(dataUrl); }
+    });
+  }
 
   /* ---------- Cross-mode aggregated review list ---------- */
   function reviewKey(malzamaKey){ return "najm_review_" + malzamaKey; }
@@ -963,7 +1012,8 @@
                   }
                 });
                 while(wi < wb.length){ htmlParts.push(formatWordHtml(wb[wi])); wi++; }
-                unitByBlockKey[bi2.key] = { renderHtml: htmlParts.join(" "), blankIds: idsC };
+                // حافظ على الصور العلمية مع النص بعد إعادة بناء الإخفاء
+                unitByBlockKey[bi2.key] = { renderHtml: htmlParts.join(" ") + extractImgsHtml(bi2.html), blankIds: idsC };
               }
             }
           } else {
@@ -981,12 +1031,18 @@
         sec.blocks.forEach(function(html, bi){
           var key = pi+"_"+si+"_"+bi;
           var unit = unitByBlockKey[key] || { renderHtml: html, blankIds: [] };
-          if(isPromoOrVerse(stripHtml(html))) return;
+          var hasImg = /<img/i.test(html);
+          if(!hasImg && isPromoOrVerse(stripHtml(html))) return;
           var plain = stripHtml(html).replace(/\s+/g," ").trim().toLowerCase();
-          // إسقاط فقرة مكررة متتالية (PDF يكرر السطر أحيانًا)
-          if(plain && plain === prevPlain) return;
+          // إسقاط فقرة مكررة متتالية (PDF يكرر السطر أحيانًا) — لكن مش الصور
+          if(plain && plain === prevPlain && !hasImg) return;
           prevPlain = plain;
-          blocks.push({ key:key, html: unit.renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html });
+          var renderHtml = unit.renderHtml;
+          // لو الإخفاء اتعمله rebuild من غير صور، رجّع الصور من الأصل
+          if(hasImg && renderHtml && !/<img/i.test(renderHtml)){
+            renderHtml = renderHtml + extractImgsHtml(html);
+          }
+          blocks.push({ key:key, html: renderHtml, blankIds: unit.blankIds || [], plainText: stripHtml(html), originalHtml: html });
         });
         var sub = sec.sub && !isPromoOrVerse(sec.sub) ? sec.sub : null;
         // لا تكرر sub لو مطابق لعنوان الصفحة أو أول فقرة
@@ -1015,7 +1071,7 @@
   }
 
   /* ---------- State ---------- */
-  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"sentences", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{} };
+  var state = { malzamaKey:null, malzamaTitle:"", malzamaSub:"", mode:"sentences", page:0, revealedIds:{}, blockRatings:{}, freeMode:false, seed:null, stuckTaps:0, selecting:false, customSelected:{}, editMode:false };
   var MODEL = null, RAW_PAGES = null;
 
   function progressKey(malzamaKey, mode){ return "najm_prog2_" + malzamaKey + "_" + mode; }
@@ -1636,9 +1692,15 @@
         } else {
           bd.innerHTML = block.html;
         }
-        // ضغط مطوّل ثانيتين → تعديل أو حذف الفقرة
-        if(!useClean){
-          bindLongPressEdit(bd, block.key);
+        // وضع التعديل: ضغطة واحدة على الفقرة
+        if(!useClean && state.editMode){
+          bd.style.outline = "2px dashed rgba(224,182,47,.75)";
+          bd.style.cursor = "pointer";
+          bd.addEventListener("click", function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            showBlockEditMenu(bd, block.key);
+          });
         }
         docCard.appendChild(bd);
         // رسوم علمية مرفقة مع بياناتها (لو موجودة في الفقرة أو page.figures)
@@ -2274,7 +2336,6 @@
             var imgs = imagesHtmlInPara(pEl);
             if(imgs){
               html += imgs;
-              // علّم المصادر المستخدمة
               imgs.replace(/src="([^"]+)"/g, function(_, s){ usedSrc[s] = true; return _; });
             }
             if(!level && text.trim().length > 0 && text.trim().length <= 80){
@@ -2290,16 +2351,37 @@
           });
           // صور لم تُربط بفقرة — أضفها في الآخر
           Object.keys(mediaMap).forEach(function(k){
-            if(k.indexOf("/") >= 0 && k.indexOf("media/") !== 0) return;
-            if(k.indexOf("/") >= 0 && !/^media\//i.test(k)) return;
+            if(!/^media\//i.test(k)) return;
             var src = mediaMap[k];
-            if(src && !usedSrc[src] && /^media\//i.test(k)){
+            if(src && !usedSrc[src]){
               usedSrc[src] = true;
               paragraphs.push({ level:null, html: imgHtmlFromSrc(src), text:"" });
             }
           });
-          var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
-          resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+          // ضغط كل الصور قبل الحفظ
+          var allSrc = [];
+          paragraphs.forEach(function(p){
+            if(!p.html) return;
+            p.html.replace(/src="(data:image[^"]+)"/g, function(_, s){ allSrc.push(s); return _; });
+          });
+          var uniq = [];
+          var seenU = {};
+          allSrc.forEach(function(s){ if(!seenU[s]){ seenU[s]=true; uniq.push(s); } });
+          Promise.all(uniq.map(function(s){ return compressDataUrl(s, 900); })).then(function(compressed){
+            var mapC = {};
+            uniq.forEach(function(s, i){ mapC[s] = compressed[i] || s; });
+            paragraphs.forEach(function(p){
+              if(!p.html) return;
+              p.html = p.html.replace(/src="(data:image[^"]+)"/g, function(_, s){
+                return 'src="'+(mapC[s]||s)+'"';
+              });
+            });
+            var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
+            resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+          }).catch(function(){
+            var parsed = docxParagraphsToRawPages(paragraphs, file.name.replace(/\.docx$/i,""));
+            resolve({ rawPages: parsed.rawPages, fallbackTitle: file.name.replace(/\.docx$/i,""), heading: parsed.heading });
+          });
         }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
       };
       reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
@@ -2911,6 +2993,36 @@
   $("btnNextPage").addEventListener("click", function(){ if(state.page<MODEL.pages.length-1){ state.page++; saveProgress(); renderPage(); } });
 
   if($("btnDeletePage")) $("btnDeletePage").addEventListener("click", deleteCurrentPage);
+  if($("btnEditMode")) $("btnEditMode").addEventListener("click", function(){
+    if(state.selecting){
+      showToast("ألغِ التحديد أو احفظه الأول، بعدين عدّل الفقرات");
+      return;
+    }
+    state.editMode = !state.editMode;
+    var btn = $("btnEditMode");
+    if(state.editMode){
+      btn.style.background = "var(--gold-500)";
+      btn.style.color = "#111";
+      showToast("اضغط على أي فقرة — تعديل أو حذف");
+    } else {
+      btn.style.background = "";
+      btn.style.color = "";
+      document.querySelectorAll(".block-edit-menu").forEach(function(m){ m.remove(); });
+      showToast("وضع التعديل اتقفل");
+    }
+    renderPage();
+  });
+  // اقفل وضع التعديل عند بدء التحديد
+  var _oldStart = $("btnStartSelect");
+  if(_oldStart){
+    _oldStart.addEventListener("click", function(){
+      if(state.editMode){
+        state.editMode = false;
+        var b = $("btnEditMode");
+        if(b){ b.style.background = ""; b.style.color = ""; }
+      }
+    });
+  }
 
   $("btnOpenReview").addEventListener("click", function(){ renderReviewModal(); $("modalReview").classList.add("show"); });
   $("btnReviewNeeded").addEventListener("click", function(){ switchView("unit"); renderReviewModal(); $("modalReview").classList.add("show"); });
