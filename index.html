@@ -2246,17 +2246,21 @@
           var mediaJobs = [];
           var unsupportedMedia = 0;
           Object.keys(zip.files).forEach(function(path){
-            if(!/^word\/media\//i.test(path) || zip.files[path].dir) return;
+            if(zip.files[path].dir) return;
             var name = path.split("/").pop();
             var ext = (name.split(".").pop()||"").toLowerCase();
+            var inMedia = /word\/media\//i.test(path) || /\/media\//i.test(path);
+            var isImgExt = /^(png|jpe?g|gif|webp|bmp)$/i.test(ext);
             if(ext === "emf" || ext === "wmf" || ext === "emz" || ext === "wmz"){
               unsupportedMedia++;
               return;
             }
-            var mime = ext==="png"?"image/png":(ext==="jpg"||ext==="jpeg")?"image/jpeg":ext==="gif"?"image/gif":ext==="webp"?"image/webp":ext==="bmp"?"image/bmp":null;
-            if(!mime){ unsupportedMedia++; return; }
+            if(!inMedia && !isImgExt) return;
+            if(!isImgExt){ unsupportedMedia++; return; }
+            var mime = ext==="png"?"image/png":(ext==="jpg"||ext==="jpeg")?"image/jpeg":ext==="gif"?"image/gif":ext==="webp"?"image/webp":ext==="bmp"?"image/bmp":"image/png";
             mediaJobs.push(zip.files[path].async("base64").then(function(b64){
               var rel = path.replace(/^word\//i, "");
+              if(rel.indexOf("media/") === -1 && isImgExt) rel = "media/"+name;
               var dataUrl = "data:"+mime+";base64,"+b64;
               mediaByPath[rel] = dataUrl;
               mediaByPath[name] = dataUrl;
@@ -2340,18 +2344,20 @@
             }
             return { level: level, html: html, text: text };
           });
-          // أي صورة في media لم تُدرج — أضفها في النهاية (ضمان الظهور)
+          // ضمان: كل صور media تظهر في أول المستند لو ما اتربطتش بفقرة
           var extraImgs = 0;
+          var galleryHtml = "";
           Object.keys(mediaByPath).forEach(function(k){
-            if(k.indexOf("/") === -1) return; // تخطّي المفاتيح المختصرة لتجنب التكرار
             if(!/^media\//i.test(k)) return;
             var src = mediaByPath[k];
-            if(src && !usedSrc[src]){
-              usedSrc[src] = true;
-              extraImgs++;
-              paragraphs.push({ level:null, html: imgHtmlFromSrc(src), text:"" });
-            }
+            if(!src || usedSrc[src]) return;
+            usedSrc[src] = true;
+            extraImgs++;
+            galleryHtml += imgHtmlFromSrc(src);
           });
+          if(galleryHtml){
+            paragraphs.unshift({ level:null, html: '<div class="doc-fig"><b>الرسوم العلمية</b></div>' + galleryHtml, text: "الرسوم العلمية" });
+          }
           var imgCount = Object.keys(usedSrc).length;
           // ضغط الصور
           var uniq = Object.keys(usedSrc);
@@ -2756,29 +2762,47 @@
       if(resolved.existed) updatedCount++; else newCount++;
       lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
       r._keptSels = hasSels;
-      // تشخيص الصور
-      if(typeof r.imgCount === "number"){
-        if(r.imgCount > 0) showToast("تم استخراج "+ar(r.imgCount)+" صورة من الملف");
-        else if(r.unsupportedMedia > 0) showToast("الصور بصيغة قديمة (EMF/WMF) والمتصفح مش بيعرضها — حوّلها PNG في Word");
-        else showToast("مفيش صور مضمّنة في الملف ده");
-      }
     });
     setUploadStatus("");
     if(results.length===0) return;
+    // ملخص الصور من كل الملفات المرفوعة
+    var totalImgs = 0, totalUnsup = 0;
+    results.forEach(function(r){
+      if(r.imgCount) totalImgs += r.imgCount;
+      if(r.unsupportedMedia) totalUnsup += r.unsupportedMedia;
+    });
+    var imgNote = totalImgs > 0
+      ? (" · 🖼️ "+ar(totalImgs)+" صورة")
+      : (totalUnsup > 0 ? " · ⚠️ صور EMF غير مدعومة" : " · بدون صور مضمّنة");
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
       renderPendingList();
-      showToast(updatedCount
-        ? ("تم تحديث المحتوى ("+ar(updatedCount)+") مع الحفاظ على التحديد — نزّل library.json")
-        : ("اترفع "+ar(newCount)+" ملزمة رسمية — راجع القائمة ونزّل ملف المكتبة"));
+      showToast((updatedCount
+        ? ("تم تحديث المحتوى ("+ar(updatedCount)+") مع الحفاظ على التحديد")
+        : ("اترفع "+ar(newCount)+" ملزمة رسمية")) + imgNote);
       renderHome();
     } else {
       $("modalUpload").classList.remove("show");
       renderHome();
-      showToast(updatedCount
-        ? ('تم تحديث "'+lastTitle+'" مع الحفاظ على التحديد')
-        : ('اتضافت "'+lastTitle+'" للملازم'));
+      showToast((updatedCount
+        ? ('تم تحديث "'+lastTitle+'"')
+        : ('اتضافت "'+lastTitle+'"')) + imgNote);
       openUnit(lastKey, lastTitle, lastSub);
+      // تأكيد إضافي بعد الفتح
+      setTimeout(function(){
+        var n = 0;
+        try{
+          var raw = getMalzamaContent(lastKey);
+          if(raw) JSON.stringify(raw).replace(/<img/gi, function(){ n++; return ""; });
+        }catch(e){}
+        if(n === 0 && totalUnsup > 0){
+          showToast("الصور في الملف بصيغة قديمة لا يعرضها المتصفح — من Word: احفظ الصورة كـ PNG");
+        } else if(n === 0){
+          showToast("لم يُعثر على صور داخل الملف — تأكد أن الصورة Paste داخل Word ثم Save كـ .docx");
+        } else {
+          showToast("الصور جاهزة: "+ar(n)+" — لو مش ظاهرة مرّر لأعلى الصفحة");
+        }
+      }, 900);
     }
   }
 
