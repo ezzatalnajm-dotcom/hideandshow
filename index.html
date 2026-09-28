@@ -212,6 +212,9 @@
   .doc-fig{margin:8px 0;text-align:center;}
   .doc-fig img,.doc-block img{max-width:100%;height:auto;border-radius:10px;border:1px solid rgba(10,27,46,.08);display:block;margin:8px auto;}
   .doc-fig .cap{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700;}
+  .block-edit-menu{display:flex;gap:8px;flex-wrap:wrap;margin:6px 16px 10px;padding:8px;background:var(--card);border:1px solid rgba(224,182,47,.45);border-radius:12px;box-shadow:0 4px 14px rgba(10,27,46,.12);}
+  .block-edit-menu button{border:none;background:rgba(224,182,47,.15);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:800;cursor:pointer;}
+  :root:not([data-theme="light"]) .block-edit-menu{background:rgba(255,255,255,.06);}
   .edit-bar{margin:8px 18px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
   .edit-bar button{border:1px solid rgba(10,27,46,.14);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;}
   :root:not([data-theme="light"]) .edit-bar button{border-color:rgba(255,255,255,.14);}
@@ -1388,37 +1391,17 @@
   }
 
   // Parse original HTML into word spans, preserving <b>
+  // مهم: نستخدم wordsWithBold عشان ما يفصلش «ال» عن الكلمة أثناء التحديد
   function renderSelectableBlock(bd, block){
     var src = block.originalHtml || block.html || escapeHtml(block.plainText || "");
-    // Convert HTML to a flat list of {text, bold} runs then to words
+    // تجاهل الصور داخل التحديد — تظهر كـ img منفصلة تحت
     var tmp = document.createElement("div");
     tmp.innerHTML = src;
-    var runs = [];
-    function walk(node, bold){
-      if(node.nodeType === 3){
-        var t = node.textContent;
-        if(t) runs.push({ text: t, bold: !!bold });
-      } else if(node.nodeType === 1){
-        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
-        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
-      }
-    }
-    walk(tmp, false);
-    // Build words with bold flag
-    var wordList = [];
-    runs.forEach(function(run){
-      var parts = run.text.split(/(\s+)/);
-      parts.forEach(function(p){
-        if(!p) return;
-        if(/^\s+$/.test(p)){
-          // whitespace — attach to previous or skip
-        } else {
-          wordList.push({ text: p, bold: run.bold });
-        }
-      });
-    });
+    tmp.querySelectorAll("img, .doc-fig").forEach(function(n){ n.remove(); });
+    var wordList = wordsWithBold(tmp.innerHTML);
     if(wordList.length === 0){
-      bd.textContent = block.plainText || "";
+      var plain = fixBrokenArabicText(block.plainText || stripHtml(src) || "");
+      bd.textContent = plain;
       return;
     }
     // Determine which word indices are already selected (from stored ranges)
@@ -2844,37 +2827,64 @@
     showToast("اتمسحت الفقرة");
   }
 
+  function showBlockEditMenu(el, blockKey){
+    // إزالة أي قائمة قديمة
+    document.querySelectorAll(".block-edit-menu").forEach(function(m){ m.remove(); });
+    el.style.outline = "2px solid var(--gold-500)";
+    var menu = document.createElement("div");
+    menu.className = "block-edit-menu";
+    menu.innerHTML =
+      '<button type="button" data-act="edit">✏️ تعديل</button>'+
+      '<button type="button" data-act="del" style="color:var(--danger);">🗑️ حذف</button>'+
+      '<button type="button" data-act="cancel">إلغاء</button>';
+    el.parentNode.insertBefore(menu, el.nextSibling);
+    function close(){ el.style.outline = ""; menu.remove(); }
+    menu.querySelector('[data-act="edit"]').addEventListener("click", function(e){
+      e.stopPropagation(); close(); editBlockByKey(blockKey);
+    });
+    menu.querySelector('[data-act="del"]').addEventListener("click", function(e){
+      e.stopPropagation(); close(); deleteBlockByKey(blockKey);
+    });
+    menu.querySelector('[data-act="cancel"]').addEventListener("click", function(e){
+      e.stopPropagation(); close();
+    });
+  }
+
   function bindLongPressEdit(el, blockKey){
     if(!el || el._lpBound) return;
     el._lpBound = true;
     var timer = null;
     var startX = 0, startY = 0;
-    function clearT(){ if(timer){ clearTimeout(timer); timer = null; } }
+    var holding = false;
+    function clearT(){ if(timer){ clearTimeout(timer); timer = null; } holding = false; }
     function onDown(e){
       if(state.selecting) return;
+      // تجاهل أزرار داخل الفقرة
+      if(e.target && (e.target.closest && (e.target.closest("button") || e.target.closest("a")))) return;
       var pt = e.touches && e.touches[0] ? e.touches[0] : e;
       startX = pt.clientX; startY = pt.clientY;
+      holding = true;
       clearT();
+      holding = true;
       timer = setTimeout(function(){
         timer = null;
-        el.style.outline = "2px solid var(--gold-500)";
-        var choice = prompt("الفقرة:\n1 = تعديل النص\n2 = حذف الفقرة\n(اكتب 1 أو 2)");
-        el.style.outline = "";
-        if(choice === "1") editBlockByKey(blockKey);
-        else if(choice === "2") deleteBlockByKey(blockKey);
+        if(!holding) return;
+        try{ if(navigator.vibrate) navigator.vibrate(30); }catch(err){}
+        showBlockEditMenu(el, blockKey);
       }, 2000);
     }
     function onMove(e){
-      if(!timer) return;
+      if(!timer && !holding) return;
       var pt = e.touches && e.touches[0] ? e.touches[0] : e;
-      if(Math.abs(pt.clientX - startX) > 12 || Math.abs(pt.clientY - startY) > 12) clearT();
+      // تسماحية أكبر للحركة البسيطة على الموبايل
+      if(Math.abs(pt.clientX - startX) > 18 || Math.abs(pt.clientY - startY) > 18) clearT();
     }
     function onUp(){ clearT(); }
     el.addEventListener("pointerdown", onDown);
     el.addEventListener("pointermove", onMove);
     el.addEventListener("pointerup", onUp);
     el.addEventListener("pointercancel", onUp);
-    el.addEventListener("pointerleave", onUp);
+    // لا نلغي على pointerleave — على الموبايل بيتفعل بالغلط
   }
 
   function deleteCurrentPage(){
