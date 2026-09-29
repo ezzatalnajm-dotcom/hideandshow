@@ -349,16 +349,16 @@
       <li>اللي تقيّمه «محتاج مراجعة» بيتجمع في قائمة واحدة تقدر تفتحها من فوق.</li>
       <li>لو جزء اتخفى غلط: اضغط <b>✕</b> جنبه (مرة = يتشال من المحاولة دي، مرتين = مش هيتخفي تاني).</li>
       <li>🎤 <b>اضغط واستمر</b> وأنت بتتكلم، وسيّب لما تخلّص، وبعدها 🔊 للسماع. التسجيل بيفضل لحد ما تقفل الصفحة.</li>
-      <li>تقدر تضغط <b>+</b> وترفع ملزمة من عندك (Word أو PDF) وتحدد الإخفاء بنفسك — بتفضل على جهازك بس.</li>
+      <li>تقدر تضغط <b>+</b> وترفع ملزمة من عندك (Word أو PDF)، وتفتحها وتدوس <b>«① ابدأ التحديد»</b>، وتضغط على كلمة (أو تسحب على كذا كلمة) عشان تتخفي، وبعدين <b>«② احفظ»</b>. تقدر كمان تعدّل فقراتها وتحذف صفحات بـ <b>✏️ تعديل / حذف</b>. ملزمتك بتفضل على جهازك بس.</li>
       <li>تقدمك بيتحفظ تلقائيًا على جهازك.</li>
     </ol>
     <ol class="teacher-only">
       <li>دوس <b>+</b> ← ارفع ملف Word أو PDF مع تفعيل <b>«ملازم رسمية»</b>.</li>
       <li>افتح الملزمة ← اختار مود (عناوين / جمل / تخصيص) ← <b>① ابدأ التحديد</b> ← نقرة = كلمة، سحب = عدة كلمات.</li>
       <li>تنقّل بين الصفحات وحدّد، وبعدين <b>② احفظ</b> مرة واحدة. كرّر لكل مود.</li>
-      <li><b>✏️ تعديل / حذف</b>: اضغط على أي فقرة أو صورة لتعديل نصها أو حذفها. <b>🗑️ حذف الصفحة</b> يشيل الصفحة كلها. الإخفاءات والتقييمات بتفضل على فقراتها بعد الحذف.</li>
+      <li><b>✏️ تعديل / حذف</b>: اضغط على أي فقرة أو صورة لتعديل نصها أو حذفها. لتغليظ كلمات ضعها بين نجمتين <b>*هكذا*</b>. أي تعديل أو حذف بيتطبق على الأنظمة التلاتة. <b>🗑️ حذف الصفحة</b> يشيل الصفحة كلها. الإخفاءات والتقييمات بتفضل على فقراتها بعد الحذف.</li>
       <li>الصور اللي بتتكرر أكتر من مرتين (شعارات/خلفيات) بتتجاهل تلقائيًا عند الرفع.</li>
-      <li>ارجع لـ <b>⚙️ الإعدادات</b> ← <b>نزّل حزمة المكتبة (ZIP)</b> ← فُكّ الضغط وارفع <b>library.json</b> + مجلد <b>library</b> + <b>sw.js</b> جنب <b>index.html</b>.</li>
+      <li>ارجع لـ <b>⚙️ الإعدادات</b> ← <b>نزّل حزمة المكتبة (ZIP)</b> ← فُكّ الضغط وارفع <b>كل الملفات اللي جوّاها</b> (library.json وملفات lib-….json وsw.js) جنب <b>index.html</b>.</li>
       <li>الملزمة بتتحمّل عند الفتح بس، وبعد أول زيارة بتشتغل أوفلاين بفضل <b>sw.js</b>.</li>
       <li>للخروج من وضع المدرّس اضغط 👨‍🏫 فوق. للدخول تاني: اضغط ٧ مرات على اسم التطبيق، أو افتح الرابط بـ <b>#teacher</b>.</li>
     </ol>
@@ -395,12 +395,25 @@
         <div>① ارفع الملزمة هنا مع تفعيل «ملازم رسمية»</div>
         <div>② افتح الملزمة → حدّد الإخفاء في التطبيق → <b>احفظ</b></div>
         <div>③ ارجع هنا → <b>نزّل حزمة المكتبة (ZIP)</b> وفُكّ ضغطها</div>
-        <div>④ ارفع محتوياتها (<b>library.json</b> + مجلد <b>library</b> + <b>sw.js</b>) <b>جنب index.html</b></div>
+        <div>④ ارفع محتوياتها (<b>كل الملفات اللي جوّاها</b> (library.json وملفات lib-….json وsw.js)) <b>جنب index.html</b></div>
         <div>⑤ الطالب يفتح الرابط → الإخفاء جاهز → «ابدأ الاختبار»</div>
       </div>
       <p style="font-size:12.5px;color:var(--muted);">الملازم في الملف الحالي: <span id="pendingCount">٠</span> — شيل أي واحدة قبل التنزيل لو مش عايزها.</p>
       <div id="pendingListWrap"></div>
       <div class="file-choice"><button id="downloadLibrary">⬇️ نزّل حزمة المكتبة (ZIP) مع الإخفاءات</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalEditBlock">
+  <div class="modal">
+    <h3>تعديل الفقرة <span class="close-x" data-close="modalEditBlock">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;line-height:1.9;margin:0 0 8px;">لتغليظ كلمة أو أكثر (Bold): حطها بين نجمتين، مثال <b>*كلمة*</b> أو <b>*كلمتين معًا*</b>. أو حدّد الكلمات واضغط زر <b>B</b>. التعديل بيتطبق على الأنظمة التلاتة (العناوين والجمل وتخصيص).</p>
+    <textarea id="editBlockText" dir="rtl" style="width:100%;min-height:170px;box-sizing:border-box;border:1px solid rgba(10,27,46,.2);border-radius:12px;padding:12px;font-size:16px;line-height:2;font-family:inherit;background:var(--paper);color:var(--ink);resize:vertical;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <button type="button" class="btn-ghost" id="editBlockBold" style="font-weight:900;">B تغليظ المحدد</button>
+      <button type="button" class="btn-gold" id="editBlockSave">💾 حفظ</button>
+      <button type="button" class="btn-ghost" id="editBlockCancel">إلغاء</button>
     </div>
   </div>
 </div>
@@ -419,7 +432,7 @@
     <p style="font-size:14px;line-height:1.9;">الإخفاء اتحفظ على جهازك. عشان يوصل للطلاب:</p>
     <div class="export-steps">
       <div>① اضغط الزر الأخضر تحت ونزّل <b>حزمة المكتبة (ZIP)</b> وفُكّ ضغطها</div>
-      <div>② ارفع محتوياتها (<b>library.json</b> + مجلد <b>library</b> + <b>sw.js</b>) على <b>GitHub</b> جنب <b>index.html</b></div>
+      <div>② ارفع محتوياتها (<b>كل الملفات اللي جوّاها</b> (library.json وملفات lib-….json وsw.js)) على <b>GitHub</b> جنب <b>index.html</b></div>
       <div>③ Vercel يحدّث لوحده — الطالب يفتح الرابط ويلاقي الإخفاء</div>
     </div>
     <div class="file-choice" style="margin-top:12px;">
@@ -709,7 +722,7 @@
   // Pre-baked hides from official library.json (so students start testing immediately)
   var SHARED_SELECTIONS = {}; // key -> { headings:{}, sentences:{}, custom:{} }
 
-  var SHARED_FILES = {}; // key -> "library/xxxx.json" (بتتحمّل عند الفتح بس)
+  var SHARED_FILES = {}; // key -> "lib-xxxx.json" (بتتحمّل عند الفتح بس)
 
   function fetchSharedLibrary(){
     return fetch("./library.json", { cache: "no-cache" }).then(function(res){
@@ -839,26 +852,37 @@
       });
     });
   }
+  function readLocalContent(key){
+    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw){ var p = JSON.parse(raw); CONTENT_CACHE[key] = p; return p; } }catch(e){}
+    return null;
+  }
   function getMalzamaContent(key){
     if(CONTENT_CACHE[key]) return CONTENT_CACHE[key];
+    // المدرّس: تعديلاته المحفوظة على جهازه أهم من نسخة الموقع لحد ما ينشر الحزمة الجديدة
+    if(isTeacher()){ var lp = readLocalContent(key); if(lp) return lp; }
     if(SHARED_CONTENT[key]) return SHARED_CONTENT[key];
-    try{ var raw = localStorage.getItem("najm_content_" + key); if(raw){ var p=JSON.parse(raw); CONTENT_CACHE[key]=p; return p; } }catch(e){}
-    return null;
+    return readLocalContent(key);
   }
   function getMalzamaContentAsync(key){
     var sync = getMalzamaContent(key);
-    if(sync) return Promise.resolve(sync);
-    if(SHARED_FILES[key]){
-      return loadSharedContent(key).then(function(p){
-        if(p) return p;
-        showToast("مش قادر أحمّل الملزمة — تأكد من الإنترنت");
-        return null;
-      });
-    }
-    return idbGet(key).then(function(p){
+    var teacherShared = isTeacher() && (!sync || SHARED_CONTENT[key] === sync);
+    if(sync && !teacherShared) return Promise.resolve(sync);
+    var tryIdb = teacherShared ? idbGet(key).catch(function(){ return null; }) : Promise.resolve(null);
+    return tryIdb.then(function(p){
       if(p){ CONTENT_CACHE[key] = p; return p; }
-      return null;
-    }).catch(function(){ return null; });
+      if(sync) return sync;
+      if(SHARED_FILES[key]){
+        return loadSharedContent(key).then(function(sp){
+          if(sp) return sp;
+          showToast("مش قادر أحمّل الملزمة — تأكد من الإنترنت");
+          return null;
+        });
+      }
+      return idbGet(key).then(function(q){
+        if(q){ CONTENT_CACHE[key] = q; return q; }
+        return null;
+      }).catch(function(){ return null; });
+    });
   }
   function saveMalzamaContent(key, rawPages){
     CONTENT_CACHE[key] = rawPages;
@@ -910,7 +934,7 @@
             ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, w, h); // يمنع الخلفية السودا في الصور الشفافة
             ctx.drawImage(img, 0, 0, w, h);
             var out = null;
-            if(/^data:image\/png/i.test(dataUrl)){
+            if(/^data:image\/(png|bmp)/i.test(dataUrl)){
               out = c.toDataURL("image/png");
               if(out.length > 400000) out = null;
             }
@@ -1956,6 +1980,7 @@
           el.addEventListener("click", function(ev){
             if(ev.target.closest(".pin-btn, .blank, .rate-btn, .mic-mini")) return;
             if(!canEditCurrent()) return;
+            if(state.editMode || state.selecting) return; // في وضع التعديل/التحديد الضغطة مش للإخفاء
             ev.preventDefault();
             forceHideText(target);
           });
@@ -2423,8 +2448,50 @@
     for(var i=0;i<bytes.length;i+=CH){ s += String.fromCharCode.apply(null, bytes.subarray(i, i+CH)); }
     return btoa(s);
   }
-  // ملفات EMF/WMF بتحتوي أحيانًا على صورة PNG/JPEG جوّاها — نحاول نطلعها
+  // EMF فيها غالبًا صورة نقطية (DIB) جوّاها — نطلعها ونحوّلها لملف BMP يعرضه المتصفح
+  function emfBitmapToImage(bytes){
+    try{
+      if(bytes.length < 88) return null;
+      var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      if(dv.getUint32(0, true) !== 1) return null; // مش EMF
+      var off = 0, best = null;
+      while(off + 8 <= bytes.length){
+        var type = dv.getUint32(off, true), size = dv.getUint32(off + 4, true);
+        if(size < 8 || off + size > bytes.length) break;
+        var fo = -1;
+        if(type === 81 || type === 80) fo = 48;          // STRETCHDIBITS / SETDIBITSTODEVICE
+        else if(type === 76 || type === 77) fo = 84;     // BITBLT / STRETCHBLT
+        if(fo > 0 && off + fo + 16 <= off + size){
+          var offBmi = dv.getUint32(off + fo, true), cbBmi = dv.getUint32(off + fo + 4, true);
+          var offBits = dv.getUint32(off + fo + 8, true), cbBits = dv.getUint32(off + fo + 12, true);
+          if(cbBmi >= 12 && cbBits > 0 && offBmi + cbBmi <= size && offBits + cbBits <= size && offBits >= offBmi){
+            if(!best || cbBits > best.cbBits) best = { rec: off, offBmi: offBmi, cbBmi: cbBmi, offBits: offBits, cbBits: cbBits };
+          }
+        }
+        off += size;
+        if(type === 14) break;
+      }
+      if(!best) return null;
+      var base = best.rec;
+      var compression = dv.getUint32(base + best.offBmi + 16, true);
+      if(compression === 4 || compression === 5){ // JPEG/PNG جوّه الـ DIB
+        return { mime: compression === 4 ? "image/jpeg" : "image/png", bytes: bytes.subarray(base + best.offBits, base + best.offBits + best.cbBits) };
+      }
+      var head = best.offBits - best.offBmi;             // رأس الـ DIB + الألوان + أي فراغ قبل البيانات
+      var total = 14 + head + best.cbBits;
+      var out = new Uint8Array(total);
+      out[0] = 0x42; out[1] = 0x4D;
+      var odv = new DataView(out.buffer);
+      odv.setUint32(2, total, true);
+      odv.setUint32(10, 14 + head, true);
+      out.set(bytes.subarray(base + best.offBmi, base + best.offBmi + head + best.cbBits), 14);
+      return { mime: "image/bmp", bytes: out };
+    }catch(e){ return null; }
+  }
+  // ملفات EMF/WMF: الأول نطلع الصورة النقطية، وبعدين لو فيه PNG/JPEG جوّاها
   function findRasterInMetafile(bytes){
+    var bmp = emfBitmapToImage(bytes);
+    if(bmp) return bmp;
     var n = bytes.length, i, j;
     for(i=0;i<n-8;i++){
       if(bytes[i]===0x89 && bytes[i+1]===0x50 && bytes[i+2]===0x4E && bytes[i+3]===0x47 &&
@@ -2668,7 +2735,7 @@
               buf = [];
             }
             toks.forEach(function(t){
-              if(t.t === "text") buf.push({ text: fixBrokenArabicText(t.text), bold: t.bold });
+              if(t.t === "text") buf.push({ text: t.text, bold: t.bold });
               else { flushBuf(); segs.push({ kind:"img", src:t.src }); }
             });
             flushBuf();
@@ -3429,7 +3496,7 @@
     '  }).then(function(){ return self.clients.claim(); }));',
     '});',
     'function isCdn(u){ return /(^|\\.)(cdnjs\\.cloudflare\\.com|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com)$/.test(u.hostname); }',
-    '// ملفات الموقع (الصفحة، library.json، library/*): الشبكة أولًا ولو بطيئة/مفيش نت نرجع للنسخة المحفوظة',
+    '// ملفات الموقع (الصفحة، library.json، lib-*.json): الشبكة أولًا ولو بطيئة/مفيش نت نرجع للنسخة المحفوظة',
     'function networkFirst(req){',
     '  return new Promise(function(resolve){',
     '    var done = false;',
@@ -3515,7 +3582,7 @@
           var zip = new JSZip();
           var index = { version: 2, items: [] };
           slim.forEach(function(x){
-            var file = "library/" + hash32(x.item.key) + ".json";
+            var file = "lib-" + hash32(x.item.key) + ".json";
             index.items.push({ key: x.item.key, title: x.item.title, subtitle: x.item.subtitle, file: file, selections: x.item.selections });
             zip.file(file, JSON.stringify({ rawPages: x.rawPages }));
           });
@@ -3574,23 +3641,117 @@
     return null;
   }
 
+  // نص الفقرة للتعديل: الأجزاء الـ bold بتظهر بين نجمتين *هكذا*
+  function htmlToMarked(html){
+    var tmp = document.createElement("div");
+    tmp.innerHTML = String(html || "");
+    tmp.querySelectorAll("img").forEach(function(im){ im.remove(); });
+    var segs = [];
+    (function walk(node, bold){
+      if(node.nodeType === 3){
+        var t = node.textContent || "";
+        if(t) segs.push({ t: t, b: !!bold });
+      } else if(node.nodeType === 1){
+        var isB = bold || /^(B|STRONG)$/i.test(node.tagName);
+        Array.prototype.forEach.call(node.childNodes, function(ch){ walk(ch, isB); });
+      }
+    })(tmp, false);
+    var merged = [];
+    segs.forEach(function(sg){
+      var last = merged[merged.length - 1];
+      if(last && last.b === sg.b) last.t += sg.t; else merged.push({ t: sg.t, b: sg.b });
+    });
+    return merged.map(function(sg){
+      if(!sg.b) return sg.t;
+      var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(sg.t);
+      return m[2] ? (m[1] + "*" + m[2] + "*" + m[3]) : sg.t;
+    }).join("").trim();
+  }
+  function markedToHtml(text){
+    var t = String(text || "").replace(/\s*\n+\s*/g, " ").replace(/[ \t]+/g, " ").trim();
+    return escapeHtml(t).replace(/\*([^*]+?)\*/g, function(m, inner){
+      return inner.trim() ? ("<b>" + inner + "</b>") : m;
+    });
+  }
+
+  // بعد تعديل نص فقرة: نحدّث الإخفاءات المحفوظة (في الأنظمة التلاتة) عشان تفضل على نفس الكلمات
+  function remapSelectionsForEdit(blockId, oldPlain, newPlain){
+    var mk = state.malzamaKey;
+    if(!mk) return;
+    var ow = splitIntoWords(oldPlain), nw = splitIntoWords(newPlain);
+    var pre = 0;
+    while(pre < ow.length && pre < nw.length && ow[pre] === nw[pre]) pre++;
+    var suf = 0;
+    while(suf < ow.length - pre && suf < nw.length - pre && ow[ow.length - 1 - suf] === nw[nw.length - 1 - suf]) suf++;
+    var delta = nw.length - ow.length, oldEnd = ow.length - suf; // المنطقة المتغيّرة: [pre, oldEnd)
+    var prefix = blockId + "|w|";
+    ["headings","sentences","custom"].forEach(function(mode){
+      var sel;
+      try{ sel = loadCustomSelection(mk, mode); }catch(e){ return; }
+      var out = {}, changed = false;
+      Object.keys(sel).forEach(function(k){
+        if(k.indexOf(prefix) !== 0){ out[k] = sel[k]; return; }
+        var tail = k.slice(prefix.length).split("|");
+        var a = +tail[0], b = +tail[1];
+        if(isNaN(a) || isNaN(b)){ out[k] = sel[k]; return; }
+        var lo = Math.min(a, b), hi = Math.max(a, b), nlo, nhi;
+        nlo = lo < pre ? lo : (lo >= oldEnd ? lo + delta : null);
+        nhi = hi < pre ? hi : (hi >= oldEnd ? hi + delta : null);
+        if(nlo === null || nhi === null){
+          if(lo < pre && hi >= oldEnd){ nlo = lo; nhi = hi + delta; }   // العبارة كلها حوالين الجزء المتغيّر
+          else { changed = true; return; }                                // الجزء المتغيّر جوّه الإخفاء نفسه — نلغيه
+        }
+        if(nhi < nlo || nlo < 0 || nhi >= nw.length){ changed = true; return; }
+        var nk = prefix + nlo + "|" + nhi;
+        if(nk !== k) changed = true;
+        out[nk] = sel[k];
+      });
+      if(changed) saveCustomSelection(mk, out, mode);
+    });
+    var idx = pendingSharedBatch.findIndex(function(x){ return x.key === mk; });
+    if(idx >= 0) pendingSharedBatch[idx].selections = collectAllModeSelections(mk);
+    try{ state.customSelected = loadCustomSelection(mk, state.mode); }catch(e){}
+  }
+
+  var editingBlockKey = null;
+  function closeEditBlock(){
+    editingBlockKey = null;
+    $("modalEditBlock").classList.remove("show");
+  }
   function editBlockByKey(blockKey){
     var ref = getRawBlockRef(blockKey);
     if(!ref){ showToast("مقدرش ألاقي الفقرة"); return; }
-    var current = stripHtml(ref.sec.blocks[ref.bi] || "");
-    var next = prompt("عدّل النص — تقدر تضيف/تمسح حروف ومسافات:", current);
-    if(next === null) return;
-    next = String(next).replace(/\r\n/g, "\n");
-    var wasBold = /<b>/i.test(ref.sec.blocks[ref.bi]||"");
-    var imgs = [];
-    var tmp = document.createElement("div");
-    tmp.innerHTML = ref.sec.blocks[ref.bi] || "";
-    tmp.querySelectorAll("img").forEach(function(im){ imgs.push(im.outerHTML); });
-    var html = wasBold ? ("<b>"+escapeHtml(next.trim())+"</b>") : escapeHtml(next.trim());
-    if(imgs.length) html += imgs.join("");
-    ref.sec.blocks[ref.bi] = html;
+    editingBlockKey = blockKey;
+    $("editBlockText").value = htmlToMarked(ref.sec.blocks[ref.bi] || "");
+    $("modalEditBlock").classList.add("show");
+    setTimeout(function(){ try{ $("editBlockText").focus(); }catch(e){} }, 60);
+  }
+  function saveEditedBlock(){
+    var ref = editingBlockKey ? getRawBlockRef(editingBlockKey) : null;
+    if(!ref){ closeEditBlock(); showToast("مقدرش ألاقي الفقرة"); return; }
+    var oldHtml = ref.sec.blocks[ref.bi] || "";
+    var imgs = extractImgsHtml(oldHtml);
+    var textHtml = markedToHtml($("editBlockText").value);
+    if(!textHtml && !imgs){ showToast("الفقرة فاضية — لو عايز تمسحها استخدم «حذف»"); return; }
+    var newHtml = textHtml + imgs;
+    var key = editingBlockKey;
+    ref.sec.blocks[ref.bi] = newHtml;
+    remapSelectionsForEdit(key, stripHtml(oldHtml), stripHtml(newHtml));
+    closeEditBlock();
     persistRawAndRebuild();
-    showToast("تم تعديل النص");
+    showToast("تم التعديل — اتطبّق على الأنظمة التلاتة");
+  }
+  function boldSelectionInEditor(){
+    var ta = $("editBlockText");
+    var a = ta.selectionStart, b = ta.selectionEnd;
+    if(a == null || a === b){ showToast("حدّد الكلمات اللي عايز تغلّظها الأول"); return; }
+    var v = ta.value, sel = v.slice(a, b);
+    var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(sel);
+    if(!m[2]){ showToast("حدّد كلمات مش مسافات"); return; }
+    var wrapped = m[1] + "*" + m[2].replace(/\*/g, "") + "*" + m[3];
+    ta.value = v.slice(0, a) + wrapped + v.slice(b);
+    ta.focus();
+    ta.selectionStart = a; ta.selectionEnd = a + wrapped.length;
   }
 
   // تنظيف الإخفاءات/التقييمات المحفوظة للفقرات اللي اتحذفت (المعرّفات ثابتة فباقي الفقرات مش بتتأثر)
@@ -3728,6 +3889,9 @@
     setMode(state.mode, true, true);
     showToast("محاولة جديدة — أجزاء مختلفة اتخفت هالمرة");
   });
+  $("editBlockSave").addEventListener("click", saveEditedBlock);
+  $("editBlockCancel").addEventListener("click", closeEditBlock);
+  $("editBlockBold").addEventListener("click", boldSelectionInEditor);
   $("btnBackHome").addEventListener("click", function(){ switchView("home"); renderHome(); });
 
   $("btnAdd").addEventListener("click", function(){
@@ -3849,10 +4013,14 @@
     $("btnTeacherOff").addEventListener("click", function(){
       if(confirm("تخرج من وضع المدرّس؟")) setTeacher(false);
     });
-    if(/^#teacher$/i.test(location.hash || "")){
-      try{ localStorage.setItem(TEACHER_KEY, "1"); }catch(e){}
-      try{ history.replaceState(null, "", location.pathname + location.search); }catch(e){}
+    function checkTeacherLink(){
+      if(/^#teacher$/i.test(location.hash || "") || /[?&]teacher(=1)?(&|$)/i.test(location.search || "")){
+        try{ history.replaceState(null, "", location.pathname); }catch(e){}
+        setTeacher(true);
+      }
     }
+    checkTeacherLink();
+    window.addEventListener("hashchange", checkTeacherLink);
   })();
 
   // Service Worker: يخلي التطبيق يشتغل أوفلاين ويسرّع الفتح (محتاج ملف sw.js جنب index.html)
