@@ -9,7 +9,7 @@ self.addEventListener("activate", function(e){
   }).then(function(){ return self.clients.claim(); }));
 });
 function isCdn(u){ return /(^|\.)(cdnjs\.cloudflare\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(u.hostname); }
-// ملفات الموقع (الصفحة، library.json، library/*): الشبكة أولًا ولو بطيئة/مفيش نت نرجع للنسخة المحفوظة
+// ملفات الموقع (الصفحة، library.json، lib-*.json): الشبكة أولًا ولو بطيئة/مفيش نت نرجع للنسخة المحفوظة
 function networkFirst(req){
   return new Promise(function(resolve){
     var done = false;
