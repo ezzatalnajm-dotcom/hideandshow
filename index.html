@@ -229,6 +229,10 @@
   .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:88%;text-align:center;}
   .toast.show{opacity:1;}
   .hidden{display:none !important;}
+  .add-imgs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .add-img{position:relative;width:104px;height:78px;border-radius:8px;overflow:hidden;border:1px solid rgba(10,27,46,.15);background:#fff;}
+  .add-img img{width:100%;height:100%;object-fit:cover;}
+  .add-img b{position:absolute;top:2px;left:2px;background:#e5484d;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;}
   /* ===================== وضع اللاب توب / وضع الهاتف ===================== */
   #unitSide, #unitMain{display:contents;}
   body:not(.view-laptop) .laptop-only{display:none !important;}
@@ -371,6 +375,7 @@
     <div class="edit-bar edit-tools" id="editBar">
       <button type="button" id="btnEditMode" title="عدّل أو احذف فقرة أو صورة">✏️ تعديل / حذف فقرة أو صورة</button>
       <button type="button" id="btnDeleteMulti" title="اختار كذا فقرة واحذفهم مرة واحدة" style="color:var(--danger);">🗑️ حذف متعدد</button>
+      <button type="button" id="btnAddBlock" title="أضف فقرة أو صورة (الصق صورة من الحافظة)">➕ إضافة فقرة/صورة</button>
       <button type="button" id="btnUndo" class="hidden" title="تراجع عن آخر تعديل أو حذف">↩️ تراجع</button>
       <button type="button" id="btnVersions" title="النسخ السابقة من الملزمة">🕘 النسخ السابقة</button>
       <button type="button" id="btnDeletePage" title="احذف الصفحة الحالية" style="color:var(--danger);">🗑️ حذف الصفحة</button>
@@ -455,6 +460,7 @@
       <li>✏️ جنب الملزمة لتغيير الاسم. 📤 للمشاركة: إرسال كملف، أو رابط مباشر (بعد تفعيل خدمة الروابط من الإعدادات).</li>
       <li>🚀 <b>النشر المباشر</b>: فعّل خدمة الروابط (⚙️ الإعدادات)، ونزّل حزمة ZIP وارفعها على GitHub <b>مرة واحدة</b> (بتعرّف التطبيق بالخدمة). بعد كده كل تعديل تضغط «انشر للطلاب الآن» ويوصلهم من غير GitHub، والتطبيق بيرفع الملازم اللي اتغيّرت بس.</li>
       <li>↩️ <b>تراجع</b> بعد أي تعديل أو حذف (شريط تحت لثواني، أو زر «تراجع» فوق). 🕘 <b>النسخ السابقة</b>: آخر ٥ نسخ لكل ملزمة، بتتحفظ تلقائيًا قبل أول تعديل وقبل رفع ملف جديد بنفس الاسم، وتقدر تسترجع أي واحدة.</li>
+      <li>➕ <b>إضافة فقرة/صورة</b>: لو صورة أو رسم مطلعش من الملف، خدها لقطة شاشة والصقها (Ctrl+V) في نافذة الإضافة، أو اختارها من الجهاز، وهتتحط في مكانها كفقرة تقدر تحذفها. وأي فقرة تقدر تضغط عليها في وضع التعديل ← «أضف بعدها».</li>
       <li>للخروج من وضع المدرّس اضغط 👨‍🏫 فوق. للدخول تاني: اضغط ٧ مرات على اسم التطبيق، أو افتح الرابط بـ <b>#teacher</b>.</li>
     </ol>
   </div>
@@ -514,6 +520,21 @@
       <input id="shareLinkInput" readonly>
       <button type="button" id="shareLinkCopy">نسخ</button>
       <button type="button" id="shareLinkSend">مشاركة</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAddBlock">
+  <div class="modal">
+    <h3><span>➕ إضافة فقرة أو صورة <span id="addBlockWhere" style="font-size:12px;color:var(--muted);font-weight:700;"></span></span> <span class="close-x" id="addBlockX">✕</span></h3>
+    <p style="color:var(--muted);font-size:12.5px;line-height:1.9;margin:0 0 8px;">اكتب نصًا (الكلمات المهمة بين نجمتين <b>*هكذا*</b>) و/أو أضف صور: <b>الصق صورة</b> (Ctrl+V)، أو <b>اسحبها</b> هنا، أو اختارها من الجهاز. كل صورة بتبقى فقرة مستقلة تقدر تحذفها. مفيدة للرسومات اللي مطلعتش من الملف.</p>
+    <textarea id="addBlockText" dir="rtl" placeholder="النص (اختياري)…" style="width:100%;min-height:110px;box-sizing:border-box;border:1px solid rgba(10,27,46,.2);border-radius:12px;padding:12px;font-size:16px;line-height:2;font-family:inherit;background:var(--paper);color:var(--ink);resize:vertical;"></textarea>
+    <div class="add-imgs" id="addBlockImgs"></div>
+    <input type="file" id="addBlockFile" accept="image/*" multiple style="display:none;">
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <button type="button" class="btn-ghost" id="addBlockPick">🖼️ اختيار صورة</button>
+      <button type="button" class="btn-gold" id="addBlockSave">💾 إضافة</button>
+      <button type="button" class="btn-ghost" id="addBlockCancel">إلغاء</button>
     </div>
   </div>
 </div>
@@ -866,14 +887,14 @@
     for(var i=0;i<words.length;i++){
       var w = words[i];
       var next = words[i+1];
-      if(next && /^[\u0600-\u06FF]/.test(next)){
+      if(next && /^[\u0621-\u064A\u0671]/.test(next)){
         if(w === "ال" || w === "أل" || w === "الـ"){
           out.push(w.replace(/ـ/g,"") + next);
           i++;
           continue;
         }
         // حرف عربي مفرد (مش «و») ملتصق بالكلمة التالية
-        if(/^[\u0600-\u06FF]$/.test(w) && w !== "و"){
+        if(/^[\u0621-\u064A\u0671]$/.test(w) && w !== "و"){
           out.push(w + next);
           i++;
           continue;
@@ -932,13 +953,13 @@
     for(var i=0;i<list.length;i++){
       var w = list[i];
       var next = list[i+1];
-      if(next && /^[\u0600-\u06FF]/.test(next.text)){
+      if(next && /^[\u0621-\u064A\u0671]/.test(next.text)){
         if(w.text === "ال" || w.text === "أل" || w.text === "الـ"){
           merged.push({ text: w.text.replace(/ـ/g,"") + next.text, bold: w.bold || next.bold });
           i++;
           continue;
         }
-        if(/^[\u0600-\u06FF]$/.test(w.text) && w.text !== "و"){
+        if(/^[\u0621-\u064A\u0671]$/.test(w.text) && w.text !== "و"){
           merged.push({ text: w.text + next.text, bold: w.bold || next.bold });
           i++;
           continue;
@@ -3418,7 +3439,35 @@
 
   
   function runsToHtml(runs){
-    return runs.map(function(r){ return r.bold ? "<b>"+escapeHtml(r.text)+"</b>" : escapeHtml(r.text); }).join("");
+    return runs.map(function(r){
+      var m = /^(\s*)([\s\S]*?)(\s*)$/.exec(r.text);
+      var core = escapeHtml(m[2]);
+      if(!core) return escapeHtml(r.text);
+      if(r.sup) core = "<sup>" + core + "</sup>"; else if(r.sub) core = "<sub>" + core + "</sub>";
+      if(r.bold) core = "<b>" + core + "</b>";
+      return escapeHtml(m[1]) + core + escapeHtml(m[3]);
+    }).join("");
+  }
+  // رقم ملتصق بكلمة عربية (650عضلة / الحالة2) → نفصلهم بمسافة
+  function spaceDigitsArabic(str){
+    return String(str || "").replace(/([0-9\u0660-\u0669])([\u0600-\u06FF])/g, "$1 $2").replace(/([\u0600-\u06FF])([0-9\u0660-\u0669])/g, "$1 $2").replace(/([A-Za-z])([\u0600-\u06FF])/g, "$1 $2");
+  }
+  // بين الـ runs: رقم/حرف عربي ملتصقين، وأرقام الإشارة المرتفعة (¹ ²) بتتفصل عن الكلام اللي حواليها
+  function fixTokSpacing(toks){
+    var AR = /[\u0600-\u06FF]/, DG = /[0-9\u0660-\u0669]/;
+    var tx = toks.filter(function(t){ return t.t === "text"; });
+    tx.forEach(function(t){ t.text = spaceDigitsArabic(t.text); });
+    for(var i=0;i<tx.length;i++){
+      var cur = tx[i], prev = tx[i-1], next = tx[i+1];
+      var isMarker = (cur.sup || cur.sub) && /^\s*[0-9\u0660-\u0669]+\s*$/.test(cur.text);
+      if(isMarker){
+        if(prev && prev.text && AR.test(prev.text.slice(-1)) && !/^\s/.test(cur.text)) cur.text = " " + cur.text;
+        if(next && next.text && AR.test(next.text.charAt(0)) && !/\s$/.test(cur.text)) cur.text = cur.text + " ";
+      } else if(prev && prev.text && cur.text){
+        var la = prev.text.slice(-1), fb = cur.text.charAt(0);
+        if((DG.test(la) && AR.test(fb)) || (AR.test(la) && DG.test(fb)) || (/[A-Za-z]/.test(la) && AR.test(fb))) cur.text = " " + cur.text;
+      }
+    }
   }
   function runsToPlainText(runs){ return runs.map(function(r){ return r.text; }).join(""); }
 
@@ -3484,9 +3533,57 @@
       return { mime: "image/bmp", bytes: out };
     }catch(e){ return null; }
   }
+  // DIB خام (رأس + ألوان + بيانات) → ملف BMP يعرضه المتصفح
+  function dibToBmp(dib){
+    try{
+      var dv = new DataView(dib.buffer, dib.byteOffset, dib.byteLength);
+      var biSize = dv.getUint32(0, true);
+      if(biSize < 12 || biSize > 200) return null;
+      var bitCount, comp = 0, clrUsed = 0;
+      if(biSize === 12){ bitCount = dv.getUint16(10, true); }
+      else { bitCount = dv.getUint16(14, true); comp = dv.getUint32(16, true); clrUsed = dv.getUint32(32, true); }
+      var pal = bitCount <= 8 ? (clrUsed || (1 << bitCount)) : clrUsed;
+      var palSize = pal * (biSize === 12 ? 3 : 4);
+      var masks = (biSize === 40 && comp === 3) ? 12 : 0;
+      var out = new Uint8Array(14 + dib.length);
+      out[0] = 0x42; out[1] = 0x4D;
+      var odv = new DataView(out.buffer);
+      odv.setUint32(2, out.length, true);
+      odv.setUint32(10, 14 + biSize + masks + palSize, true);
+      out.set(dib, 14);
+      return out;
+    }catch(e){ return null; }
+  }
+  // WMF (صيغة Word القديمة): نطلع الصورة النقطية من سجلات StretchDIB / DibStretchBlt / DibBitBlt
+  function wmfBitmapToImage(bytes){
+    try{
+      if(bytes.length < 40) return null;
+      var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), off = 0;
+      if(dv.getUint32(0, true) === 0x9AC6CDD7) off = 22;
+      off += dv.getUint16(off + 2, true) * 2;
+      var best = null;
+      while(off + 6 <= bytes.length){
+        var sizeW = dv.getUint32(off, true), fn = dv.getUint16(off + 4, true), recLen = sizeW * 2;
+        if(sizeW < 3 || off + recLen > bytes.length) break;
+        var dibOff = -1;
+        if(fn === 0x0F43) dibOff = off + 6 + 4 + 2 + 16;
+        else if(fn === 0x0B41) dibOff = off + 6 + 4 + 16;
+        else if(fn === 0x0940) dibOff = off + 6 + 4 + 12;
+        if(dibOff > 0 && dibOff + 40 <= off + recLen){
+          var len = off + recLen - dibOff;
+          if(!best || len > best.len) best = { off: dibOff, len: len };
+        }
+        off += recLen;
+        if(fn === 0) break;
+      }
+      if(!best) return null;
+      var bmp = dibToBmp(bytes.subarray(best.off, best.off + best.len));
+      return bmp ? { mime: "image/bmp", bytes: bmp } : null;
+    }catch(e){ return null; }
+  }
   // ملفات EMF/WMF: الأول نطلع الصورة النقطية، وبعدين لو فيه PNG/JPEG جوّاها
   function findRasterInMetafile(bytes){
-    var bmp = emfBitmapToImage(bytes);
+    var bmp = emfBitmapToImage(bytes) || wmfBitmapToImage(bytes);
     if(bmp) return bmp;
     var n = bytes.length, i, j;
     for(i=0;i<n-8;i++){
@@ -3682,10 +3779,12 @@
               if(ownerParagraph(rEl) !== pEl) return;
               if(insideFallback(rEl)) return;
               var rPr = childW(rEl, "rPr");
-              var struck = false, bold = false;
+              var struck = false, bold = false, vaVal = "";
               if(rPr){
                 struck = isFlagOn(childW(rPr, "strike")) || isFlagOn(childW(rPr, "dstrike"));
                 bold = isFlagOn(childW(rPr, "b"));
+                var vaEl = childW(rPr, "vertAlign");
+                if(vaEl) vaVal = wAttrVal(vaEl) || vaEl.getAttribute("w:val") || "";
               }
               if(!struck){ // النص المشطوب مش بيتاخد
                 var text = "";
@@ -3694,7 +3793,7 @@
                   else if(child.namespaceURI === WNS && child.localName === "tab") text += " ";
                   else if(child.namespaceURI === WNS && (child.localName === "br" || child.localName === "cr")) text += " ";
                 });
-                if(text) toks.push({ t:"text", text:text, bold:bold });
+                if(text) toks.push({ t:"text", text:text, bold:bold, sup: vaVal === "superscript", sub: vaVal === "subscript" });
               }
               var imgs = [];
               collectImgs(rEl, imgs);
@@ -3703,6 +3802,15 @@
             return toks;
           }
 
+          var unresolvedDrawings = 0;
+          try{
+            var cdoc = new DOMParser().parseFromString(docXml, "application/xml");
+            Array.prototype.forEach.call(cdoc.getElementsByTagNameNS("http://schemas.openxmlformats.org/drawingml/2006/main", "graphicData"), function(gd){
+              if(insideFallback(gd)) return;
+              var uri = gd.getAttribute("uri") || "";
+              if(/chart|diagram/i.test(uri)) unresolvedDrawings++;
+            });
+          }catch(e){}
           var missingCount = 0;
           function imgBlock(src){
             if(src.charAt(0) === "!"){ missingCount++; return missingFigHtml(src.slice(1)); }
@@ -3719,6 +3827,7 @@
             var level = styleId && headingLevels[styleId] ? headingLevels[styleId] : null;
 
             var toks = paragraphTokens(pEl);
+            fixTokSpacing(toks);
             var runs = toks.filter(function(t){ return t.t === "text"; }).map(function(t){ return { text:t.text, bold:t.bold }; });
             var text = fixBrokenArabicText(runsToPlainText(runs));
 
@@ -3731,7 +3840,7 @@
               buf = [];
             }
             toks.forEach(function(t){
-              if(t.t === "text") buf.push({ text: t.text, bold: t.bold });
+              if(t.t === "text") buf.push({ text: t.text, bold: t.bold, sup: t.sup, sub: t.sub });
               else { flushBuf(); segs.push({ kind:"img", src:t.src }); }
             });
             flushBuf();
@@ -3813,7 +3922,8 @@
               imgCount: total,
               unsupportedMedia: missingCount,
               extraImgs: orphanBlocks.length,
-              skippedRepeats: skippedRepeats
+              skippedRepeats: skippedRepeats,
+              unresolvedDrawings: unresolvedDrawings
             });
           }
           chain.then(finish).catch(finish);
@@ -4011,7 +4121,7 @@
       var y = Math.round(tr[5] || 0);
       var font = (it.fontName || it.font || "") + "";
       var bold = /bold|black|heavy|semibold|demibold|extrabold/i.test(font) || (it.fontWeight >= 600);
-      raw.push({ str: str, x: x, y: y, size: size, bold: bold, w: Math.abs(tr[0]) * (str.length || 1) });
+      raw.push({ str: str, x: x, y: y, size: size, bold: bold, w: (it.width > 0 ? it.width : Math.abs(tr[0]) * (str.length || 1) * 0.5) });
     });
     // Group into lines by Y (slightly looser for Arabic fonts)
     var lines = [];
@@ -4049,10 +4159,10 @@
         if(i === 0){ parts.push(cur.str); continue; }
         var prev = its[i-1];
         var gap = rtl ? (prev.x - (cur.x + (cur.w || 0))) : (cur.x - (prev.x + (prev.w || 0)));
-        if(gap > Math.max(1.2, prev.size * 0.15)) parts.push(" ");
+        if(gap > Math.max(0.8, prev.size * 0.1)) parts.push(" ");
         parts.push(cur.str);
       }
-      var text = fixBrokenArabicText(parts.join("").replace(/\s+/g, " ").trim());
+      var text = spaceDigitsArabic(fixBrokenArabicText(parts.join("").replace(/\s+/g, " ").trim()));
       return {
         y: line.y,
         size: line.size,
@@ -4400,15 +4510,17 @@
     }
     setUploadStatus("");
     // ملخص الصور من كل الملفات المرفوعة
-    var totalImgs = 0, totalUnsup = 0, totalSkipped = 0;
+    var totalImgs = 0, totalUnsup = 0, totalSkipped = 0, totalUnres = 0;
     results.forEach(function(r){
+      if(r.unresolvedDrawings) totalUnres += r.unresolvedDrawings;
       if(r.imgCount) totalImgs += r.imgCount;
       if(r.unsupportedMedia) totalUnsup += r.unsupportedMedia;
       if(r.skippedRepeats) totalSkipped += r.skippedRepeats;
     });
     var imgNote = (totalImgs > 0 ? (" · 🖼️ "+ar(totalImgs)+" صورة") : " · بدون صور مضمّنة") +
       (totalUnsup > 0 ? (" · ⚠️ "+ar(totalUnsup)+" صورة بصيغة غير مدعومة (ظاهرة كمربع رمادي — احذفها أو أعدها كـ PNG)") : "") +
-      (totalSkipped > 0 ? (" · تم تجاهل "+ar(totalSkipped)+" صورة متكررة (شعار/خلفية)") : "");
+      (totalSkipped > 0 ? (" · تم تجاهل "+ar(totalSkipped)+" صورة متكررة (شعار/خلفية)") : "") +
+      (totalUnres > 0 ? (" · ⚠️ "+ar(totalUnres)+" مخطط/رسم SmartArt في الملف مقدرتش أحوّله لصورة — أضفه بزر ➕") : "");
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
       renderPendingList();
@@ -4796,6 +4908,76 @@
     try{ state.customSelected = loadCustomSelection(mk, state.mode); }catch(e){}
   }
 
+  /* ---------- إضافة فقرة أو صورة (لصق من الحافظة) ---------- */
+  var addAfterKey = null, addImgs = [];
+  function lastKeyOfCurrentPage(){
+    var pg = MODEL && MODEL.pages[state.page];
+    if(!pg) return null;
+    for(var i=pg.sections.length-1;i>=0;i--){
+      var bl = pg.sections[i].blocks;
+      if(bl.length) return bl[bl.length - 1].key;
+    }
+    return null;
+  }
+  function renderAddImgs(){
+    var wrap = $("addBlockImgs"); wrap.innerHTML = "";
+    addImgs.forEach(function(src, idx){
+      var d = document.createElement("div"); d.className = "add-img";
+      d.innerHTML = '<img src="' + src + '" alt=""><b title="إزالة">✕</b>';
+      d.querySelector("b").addEventListener("click", function(){ addImgs.splice(idx, 1); renderAddImgs(); });
+      wrap.appendChild(d);
+    });
+  }
+  function addImageFile(file){
+    if(!file || !/^image\//i.test(file.type || "")) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      compressDataUrl(String(fr.result), 1000, 0.85).then(function(c){ addImgs.push(c || String(fr.result)); renderAddImgs(); });
+    };
+    fr.readAsDataURL(file);
+  }
+  function openAddBlock(afterKey){
+    var k = afterKey || lastKeyOfCurrentPage();
+    if(!k){ showToast("مفيش مكان أضيف فيه — افتح صفحة فيها فقرات"); return; }
+    addAfterKey = k; addImgs = [];
+    var ni = blockNumInfo(k);
+    $("addBlockWhere").textContent = ni ? ("· بعد الفقرة " + ni.num) : "";
+    $("addBlockText").value = "";
+    renderAddImgs();
+    $("modalAddBlock").classList.add("show");
+    setTimeout(function(){ try{ $("addBlockText").focus(); }catch(e){} }, 60);
+  }
+  function closeAddBlock(force){
+    if(!force && ($("addBlockText").value.trim() || addImgs.length) && !confirm("فيه نص أو صور ما اتضافتش. تقفل من غير حفظ؟")) return;
+    addAfterKey = null; addImgs = [];
+    $("modalAddBlock").classList.remove("show");
+  }
+  function insertBlocksAfter(afterKey, htmls){
+    var ref = getRawBlockRef(afterKey), used = {};
+    RAW_PAGES.forEach(function(pg){ (pg.sections || []).forEach(function(sec){ (sec.ids || []).forEach(function(id){ used[id] = true; }); }); });
+    var ids = htmls.map(function(h){ return makeBlockId(h, used); });
+    var sec, at;
+    if(ref){ sec = ref.sec; at = ref.bi + 1; }
+    else {
+      var lp = RAW_PAGES[RAW_PAGES.length - 1]; sec = lp.sections[lp.sections.length - 1]; at = sec.blocks.length;
+    }
+    if(!sec.ids) sec.ids = sec.blocks.map(function(h){ return makeBlockId(h, used); });
+    Array.prototype.splice.apply(sec.blocks, [at, 0].concat(htmls));
+    Array.prototype.splice.apply(sec.ids, [at, 0].concat(ids));
+  }
+  function saveAddedBlock(){
+    var textHtml = markedToHtml($("addBlockText").value), htmls = [];
+    if(textHtml) htmls.push(textHtml);
+    addImgs.forEach(function(src){ htmls.push(figHtml(src)); });
+    if(!htmls.length){ showToast("اكتب نص أو أضف صورة الأول"); return; }
+    pushUndo("إضافة " + (addImgs.length ? "صورة" : "فقرة"));
+    insertBlocksAfter(addAfterKey, htmls);
+    var key = addAfterKey;
+    closeAddBlock(true);
+    persistRawAndRebuild();
+    announceUndo("✓ اتضافت " + ar(htmls.length) + " فقرة/صورة");
+  }
+
   var editingBlockKey = null, editInitialText = "";
   function tryCloseEditBlock(){
     var ta = $("editBlockText");
@@ -5097,6 +5279,7 @@
     menu.className = "block-edit-menu";
     menu.innerHTML =
       (imgOnly ? '' : '<button type="button" data-act="edit">✏️ تعديل</button>')+
+      '<button type="button" data-act="add">➕ أضف بعدها</button>'+
       '<button type="button" data-act="del" style="color:var(--danger);">'+(imgOnly ? '🗑️ حذف الصورة' : '🗑️ حذف')+'</button>'+
       '<button type="button" data-act="cancel">إلغاء</button>';
     el.parentNode.insertBefore(menu, el.nextSibling);
@@ -5104,6 +5287,9 @@
     var eb = menu.querySelector('[data-act="edit"]');
     if(eb) eb.addEventListener("click", function(e){
       e.stopPropagation(); close(); editBlockByKey(blockKey);
+    });
+    menu.querySelector('[data-act="add"]').addEventListener("click", function(e){
+      e.stopPropagation(); close(); openAddBlock(blockKey);
     });
     menu.querySelector('[data-act="del"]').addEventListener("click", function(e){
       e.stopPropagation(); close(); deleteBlockByKey(blockKey);
@@ -5137,7 +5323,7 @@
   var btnUnitHome = $("btnUnitHome");
   if(btnUnitHome) btnUnitHome.addEventListener("click", goHome);
   document.querySelectorAll("[data-close]").forEach(function(x){ x.addEventListener("click", function(){ $(x.dataset.close).classList.remove("show"); }); });
-  document.querySelectorAll(".modal-overlay").forEach(function(ov){ ov.addEventListener("click", function(e){ if(e.target===ov && ov.id !== "modalEditBlock") ov.classList.remove("show"); }); });
+  document.querySelectorAll(".modal-overlay").forEach(function(ov){ ov.addEventListener("click", function(e){ if(e.target===ov && ov.id !== "modalEditBlock" && ov.id !== "modalAddBlock") ov.classList.remove("show"); }); });
 
   document.querySelectorAll(".mode-btn").forEach(function(btn){ btn.addEventListener("click", function(){ setMode(btn.dataset.mode); }); });
   $("btnPrevPage").addEventListener("click", function(){ if(state.page>0){ state.page--; saveProgress(); renderPage(); } });
@@ -5239,6 +5425,31 @@
     showToast("✨ اخترنا لك أجزاء جديدة");
   });
   $("btnUndo").addEventListener("click", undoLast);
+  $("btnAddBlock").addEventListener("click", function(){ openAddBlock(null); });
+  $("addBlockSave").addEventListener("click", saveAddedBlock);
+  $("addBlockCancel").addEventListener("click", function(){ closeAddBlock(false); });
+  $("addBlockX").addEventListener("click", function(){ closeAddBlock(false); });
+  $("addBlockPick").addEventListener("click", function(){ $("addBlockFile").click(); });
+  $("addBlockFile").addEventListener("change", function(e){
+    Array.prototype.forEach.call(e.target.files || [], addImageFile);
+    e.target.value = "";
+  });
+  // لصق صورة (Ctrl+V) أثناء فتح نافذة الإضافة — حتى لو المؤشر مش جوّه مربع النص
+  document.addEventListener("paste", function(e){
+    if(!$("modalAddBlock").classList.contains("show")) return;
+    var items = (e.clipboardData && e.clipboardData.items) || [], got = false;
+    Array.prototype.forEach.call(items, function(it){
+      if(it.kind === "file" && /^image\//i.test(it.type)){ var f = it.getAsFile(); if(f){ addImageFile(f); got = true; } }
+    });
+    if(got){ e.preventDefault(); showToast("اتضافت الصورة المنسوخة"); }
+  });
+  // سحب وإفلات صور من الجهاز
+  $("modalAddBlock").addEventListener("dragover", function(e){ e.preventDefault(); });
+  $("modalAddBlock").addEventListener("drop", function(e){
+    e.preventDefault();
+    var files = (e.dataTransfer && e.dataTransfer.files) || [];
+    Array.prototype.forEach.call(files, addImageFile);
+  });
   $("undoBarBtn").addEventListener("click", undoLast);
   $("btnVersions").addEventListener("click", openVersions);
   $("btnSaveVersion").addEventListener("click", function(){
