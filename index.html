@@ -160,7 +160,7 @@
   :root:not([data-theme="light"]) .mic-mini,:root:not([data-theme="light"]) .spk-mini{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);}
   .mic-mini.on{color:#fff;background:var(--danger);border-color:var(--danger);animation:pulseMic .8s ease infinite alternate;}
   .spk-mini.on{color:#fff;background:var(--ok);border-color:var(--ok);}
-  .spk-mini:disabled{opacity:.4;cursor:default;}
+  .spk-mini:disabled,.spk-mini.nodata{opacity:.4;cursor:default;}
   @keyframes pulseMic{from{transform:scale(1)}to{transform:scale(1.06)}}
   .voice-btns{display:inline-flex;align-items:center;gap:6px;margin-inline-start:6px;vertical-align:middle;}
   .said-inline{font-size:11.5px;color:var(--muted);margin:0 16px 10px;display:none;}
@@ -229,6 +229,33 @@
   .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--navy-950);color:#fff;padding:10px 18px;border-radius:999px;font-size:12.5px;font-weight:700;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s ease;max-width:88%;text-align:center;}
   .toast.show{opacity:1;}
   .hidden{display:none !important;}
+  .mic-mini.on{background:#e5484d !important;color:#fff !important;animation:micpulse 1s ease-in-out infinite;}
+  @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.5);}50%{box-shadow:0 0 0 8px rgba(229,72,77,0);}}
+  /* ===== محتاج مراجعة: تظليل هايلايتر + دائرة ألوان ===== */
+  .review-item{--hl:#fde047;}
+  .rev-test .blank, .rev-hidden{background:linear-gradient(180deg,transparent 10%,var(--hl) 10%,var(--hl) 92%,transparent 92%) !important;border-radius:4px;padding:0 4px;color:#111 !important;}
+  .rev-test .blank{filter:blur(6px);}
+  .rev-test .blank.revealed{filter:none;font-weight:700;}
+  .rev-hidden{filter:blur(7px);}
+  .rev-shown{filter:none;font-weight:700;background:linear-gradient(180deg,transparent 10%,var(--hl) 10%,var(--hl) 92%,transparent 92%) !important;color:#111 !important;}
+  .rev-color{width:28px;height:28px;border-radius:50%;border:2px solid rgba(10,27,46,.3);box-shadow:inset 0 0 0 3px #fff;cursor:pointer;flex:0 0 auto;padding:0;background:var(--hl);}
+  .rev-palette{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 2px;}
+  .rev-palette button{width:28px;height:28px;border-radius:50%;border:2px solid rgba(10,27,46,.2);cursor:pointer;padding:0;}
+  .rev-palette button.on{outline:3px solid var(--ink);outline-offset:1px;}
+  .review-item .rev-color{width:28px;height:28px;min-width:28px;padding:0;border:2px solid rgba(10,27,46,.3);border-radius:50%;background:var(--hl);box-shadow:inset 0 0 0 3px #fff;}
+  .review-item .rev-palette button{background-clip:padding-box;}
+  /* ===== Magic Blur: إخفاء أجزاء من الصور (خلفية بيضاء → تظليل ذهبي + بلور + إطار + علامة ؟ عشان يبان بوضوح) ===== */
+  .img-wrap{position:relative;display:inline-block;max-width:100%;line-height:0;}
+  .img-wrap img{max-width:100%;height:auto;display:block;}
+  .img-edit{touch-action:none;cursor:crosshair;outline:2px dashed rgba(224,182,47,.75);outline-offset:2px;}
+  .img-region{position:absolute;box-sizing:border-box;border:2px solid #d4a017;background:rgba(224,182,47,.40);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:6px;}
+  .img-region.draft{border-style:dashed;background:rgba(224,182,47,.25);}
+  .img-region b{position:absolute;top:-11px;left:-11px;width:22px;height:22px;border-radius:50%;background:#e5484d;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;line-height:1;cursor:pointer;font-style:normal;}
+  .img-hint{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.7;}
+  .blank.img-blank{position:absolute !important;display:block;box-sizing:border-box;padding:0 !important;border-radius:8px;filter:none !important;background:rgba(224,182,47,.86) !important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:2px solid rgba(10,27,46,.5);box-shadow:0 2px 10px rgba(10,27,46,.25);color:transparent;overflow:hidden;font-size:0;cursor:pointer;}
+  .blank.img-blank::after{content:"؟";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(16px,4vw,30px);font-weight:900;color:#0a1b2e;opacity:.85;}
+  .blank.img-blank.locked{opacity:.6;cursor:not-allowed;}
+  .blank.img-blank.revealed{opacity:0 !important;pointer-events:none;transition:opacity .3s ease;}
   .qwrap{display:inline;}
   .qwrap::before{content:attr(data-q) "؟";display:inline-block;font-size:10px;font-weight:800;line-height:1.55;padding:0 7px;margin:0 3px;border-radius:9px;background:rgba(10,27,46,.09);color:var(--muted);vertical-align:middle;white-space:nowrap;}
   .mic-meter{height:10px;border-radius:6px;background:rgba(10,27,46,.1);overflow:hidden;margin:8px 0;}
@@ -320,6 +347,22 @@
   body.teacher .student-only{display:none !important;}
   body.locked-unit .edit-tools{display:none !important;}
   .doc-fig img{background:#fff !important;}
+
+  /* مجلدات المواد / الأقسام */
+  .folder-bar{display:flex;gap:7px;padding:2px 16px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  .folder-bar::-webkit-scrollbar{display:none;}
+  .folder-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(10,27,46,.16);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .folder-chip .fc-n{background:rgba(120,135,150,.22);border-radius:999px;font-size:10.5px;padding:1px 7px;color:var(--muted);}
+  .folder-chip.active{background:var(--navy-900);color:var(--gold-400);border-color:var(--gold-500);}
+  .folder-chip.active .fc-n{background:rgba(240,201,72,.2);color:var(--gold-400);}
+  .folder-chip.folder-add{background:var(--navy-900);color:var(--gold-400);font-size:16px;line-height:1;padding:8px 15px;}
+  .folder-tools{display:flex;gap:6px;padding:0 16px 8px;flex-wrap:wrap;}
+  .folder-tools button{border:1px solid rgba(10,27,46,.16);background:transparent;color:var(--muted);border-radius:999px;padding:5px 11px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .folder-tools button:disabled{opacity:.35;cursor:default;}
+  .folder-tools button.danger{color:var(--danger);}
+  .fp-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .fp-list button{border:1px solid rgba(10,27,46,.16);background:var(--card);color:var(--ink);border-radius:var(--radius-sm);padding:12px 14px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;text-align:right;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .fp-list button.here{background:var(--navy-900);color:var(--gold-400);border-color:var(--gold-500);}
 </style>
 </head>
 <body>
@@ -361,7 +404,9 @@
       <a class="cs-tg" href="https://t.me/thanwiaqatarbioadvanced" target="_blank">📣 قناة التليجرام</a>
     </div>
     <div class="section-title">الملازم المتاحة <button class="add-btn" id="btnAdd" title="ارفع ملزمة جديدة">+</button></div>
-    <div class="malzama-list" id="malzamaList"></div>
+    <div class="folder-bar" id="folderBar"></div>
+<div class="folder-tools" id="folderTools"></div>
+<div class="malzama-list" id="malzamaList"></div>
     <div class="upload-hint">تقدر ترفع ملزمة أي مادة (مش بس الأحياء) — <b>Word</b> أو <b>PDF</b> — وهتتحول تلقائيًا لنفس أسلوب المراجعة دي.</div>
     <div style="text-align:center;margin:0 18px 22px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
       <button type="button" class="btn-ghost" id="btnFeedbackHome">💬 رأيك في التطبيق 👍👎</button>
@@ -385,15 +430,15 @@
     </div>
 
     <div class="mode-row" id="modeRow">
-      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ العناوين</span><span class="mtime">حدّد · احفظ</span></button>
-      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ الجمل</span><span class="mtime">حدّد · احفظ</span></button>
-      <button class="mode-btn" data-mode="custom"><span class="mt">✏️ تخصيص</span><span class="mtime">حدّد · اختبر</span></button>
-      <button class="mode-btn" data-mode="auto"><span class="mt">✨ اختيار</span><span class="mtime">التطبيق · يتغيّر</span></button>
+      <button class="mode-btn" data-mode="headings"><span class="mt">🏷️ تخصيص١</span><span class="mtime">حدّد · احفظ</span></button>
+      <button class="mode-btn" data-mode="sentences"><span class="mt">✂️ تخصيص٢</span><span class="mtime">حدّد · احفظ</span></button>
+      <button class="mode-btn" data-mode="auto"><span class="mt">✨ اختيار التطبيق</span><span class="mtime">تلقائي · يتغيّر</span></button>
+      <button class="mode-btn" data-mode="custom"><span class="mt">📖 الدليل</span><span class="mtime">فاضي · حدّد بنفسك</span></button>
     </div>
     <div id="autoBar" class="hidden" style="display:flex;align-items:center;gap:8px;margin:6px 18px 0;">
       <button type="button" id="btnAutoReshuffle" class="review-pill" style="background:rgba(224,182,47,.22);color:var(--ink);border:1px solid rgba(224,182,47,.6);">🎲 اختيار جديد</button>
       <button type="button" id="btnAutoManual" class="review-pill edit-tools" style="background:var(--card);color:var(--ink);border:1px solid rgba(10,27,46,.2);">✏️ حدّد بنفسك</button>
-      <span style="font-size:11.5px;color:var(--muted);line-height:1.6;">بيختار أجزاء مختلفة كل مرة. عايز تحدد بنفسك؟ اختار العناوين أو الجمل أو تخصيص.</span>
+      <span style="font-size:11.5px;color:var(--muted);line-height:1.6;">بيختار أجزاء مختلفة كل مرة. عايز تحدد بنفسك؟ اختار تخصيص١ أو تخصيص٢ أو الدليل.</span>
     </div>
     <div class="edit-bar edit-tools" id="editBar">
       <button type="button" id="btnEditMode" title="عدّل أو احذف فقرة أو صورة">✏️ تعديل / حذف فقرة أو صورة</button>
@@ -470,12 +515,16 @@
       <li>🔢 كل فقرة عليها رقم صغير (صفحة.فقرة) مثل <b>٣.٢</b>. اضغط <b>«اذهب لفقرة»</b> واكتب الرقم لتروح لها، وكمان في «محتاج مراجعة» زر 📍 يوديك لمكان الفقرة. تقدر تخفي الأرقام من ⚙️ الإعدادات.</li>
       <li>🔄 <b>مزامنة بين أجهزتك</b>: من ⚙️ الإعدادات فعّل المزامنة واكتب الرمز على أي جهاز تاني، فيفتح بنفس التقدم والإخفاء وقوائم المراجعة. (احتفظ بالرمز سرًّا).</li>
       <li>💻/📱 <b>زر فوق</b> بيحوّلك بين <b>وضع الهاتف</b> و<b>وضع اللاب توب</b> (شاشة عريضة، الأدوات على الجنب، وخط أكبر). في اللاب توب: <b>Space</b> إظهار التالي، <b>← →</b> تنقّل بين الصفحات، <b>G</b> اذهب لفقرة. الاختيار بيتحفظ على كل جهاز.</li>
+      <li>🎤 <b>التسجيل</b>: اضغط واستمر وأنت بتتكلم، أو اضغط مرة للبدء ومرة للإيقاف. 🔊 للسماع (شغّال كمان جوه «محتاج مراجعة»).</li>
       <li>🎤 لو المايك مش شغال: ⚙️ الإعدادات ← <b>اختبار المايك</b>، وهيقولك السبب. 💬 زر «رأيك في التطبيق» بيبعت للمدرّس 👍/👎 وتعليق من غير اسمك.</li>
+      <li>✨ <b>Magic Blur للصور</b>: في «ابدأ التحديد» اسحب مربع على أي جزء من الصورة (اسم في رسم، خلية في جدول…)، وفي الاختبار بيظهر مظلّل ببلور وعلامة ؟ تضغط عليه عشان يتكشف.</li>
+      <li>📊 <b>الجداول</b> (من ملف Word): بتظهر كصورة زي ما هي، وكمان كل عمود فقرة منفصلة تقدر تخفي فيها. وتقدر تعمل <b>Magic Blur</b> على الجدول-الصورة.</li>
+      <li>🖍️ في «محتاج مراجعة» الجزء المطلوب مظلّل بهايلايتر، والدايرة الملوّنة جنب كل جزئية بتغيّر لون التظليل (بيتحفظ).</li>
       <li>تقدمك بيتحفظ تلقائيًا على جهازك.</li>
     </ol>
     <ol class="teacher-only">
       <li>دوس <b>+</b> ← ارفع ملف Word أو PDF مع تفعيل <b>«ملازم رسمية»</b>.</li>
-      <li>افتح الملزمة ← اختار مود (عناوين / جمل / تخصيص) ← <b>① ابدأ التحديد</b> ← نقرة = كلمة، سحب = عدة كلمات.</li>
+      <li>افتح الملزمة ← اختار مود (تخصيص١ / تخصيص٢ / الدليل) ← <b>① ابدأ التحديد</b> ← نقرة = كلمة، سحب = عدة كلمات.</li>
       <li>تنقّل بين الصفحات وحدّد، وبعدين <b>② احفظ</b> مرة واحدة. كرّر لكل مود. نظام <b>✨ اختيار التطبيق</b> تلقائي وجاهز لكل الملازم، ومش محتاج حفظ ولا نشر.</li>
       <li><b>✏️ تعديل / حذف</b>: اضغط على أي فقرة أو صورة لتعديل نصها أو حذفها. لتغليظ كلمات ضعها بين نجمتين <b>*هكذا*</b>. أي تعديل أو حذف بيتطبق على الأنظمة التلاتة. <b>🗑️ حذف متعدد</b>: اضغط عليه، وبعدين اضغط على كل الفقرات والصور اللي عايز تلغيها (بتتلوّن أحمر)، وبعدين «احذف المحدد». <b>🗑️ حذف الصفحة</b> يشيل الصفحة كلها. الإخفاءات والتقييمات بتفضل على فقراتها بعد الحذف.</li>
       <li>الصور اللي بتتكرر أكتر من مرتين (شعارات/خلفيات) بتتجاهل تلقائيًا عند الرفع.</li>
@@ -536,7 +585,7 @@
   <div class="modal">
     <h3>مشاركة الملزمة <span class="close-x" data-close="modalShare">✕</span></h3>
     <p id="shareTitle" style="font-weight:800;margin:0 0 4px;"></p>
-    <p style="color:var(--muted);font-size:12.5px;margin:0;">بتتبعت بتنسيقها وصورها والإخفاءات (العناوين والجمل وتخصيص).</p>
+    <p style="color:var(--muted);font-size:12.5px;margin:0;">بتتبعت بتنسيقها وصورها والإخفاءات (تخصيص١ وتخصيص٢ والدليل).</p>
     <div class="file-choice">
       <button type="button" id="shareFileBtn">📎 إرسال كملف (واتساب أو غيره) — الطرف التاني يفتحه من زر + في التطبيق</button>
       <button type="button" id="shareLinkBtn" class="teacher-only">🔗 إنشاء رابط يفتح الملزمة مباشرة</button>
@@ -702,6 +751,14 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="modalFolderPick">
+  <div class="modal">
+    <h3>📁 نقل لمجلد <span class="close-x" data-close="modalFolderPick">✕</span></h3>
+    <p id="fpTitle" style="color:var(--muted);font-size:12.5px;margin:0;"></p>
+    <div class="fp-list" id="fpList"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>/*!
@@ -769,7 +826,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   var SYNC_CODE_KEY = "najm_sync_code", SYNC_META_KEY = "najm_sync_meta", SYNC_LAST_KEY = "najm_sync_last";
   var SYNC_MAX_BYTES = 380000, SYNC_CONTENT_MAX = 150000;
   var SYNC_RE = /^najm_(?:prog2|sel|custom|review|exclude|forcehide|content|tomb)_/;
-  var SYNC_FIXED = { najm_lib_index_v2: 1, najm_renames: 1, najm_list_order_v1: 1, najm_theme: 1, najm_show_nums: 1 };
+  var SYNC_FIXED = { najm_lib_index_v2: 1, najm_renames: 1, najm_list_order_v1: 1, najm_folders_v1: 1, najm_theme: 1, najm_show_nums: 1 };
   var syncBusy = false, syncTimer = null, syncDirty = false, lastSyncAt = 0;
   function syncCode(){ try{ return localStorage.getItem(SYNC_CODE_KEY) || ""; }catch(e){ return ""; } }
   function syncOn(){ return !!syncCode(); }
@@ -1108,7 +1165,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     var e = getLibraryIndex().filter(function(x){ return x.key === k; })[0];
     return e ? e.title : "ملزمة محذوفة/غير معروفة";
   }
-  var MODE_AR = { headings: "العناوين", sentences: "الجمل", custom: "تخصيص", auto: "اختيار التطبيق" };
+  var MODE_AR = { headings: "تخصيص١", sentences: "تخصيص٢", custom: "الدليل", auto: "اختيار التطبيق" };
   var MIC_WHY = { denied: "الإذن مرفوض", nodevice: "مفيش مايك", busy: "مستخدم في برنامج تاني", unsupported: "المتصفح مش بيدعم", insecure: "الموقع مش https", silent: "مفيش صوت", constraint: "إعدادات", other: "أخرى" };
   function renderStats(j){
     var h = "";
@@ -1187,12 +1244,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     showToast(on ? "👨‍🏫 وضع المدرّس شغّال" : "خرجت من وضع المدرّس");
   }
 
-  var MODE_LABELS = { sentences:"الجمل", custom:"تخصيص", headings:"العناوين", auto:"اختيار التطبيق" };
+  var MODE_LABELS = { sentences:"تخصيص٢", custom:"الدليل", headings:"تخصيص١", auto:"اختيار التطبيق" };
   var MODE_HINTS = {
     sentences: "✂️ حدّد بنفسك ما يُخفى (نقرة/سحب) ثم احفظ. ✕ مرتين = مش هيتخفي تاني.",
-    custom: "✏️ نقرة = كلمة · سحب = عدة كلمات · احفظ ثم اختبر. ✕ مرتين = مش هيتخفي تاني.",
-    headings: "🏷️ حدّد العناوين بنفسك ثم احفظ. كل ملزمة لوحدها. ✕ مرتين = مش هيتخفي تاني.",
-    auto: "✨ التطبيق اختار لك أهم الأجزاء (تعريفات، تعليل، وظائف، مقارنات، أمثلة…) وبيتغيّر كل مرة. ✕ مرتين = مش هيتخفي تاني."
+    custom: "📖 الدليل: فاضي في الأول — المعلم أو المستخدم يحدّد على عناوين الملزمة اللي يتخفي (نقرة = كلمة · سحب = عدة كلمات) ثم يحفظ ويختبر. ✕ مرتين = مش هيتخفي تاني.",
+    headings: "🏷️ تخصيص١: حدّد بنفسك ثم احفظ. كل ملزمة لوحدها. ✕ مرتين = مش هيتخفي تاني.",
+    auto: "✨ اختيار التطبيق: التطبيق اختار لك أهم الأجزاء عشوائيًا (تعريفات، تعليل، وظائف، مقارنات، أمثلة…) وبيتغيّر كل مرة. ✕ مرتين = مش هيتخفي تاني."
   };
 
   var ARABIC_DIGITS=["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
@@ -1405,6 +1462,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
   var LIB_INDEX_KEY = "najm_lib_index_v2";
   var SHARED_INDEX = [];   // [{key,title,subtitle}]
+  var SHARED_FOLDERS = { list: null, assign: {} }; // مجلدات المدرّس المنشورة: list=[{id,name}] و assign={key:folderId}
   var SHARED_CONTENT = {}; // key -> rawPages
   // Pre-baked hides from official library.json (so students start testing immediately)
   var SHARED_SELECTIONS = {}; // key -> { headings:{}, sentences:{}, custom:{} }
@@ -1415,6 +1473,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   function applyLibraryData(data, live){
     if(!data || !Array.isArray(data.items)) return false;
     SHARED_INDEX = data.items.map(function(it){ return { key: it.key, title: it.title, subtitle: it.subtitle }; });
+    if(Array.isArray(data.folders) && data.folders.length){
+      SHARED_FOLDERS.list = data.folders.slice(0, 10).map(function(f){ return { id: String(f.id), name: String(f.name || "") }; });
+    }
+    data.items.forEach(function(it){ if(it.folder) SHARED_FOLDERS.assign[it.key] = String(it.folder); });
     data.items.forEach(function(it){
       if(it.selections && typeof it.selections === "object"){ SHARED_SELECTIONS[it.key] = it.selections; }
       if(it.rawPages){ // صيغة قديمة: المحتوى جوّا library.json
@@ -1563,7 +1625,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     var keys = index.map(function(e){ return e.key; });
     var i = keys.indexOf(key);
     if(i < 0) return;
-    var j = i + dir;
+    var fst = loadFolderState(), fid = folderIdOf(key, fst), j = i + dir;
+    while(j >= 0 && j < keys.length && folderIdOf(keys[j], fst) !== fid) j += dir; // نتبادل مع جار من نفس المجلد
     if(j < 0 || j >= keys.length) return;
     var t = keys[i]; keys[i] = keys[j]; keys[j] = t;
     saveListOrder(keys);
@@ -1674,6 +1737,97 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return false;
     });
   }
+  // الصورة + مربعات Magic Blur (مواضع بالألف: x|y|w|h) — كل مربع بيتحسب جزء مخفي في ترتيب الكشف والتقدّم
+  function extractImgsWithRegions(bi, sel, nextId){
+    var html = bi.html || "";
+    if(!/<img/i.test(html)) return "";
+    var regs = [];
+    Object.keys(sel || {}).forEach(function(k){
+      if(k.indexOf(bi.key + "|r|") === 0){
+        var t = k.slice(bi.key.length + 3).split("|").map(Number);
+        if(t.length === 4 && t.every(function(n){ return !isNaN(n); })) regs.push(t);
+      }
+    });
+    if(!regs.length) return extractImgsHtml(html);
+    regs.sort(function(a, b){ return (a[1] - b[1]) || (a[0] - b[0]); });
+    var out = "", first = true;
+    html.replace(/<img[^>]*src="([^"]+)"[^>]*>/gi, function(m, src){
+      var ov = "";
+      if(first){
+        first = false;
+        regs.forEach(function(t){
+          var id = nextId();
+          ov += '<span class="blank img-blank" data-id="' + id + '" data-hide-text="[جزء من صورة]" style="left:' + (t[0] / 10) + '%;top:' + (t[1] / 10) + '%;width:' + (t[2] / 10) + '%;height:' + (t[3] / 10) + '%"></span>';
+        });
+      }
+      out += '<div class="doc-fig"><span class="img-wrap"><img src="' + src + '" alt="رسم علمي">' + ov + '</span></div>';
+      return m;
+    });
+    return out;
+  }
+  // وضع التحديد على صورة: اسحب مربع على الجزء اللي عايز تخفيه
+  function mountImageRegions(bd, block, append){
+    var m = /<img[^>]*src="([^"]+)"/i.exec(block.originalHtml || block.html || "");
+    if(!append) bd.innerHTML = "";
+    if(!m) return;
+    var fig = document.createElement("div"); fig.className = "doc-fig";
+    var wrap = document.createElement("span"); wrap.className = "img-wrap img-edit";
+    var img = document.createElement("img"); img.src = m[1]; img.alt = "رسم علمي"; img.draggable = false;
+    wrap.appendChild(img); fig.appendChild(wrap); bd.appendChild(fig);
+    var hint = document.createElement("div"); hint.className = "img-hint";
+    hint.textContent = "✨ Magic Blur: اسحب على الجزء اللي عايز تخفيه (مربع) · ✕ لإلغاء أي مربع";
+    bd.appendChild(hint);
+    var prefix = block.key + "|r|";
+    function regions(){
+      return Object.keys(state.customSelected).filter(function(k){ return k.indexOf(prefix) === 0; })
+        .map(function(k){ return { k: k, v: k.slice(prefix.length).split("|").map(Number) }; });
+    }
+    function count(){
+      var n = Object.keys(state.customSelected).length;
+      $("customSelectCount").textContent = n ? (ar(n) + " جزء محدد") : "نقرة = كلمة · اسحب وأفلت = عدة كلمات · نقرة تانية = إلغاء";
+    }
+    function draw(){
+      Array.prototype.forEach.call(wrap.querySelectorAll(".img-region:not(.draft)"), function(n){ n.remove(); });
+      regions().forEach(function(r){
+        var d = document.createElement("span"); d.className = "img-region";
+        d.style.cssText = "left:" + (r.v[0] / 10) + "%;top:" + (r.v[1] / 10) + "%;width:" + (r.v[2] / 10) + "%;height:" + (r.v[3] / 10) + "%";
+        var x = document.createElement("b"); x.textContent = "✕"; x.title = "إلغاء المربع";
+        x.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
+        x.addEventListener("click", function(e){ e.stopPropagation(); delete state.customSelected[r.k]; draw(); count(); });
+        d.appendChild(x); wrap.appendChild(d);
+      });
+    }
+    function pt(e){
+      var rc = img.getBoundingClientRect();
+      return { x: Math.max(0, Math.min(1, (e.clientX - rc.left) / Math.max(1, rc.width))), y: Math.max(0, Math.min(1, (e.clientY - rc.top) / Math.max(1, rc.height))) };
+    }
+    function box(el, a, b){
+      el.style.left = (Math.min(a.x, b.x) * 100) + "%"; el.style.top = (Math.min(a.y, b.y) * 100) + "%";
+      el.style.width = (Math.abs(a.x - b.x) * 100) + "%"; el.style.height = (Math.abs(a.y - b.y) * 100) + "%";
+    }
+    var start = null, draft = null;
+    wrap.addEventListener("pointerdown", function(e){
+      if(e.target && e.target.tagName === "B") return;
+      if(e.preventDefault) e.preventDefault();
+      start = pt(e);
+      draft = document.createElement("span"); draft.className = "img-region draft"; wrap.appendChild(draft); box(draft, start, start);
+      try{ wrap.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    wrap.addEventListener("pointermove", function(e){ if(start && draft) box(draft, start, pt(e)); });
+    function finish(e){
+      if(!start) return;
+      var p = pt(e), s0 = start; start = null;
+      if(draft){ draft.remove(); draft = null; }
+      var x = Math.min(s0.x, p.x), y = Math.min(s0.y, p.y), w = Math.abs(p.x - s0.x), h = Math.abs(p.y - s0.y);
+      if(w < 0.03 || h < 0.02) return; // لمسة بسيطة — مش مربع
+      state.customSelected[prefix + [Math.round(x * 1000), Math.round(y * 1000), Math.round(w * 1000), Math.round(h * 1000)].join("|")] = true;
+      draw(); count();
+    }
+    wrap.addEventListener("pointerup", finish);
+    wrap.addEventListener("pointercancel", finish);
+    draw();
+  }
+
   function extractImgsHtml(html){
     if(!html || !/<img/i.test(html)) return "";
     var tmp = document.createElement("div");
@@ -1730,7 +1884,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   function setReviewStatus(malzamaKey, blockKey, rating, text, html){
     var map = loadReviewMap(malzamaKey);
     if(rating === "review"){
-      map[blockKey] = { text: text || "", html: html || "", updatedAt: Date.now() };
+      map[blockKey] = { text: text || "", html: html || "", updatedAt: Date.now(), color: (map[blockKey] && map[blockKey].color) || undefined };
     } else {
       delete map[blockKey];
     }
@@ -1912,7 +2066,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 return !excluded(ph) && !permanentlyExcluded(ph);
               });
               if(wordsC.length === 0 || merged.length === 0){
-                unitByBlockKey[bi2.key] = { renderHtml: bi2.html, blankIds: [] };
+                var regHtml = null;
+                if(/<img/i.test(bi2.html || "") && Object.keys(customSelected).some(function(k){ return k.indexOf(bi2.key + "|r|") === 0; })){
+                  regHtml = extractImgsWithRegions(bi2, customSelected, function(){ globalId++; idsC.push(globalId); allIds.push(globalId); return globalId; });
+                }
+                unitByBlockKey[bi2.key] = { renderHtml: regHtml || bi2.html, blankIds: idsC };
               } else {
                 var htmlParts = [];
                 var wi = 0;
@@ -1931,7 +2089,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
                 });
                 while(wi < wb.length){ htmlParts.push(formatWordHtml(wb[wi])); wi++; }
                 // حافظ على الصور العلمية مع النص بعد إعادة بناء الإخفاء
-                unitByBlockKey[bi2.key] = { renderHtml: htmlParts.join(" ") + extractImgsHtml(bi2.html), blankIds: idsC };
+                var imgOut = extractImgsWithRegions(bi2, customSelected, function(){ globalId++; idsC.push(globalId); allIds.push(globalId); return globalId; });
+                unitByBlockKey[bi2.key] = { renderHtml: htmlParts.join(" ") + imgOut, blankIds: idsC };
               }
             }
           } else {
@@ -2145,14 +2304,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     naming:    ahRe("تسمي|يسمي|تسمي|يطلق|تطلق|سميت|سمي|تعرف|يعرف|تدعي|يدعي")
   };
   var LEAD_CUE = /^(?:مثل|مثلا|نحو|لان|لانه|لانها|لانهم|لانهما|بسبب|حيث|اذ|نظرا|يتكون|تتكون|يتالف|تتالف|يتركب|تتركب|يحتوي|تحتوي|يضم|تضم|يشمل|تشمل|يتضمن|تتضمن|هو|هي|هم|هما|عباره|يعرف|تعرف|بانه|بانها|مما|بالتالي|لذلك|بينما|بخلاف|عكس|اما|وهي|وهم|منها|ومنها|اهمها|ابرزها)$/;
+  var LEAD_CUE_EN = /^(?:is|are|because|thus|therefore|hence|consequently|whereas|unlike|however|consists|composed|comprises|contains|contain|includes|include|including|such|example|instance|leads|lead|leading|results|resulting|causes|causing|cause|means|called|defined|known|refers|termed|thereby|but|due|owing|inhibits|inhibit|prevents|prevent|blocks|block)$/;
   var GENERIC_LABELS = /^(?:ال)?(?:وظيفه|تركيب|موقع|انواع|نوع|مثال|امثله|تعريف|سبب|اسباب|نتيجه|نتائج|خصائص|اهميه|دور|اقسام)$/;
   function hasLetter(w){ return /[\u0600-\u06FFA-Za-z0-9]/.test(w); }
-  function endsClause(w){ return /[،,؛;.:!؟?]$|[\)\]]$/.test(String(w)); }
-  function endsSentence(w){ return /[.!؟?]$/.test(String(w)); }
+  function isAbbrevDot(w){ w = String(w); return /^(?:[A-Za-z]\.){1,3}$/.test(w) || /^(?:vs|etc|fig|eg|ie|dr|mr|mrs|no|approx)\.$/i.test(w); }
+  function endsClause(w){ return !isAbbrevDot(w) && /[،,؛;.:!؟?]$|[\)\]]$/.test(String(w)); }
+  function endsSentence(w){
+    w = String(w);
+    if(!/[.!؟?]$/.test(w)) return false;
+    if(/^(?:[A-Za-z]\.){1,3}$/.test(w)) return false;                 // P.  i.v.  e.g.
+    if(/^(?:vs|etc|fig|eg|ie|dr|mr|mrs|no|approx)\.$/i.test(w)) return false;
+    return true;
+  }
   function isLatinOnly(w){ return /^[\(\[]?[A-Za-z][A-Za-z\s\-\/]*[\)\]]?[،,.;:]?$/.test(String(w)); }
   var TAIL_STOP = /^(?:من|في|علي|على|الي|إلى|الى|عن|ان|أن|إن|او|أو|و|ثم|كما|التي|الذي|اللتي|اللذين|مع|بين|حتي|حتى|ل|لل|ب|ك|هذا|هذه|ذلك|تلك|قد|لا|لم|لن|ما|اي|أي|كل|بعض|غير|عند|حيث|اذا|إذا|لكن|بل)$/;
+  var TAIL_STOP_EN = /^(?:the|a|an|of|in|on|at|to|for|with|and|or|by|as|is|are|was|were|be|been|that|which|from|into|than|then|this|these|those|it|its|their|but|not|also)$/;
   function trimTail(words, lo, hi){
-    while(hi > lo && (TAIL_STOP.test(normAr(words[hi])) || !hasLetter(words[hi]))) hi--;
+    while(hi > lo && (TAIL_STOP.test(normAr(words[hi])) || TAIL_STOP_EN.test(String(words[hi]).toLowerCase().replace(/[^a-z]/g, "")) || !hasLetter(words[hi]))) hi--;
     return hi;
   }
   function clauseEnd(words, start, maxLen, sentEnd){
@@ -2168,6 +2336,9 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   function autoCandidates(words, bold, rnd){
     var n = words.length, cands = [];
     if(n < 3) return cands;
+    var latinN = 0, arN = 0;
+    words.forEach(function(w0){ latinN += (String(w0).match(/[A-Za-z]/g) || []).length; arN += (String(w0).match(/[\u0600-\u06FF]/g) || []).length; });
+    var blockIsLatin = latinN > 0 && latinN >= (latinN + arN) * 0.6;
     var norm = words.map(normAr);
     // حدود الجمل
     var sents = [], sStart = 0;
@@ -2176,11 +2347,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     function add(lo, hi, score, type, minLen){
       // كلمات الدلالة (مثل / لأن / هي / يتكون…) بتفضل ظاهرة عشان المستخدم يفهم نوع السؤال
-      while(lo <= hi && (!hasLetter(words[lo]) || LEAD_CUE.test(String(norm[lo] || "").replace(/^(?:و|ف)/, "")))) lo++;
+      while(lo <= hi && (!hasLetter(words[lo]) || LEAD_CUE.test(String(norm[lo] || "").replace(/^(?:و|ف)/, "")) || LEAD_CUE_EN.test(String(words[lo]).toLowerCase().replace(/[^a-z.]/g, "")))) lo++;
       while(hi >= lo && !hasLetter(words[hi])) hi--;
       if(hi < lo || hi - lo + 1 < (minLen || 1)) return;
-      var allLatin = true; for(var k=lo;k<=hi;k++){ if(!isLatinOnly(words[k])) allLatin = false; }
-      if(allLatin) return;
+      if(lo === hi && (/^[A-Za-z]{1,3}[.]?$|^(?:[A-Za-z]\.)+$/.test(String(words[lo]).replace(/[,;:)\]]+$/, "")) && type !== "مصطلح")) return;
+      if(!blockIsLatin){ var allLatin = true; for(var k=lo;k<=hi;k++){ if(!isLatinOnly(words[k])) allLatin = false; } if(allLatin) return; }
       cands.push({ lo: lo, hi: hi, score: score, type: type });
     }
     function tail(from, sEnd, max, score, type, minLen){
@@ -2236,6 +2407,25 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       for(var i3=s0; i3<=s1; i3++){
         var t = norm[i3], nxt = norm[i3+1] || "";
         if(!t) continue;
+        // ===== English rules =====
+        var lw = String(words[i3]).toLowerCase().replace(/^[^a-z]+|[^a-z]+$/g, ""), lw2 = String(words[i3+1] || "").toLowerCase().replace(/[^a-z]/g, "");
+        if(lw){
+          if((lw === "is" || lw === "are") && i3 > s0 && i3 - s0 <= 7 && lw2 !== "not"){ tail(i3 + 1, s1, 11, 9, "تعريف", 2); }
+          else if(/^(?:refers|defined|known|termed|called|means|stands)$/.test(lw)){ var fE = i3 + 1; if(/^(?:to|as|for)$/.test(lw2)) fE++; tail(fE, s1, 10, 9, "تعريف", 2); }
+          else if(lw === "because" || (lw === "due" && lw2 === "to") || (lw === "owing" && lw2 === "to")){ tail(i3 + (lw === "because" ? 1 : 2), s1, 11, 8, "تعليل", 1); }
+          else if(lw === "caused" && lw2 === "by"){ tail(i3 + 2, s1, 10, 8, "تعليل", 1); }
+          else if(/^(?:therefore|thus|hence|consequently|thereby)$/.test(lw)){ tail(i3 + 1, s1, 11, 8, "نتيجة", 1); }
+          else if(/^(?:leads?|leading|results?|resulting)$/.test(lw) && /^(?:to|in)$/.test(lw2)){ tail(i3 + 2, s1, 11, 8, "نتيجة", 1); }
+          else if(/^(?:causes?|causing|produces?|producing)$/.test(lw) && i3 > s0){ tail(i3 + 1, s1, 10, 7, "نتيجة", 1); }
+          else if(/^(?:inhibits?|prevents?|blocks?|binds?|acts|works|stimulates?|promotes?|reduces?|increases?|decreases?|converts?|eradicates?|destroys?|kills?|absorbed|excreted|metabolized|metabolised|eliminates?|accumulates?)$/.test(lw) && i3 > s0){
+            var fV = i3 + 1; if(/^(?:by|to|in|on|the)$/.test(lw2) && lw !== "prevents" && lw !== "inhibits") fV++;
+            tail(fV, s1, 10, 7, "وظيفة", 1);
+          }
+          else if(/^(?:consists|composed|comprises|made)$/.test(lw)){ var fC = i3 + 1; if(/^(?:of|from)$/.test(lw2)) fC++; tail(fC, s1, 11, 7, "تركيب", 1); }
+          else if(/^(?:contains?|includes?|including)$/.test(lw) && i3 < s1){ tail(i3 + 1, s1, 12, 7, "عدّ", 1); }
+          else if(/^(?:whereas|unlike|however)$/.test(lw) || (lw === "but" && i3 > s0 + 1)){ tail(i3 + 1, s1, 10, 7, "مقارنة", 2); }
+          else if((lw === "such" && lw2 === "as") || (lw === "for" && /^(?:example|instance)$/.test(lw2)) || lw === "eg" || (lw === "e" && /^g/.test(String(words[i3+1] || "").toLowerCase()))){ tail(i3 + (lw === "eg" ? 1 : 2), s1, 8, 6, "مثال", 1); }
+        }
         // ٣) تعريف بالعبارات (عبارة عن / يُعرّف بأنه / يُقصد بـ)
         if(AH.defCue.test(t) && i3 > s0){
           var from = i3 + 1; if(nxt === "عن" || nxt === "به" || nxt === "بها") from = i3 + 2;
@@ -2287,6 +2477,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           add(i3 + 1, le, 7, "عدّ", 2);
         }
       }
+      // قوائم مفصولة بفواصل (≥ ٣ بنود قصيرة): نخفي بندًا أو اتنين — «اذكر / عدّد»
+      (function(){
+        var commas = [];
+        for(var q = s0; q <= s1; q++){ if(/[,،]$/.test(words[q])) commas.push(q); }
+        if(commas.length < 2 || (s1 - s0 + 1) > 26) return;
+        var firstComma = commas[0], cueBefore = false;
+        for(var cq = s0; cq <= firstComma; cq++){ if(/^(?:include|includes|including|contains?|contain|like|e\.g\.?|منها|مثل|وهي|[^\s]*[:：])$/i.test(String(words[cq]).replace(/[,.;]$/, "")) || /[:：]$/.test(words[cq])){ cueBefore = true; break; } }
+        if(!(cueBefore || (s1 - s0 + 1) <= 14)) return;
+        var starts = [s0].concat(commas.map(function(c){ return c + 1; })), ends = commas.concat([s1]);
+        var itemsC = [];
+        for(var m = 0; m < starts.length; m++){
+          var a0 = starts[m], b0 = ends[m];
+          while(a0 <= b0 && /^(?:and|or|و|أو)$/i.test(String(words[a0]).replace(/[^A-Za-z\u0600-\u06FF]/g, ""))) a0++;
+          if(a0 <= b0 && b0 - a0 + 1 <= 4 && hasLetter(words[a0])) itemsC.push([a0, b0]);
+        }
+        if(itemsC.length >= 3) itemsC.forEach(function(it){ add(it[0], it[1], 6.5, "عدّ", 1); });
+      })();
       // ١٢) قوائم مرقّمة داخل الجملة (1عضلات هيكلية، 2عضلات قلبية، 3...)
       var marks = [];
       for(var i4=s0; i4<=s1; i4++){ if(/^[\(\[]?\d+[\)\]\.\-]?[\u0600-\u06FF]/.test(words[i4]) || /^\d+[.\-)]$/.test(words[i4])) marks.push(i4); }
@@ -2588,6 +2795,162 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return { headings:h, sentences:s, custom:c, count:n, status:status, label:label };
   }
 
+  /* ---------- مجلدات المواد / الأقسام (لحد ١٠) ---------- */
+  var FOLDERS_KEY = "najm_folders_v1", FOLDER_CUR_KEY = "najm_folder_cur", MAX_FOLDERS = 10;
+  function defaultFolderList(){ var a = []; for(var i = 1; i <= 5; i++) a.push({ id: "f" + i, name: "مجلد " + ar(i) }); return a; }
+  function cleanFolderList(l){
+    var out = [], seen = {};
+    (l || []).forEach(function(f){
+      if(!f || f.id == null) return;
+      var id = String(f.id);
+      if(seen[id] || out.length >= MAX_FOLDERS) return;
+      seen[id] = true;
+      out.push({ id: id, name: String(f.name || "").slice(0, 40) || ("مجلد " + ar(out.length + 1)) });
+    });
+    return out;
+  }
+  function loadFolderState(){
+    var st = null;
+    try{ st = JSON.parse(localStorage.getItem(FOLDERS_KEY) || "null"); }catch(e){ st = null; }
+    var list = (st && Array.isArray(st.list)) ? cleanFolderList(st.list) : [];
+    if(!list.length){
+      // لسه ما غيّرش حاجة: مجلدات المدرّس المنشورة لو موجودة، وإلا مجلد ١ لـ ٥
+      list = cleanFolderList(SHARED_FOLDERS.list && SHARED_FOLDERS.list.length ? SHARED_FOLDERS.list : defaultFolderList());
+      if(!list.length) list = defaultFolderList();
+      st = { list: list, assign: {} };
+    } else { st.list = list; }
+    if(!st.assign || typeof st.assign !== "object") st.assign = {};
+    return st;
+  }
+  function saveFolderState(st){ lsSet(FOLDERS_KEY, JSON.stringify({ list: st.list, assign: st.assign })); markUnpublished(); }
+  function currentFolderId(st){
+    st = st || loadFolderState();
+    var c = ""; try{ c = localStorage.getItem(FOLDER_CUR_KEY) || ""; }catch(e){}
+    return st.list.some(function(f){ return f.id === c; }) ? c : st.list[0].id;
+  }
+  function setCurrentFolder(id){ try{ localStorage.setItem(FOLDER_CUR_KEY, id); }catch(e){} }
+  function folderIdOf(key, st){
+    st = st || loadFolderState();
+    function has(id){ return !!id && st.list.some(function(f){ return f.id === id; }); }
+    if(has(st.assign[key])) return st.assign[key];
+    if(has(SHARED_FOLDERS.assign[key])) return SHARED_FOLDERS.assign[key];
+    return st.list[0].id;
+  }
+  function folderNameFree(st){
+    for(var n = 1; n <= MAX_FOLDERS + 1; n++){
+      var nm = "مجلد " + ar(n);
+      if(!st.list.some(function(f){ return f.name === nm; })) return nm;
+    }
+    return "مجلد";
+  }
+  function addFolder(){
+    var st = loadFolderState();
+    if(st.list.length >= MAX_FOLDERS){ showToast("وصلت للحد الأقصى: " + ar(MAX_FOLDERS) + " مجلدات"); return; }
+    var id = "f" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+    var nf = { id: id, name: folderNameFree(st) };
+    st.list.push(nf);
+    saveFolderState(st); setCurrentFolder(id); renderHome();
+    var a = document.querySelector("#folderBar .folder-chip.active");
+    if(a && a.scrollIntoView){ try{ a.scrollIntoView({ block: "nearest", inline: "nearest" }); }catch(e){} }
+    showToast("اتضاف «" + nf.name + "» — غيّر اسمه من ✏️");
+  }
+  function renameFolder(id){
+    var st = loadFolderState(), f = st.list.filter(function(x){ return x.id === id; })[0];
+    if(!f) return;
+    var t = prompt("اسم المجلد:", f.name);
+    if(t === null) return;
+    t = t.trim().slice(0, 40);
+    if(!t){ showToast("الاسم فاضي"); return; }
+    f.name = t; saveFolderState(st); renderHome();
+  }
+  function moveFolder(id, dir){
+    var st = loadFolderState(), i = -1;
+    st.list.forEach(function(f, k){ if(f.id === id) i = k; });
+    var j = i + dir;
+    if(i < 0 || j < 0 || j >= st.list.length) return;
+    var t = st.list[i]; st.list[i] = st.list[j]; st.list[j] = t;
+    saveFolderState(st); renderHome();
+  }
+  function deleteFolder(id){
+    var st = loadFolderState();
+    if(st.list.length <= 1){ showToast("لازم يفضل مجلد واحد على الأقل"); return; }
+    var f = st.list.filter(function(x){ return x.id === id; })[0];
+    if(!f) return;
+    var target = st.list.filter(function(x){ return x.id !== id; })[0];
+    var keys = getLibraryIndex().map(function(e){ return e.key; }).filter(function(k){ return folderIdOf(k, st) === id; });
+    var msg = keys.length
+      ? ('تحذف المجلد "' + f.name + '"؟\nالملازم اللي فيه (' + ar(keys.length) + ') هتتنقل إلى "' + target.name + '" ومش هتتمسح.')
+      : ('تحذف المجلد "' + f.name + '"؟');
+    if(!confirm(msg)) return;
+    keys.forEach(function(k){ st.assign[k] = target.id; });
+    Object.keys(st.assign).forEach(function(k){ if(st.assign[k] === id) st.assign[k] = target.id; });
+    var wasCur = (currentFolderId(st) === id);
+    st.list = st.list.filter(function(x){ return x.id !== id; });
+    if(wasCur) setCurrentFolder(target.id);
+    saveFolderState(st); renderHome();
+    showToast("اتحذف المجلد");
+  }
+  function moveMalzamaToFolder(key, id){
+    var st = loadFolderState();
+    if(!st.list.some(function(f){ return f.id === id; })) return;
+    st.assign[key] = id;
+    saveFolderState(st); renderHome();
+    var f = st.list.filter(function(x){ return x.id === id; })[0];
+    showToast("اتنقلت إلى «" + (f ? f.name : "") + "»");
+  }
+  // ملزمة جديدة تدخل المجلد المفتوح دلوقتي (مجلد ١ هو الافتراضي من غير تسجيل)
+  function folderAssignNew(key){
+    try{
+      var st = loadFolderState(), cur = currentFolderId(st);
+      if(cur === st.list[0].id) return;
+      st.assign[key] = cur;
+      saveFolderState(st);
+    }catch(e){}
+  }
+  function openFolderPicker(entry){
+    var st = loadFolderState(), here = folderIdOf(entry.key, st);
+    $("fpTitle").textContent = entry.title || "";
+    var box = $("fpList"); box.innerHTML = "";
+    st.list.forEach(function(f){
+      var b = document.createElement("button");
+      b.type = "button";
+      if(f.id === here) b.className = "here";
+      b.innerHTML = '<span>📁 ' + escapeHtml(f.name) + '</span><span>' + (f.id === here ? "✓ هنا" : "") + '</span>';
+      b.addEventListener("click", function(){
+        $("modalFolderPick").classList.remove("show");
+        if(f.id !== here) moveMalzamaToFolder(entry.key, f.id);
+      });
+      box.appendChild(b);
+    });
+    $("modalFolderPick").classList.add("show");
+  }
+  function renderFolderBar(allIndex){
+    var bar = $("folderBar"), tools = $("folderTools");
+    if(!bar || !tools) return;
+    var st = loadFolderState(), cur = currentFolderId(st), counts = {};
+    allIndex.forEach(function(e){ var f = folderIdOf(e.key, st); counts[f] = (counts[f] || 0) + 1; });
+    var h = "", curIdx = 0;
+    st.list.forEach(function(f, k){
+      if(f.id === cur) curIdx = k;
+      h += '<button type="button" class="folder-chip' + (f.id === cur ? " active" : "") + '" data-fid="' + escapeHtml(f.id) + '">📁 ' + escapeHtml(f.name) + '<span class="fc-n">' + ar(counts[f.id] || 0) + '</span></button>';
+    });
+    if(st.list.length < MAX_FOLDERS) h += '<button type="button" class="folder-chip folder-add" id="btnFolderAdd" title="أضف مجلد جديد">＋</button>';
+    bar.innerHTML = h;
+    Array.prototype.forEach.call(bar.querySelectorAll(".folder-chip[data-fid]"), function(b){
+      b.addEventListener("click", function(){ setCurrentFolder(b.getAttribute("data-fid")); renderHome(); });
+    });
+    var add = $("btnFolderAdd"); if(add) add.addEventListener("click", addFolder);
+    tools.innerHTML =
+      '<button type="button" id="fRen" title="إعادة تسمية المجلد">✏️ إعادة تسمية</button>' +
+      '<button type="button" id="fRight" title="تحريك المجلد لليمين" ' + (curIdx === 0 ? "disabled" : "") + '>▶ يمين</button>' +
+      '<button type="button" id="fLeft" title="تحريك المجلد لليسار" ' + (curIdx === st.list.length - 1 ? "disabled" : "") + '>◀ يسار</button>' +
+      '<button type="button" id="fDel" class="danger" title="حذف المجلد (الملازم بتتنقل لأول مجلد)">🗑️ حذف المجلد</button>';
+    $("fRen").addEventListener("click", function(){ renameFolder(cur); });
+    $("fRight").addEventListener("click", function(){ moveFolder(cur, -1); });
+    $("fLeft").addEventListener("click", function(){ moveFolder(cur, 1); });
+    $("fDel").addEventListener("click", function(){ deleteFolder(cur); });
+  }
+
   /* ---------- Home ---------- */
   function renameMalzama(entry){
     var t = prompt("اسم جديد للملزمة:", entry.title || "");
@@ -2697,7 +3060,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     var index = getLibraryIndex().filter(function(x){ return !x.shared; }).map(function(x){ return { key: x.key, title: x.title, subtitle: x.subtitle }; });
     var found = false;
     index = index.map(function(x){ if(x.key === key){ found = true; return { key: key, title: title, subtitle: pkg.subtitle || "" }; } return x; });
-    if(!found) index.push({ key: key, title: title, subtitle: pkg.subtitle || "" });
+    if(!found){ index.push({ key: key, title: title, subtitle: pkg.subtitle || "" }); folderAssignNew(key); }
     savePersonalIndex(index);
     var sels = pkg.selections || {};
     ["headings", "sentences", "custom"].forEach(function(mode){ saveCustomSelection(key, sels[mode] || {}, mode); });
@@ -2736,9 +3099,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
   function renderHome(){
     var list = $("malzamaList"); list.innerHTML="";
-    var index = getLibraryIndex();
-    if(index.length === 0){
+    var allIndex = getLibraryIndex();
+    renderFolderBar(allIndex);
+    if(allIndex.length === 0){
       list.innerHTML = '<div class="empty-note">لسه مفيش ملازم — دوس على + فوق وابدأ ارفع أول ملزمة</div>';
+      return;
+    }
+    var fst = loadFolderState(), curFid = currentFolderId(fst);
+    var index = allIndex.filter(function(e){ return folderIdOf(e.key, fst) === curFid; });
+    if(index.length === 0){
+      list.innerHTML = '<div class="empty-note">المجلد ده فاضي — دوس على + فوق وارفع ملزمة هنا، أو انقل ملزمة من مجلد تاني بزر 📁</div>';
       return;
     }
     index.forEach(function(entry, i){
@@ -2750,15 +3120,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       // حذف ظاهر للكل على جهازك: شخصية تتشال محليًا، رسمية تتشال من الدفعة وتحتاج إعادة تصدير library.json
       var delBtn = (entry.shared && !isTeacher()) ? '' : '<button class="malzama-del" data-key="'+entry.key+'" data-shared="'+(entry.shared?"1":"0")+'" title="'+(entry.shared?"احذف من الرسمية (ثم صدّر library.json)":"حذف")+'" >🗑️</button>';
       var canManage = !entry.shared || isTeacher();
-      var acts = canManage
-        ? ('<div class="malzama-acts"><button type="button" class="malzama-act act-ren" title="تغيير الاسم">✏️</button><button type="button" class="malzama-act act-share" title="مشاركة">📤</button>' + delBtn + '</div>')
-        : '';
+      var moveBtn = '<button type="button" class="malzama-act act-move" title="نقل لمجلد">📁</button>';
+      var acts = '<div class="malzama-acts">' +
+        (canManage ? '<button type="button" class="malzama-act act-ren" title="تغيير الاسم">✏️</button><button type="button" class="malzama-act act-share" title="مشاركة">📤</button>' : '') +
+        moveBtn + delBtn + '</div>';
       var modesHtml =
         '<div class="ready-modes">' +
-          '<span class="'+(ready.headings?"on":"off")+'">'+(ready.headings?"✅":"⚪")+' عناوين</span>' +
-          '<span class="'+(ready.sentences?"on":"off")+'">'+(ready.sentences?"✅":"⚪")+' جمل</span>' +
-          '<span class="'+(ready.custom?"on":"off")+'">'+(ready.custom?"✅":"⚪")+' تخصيص</span>' +
-          '<span class="on">✨ تلقائي</span>' +
+          '<span class="'+(ready.headings?"on":"off")+'">'+(ready.headings?"✅":"⚪")+' تخصيص١</span>' +
+          '<span class="'+(ready.sentences?"on":"off")+'">'+(ready.sentences?"✅":"⚪")+' تخصيص٢</span>' +
+          '<span class="'+(ready.custom?"on":"off")+'">'+(ready.custom?"✅":"⚪")+' الدليل</span>' +
+          '<span class="on">✨ اختيار التطبيق</span>' +
         '</div>';
       var orderBtns =
         '<div class="malzama-order">' +
@@ -2780,6 +3151,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       card.querySelector(".ord-down").addEventListener("click", function(e){ e.stopPropagation(); moveMalzamaInList(entry.key, 1); });
       var renEl = card.querySelector(".act-ren");
       if(renEl) renEl.addEventListener("click", function(e){ e.stopPropagation(); renameMalzama(entry); });
+      var mvEl = card.querySelector(".act-move");
+      if(mvEl) mvEl.addEventListener("click", function(e){ e.stopPropagation(); openFolderPicker(entry); });
       var shEl = card.querySelector(".act-share");
       if(shEl) shEl.addEventListener("click", function(e){ e.stopPropagation(); openShareModal(entry); });
       var delEl = card.querySelector(".malzama-del");
@@ -2844,7 +3217,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       $("unitSub").textContent = subtitle||"";
       switchView("unit");
       updateReviewBadge();
-      var startMode = isTeacher() ? "headings" : "auto"; // المدرّس يبدأ على نظام التحديد، والطالب على اختيار التطبيق لو مفيش إخفاء جاهز
+      var startMode = isTeacher() ? "headings" : "auto"; // المدرّس يبدأ على نظام التحديد، والطالب على «اختيار التطبيق» التلقائي لو مفيش إخفاء جاهز
       var anyHides = ["headings", "sentences", "custom"].some(function(m2){ if(modeHasHides(key, m2)){ startMode = m2; return true; } return false; });
       setMode(startMode, true);
       state.page = 0;
@@ -2861,7 +3234,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }, 300);
       } else if(startMode === "auto"){
         setTimeout(function(){
-          showToast("✨ اخترنا لك إخفاء تلقائي — جرّب «▶️ ابدأ الاختبار». وتقدر تحدد بنفسك من العناوين أو الجمل أو تخصيص");
+          showToast("✨ اخترنا لك إخفاء تلقائي — جرّب «▶️ ابدأ الاختبار». وتقدر تحدد بنفسك من تخصيص١ أو تخصيص٢ أو الدليل");
         }, 350);
       } else if(canEditCurrent()){
         setTimeout(function(){
@@ -2937,7 +3310,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     var wordList = wordsWithBold(tmp.innerHTML);
     if(wordList.length === 0){
       // فقرة صورة فقط أو فاضية
-      if(imgsHtml){ bd.innerHTML = imgsHtml; return; }
+      if(imgsHtml){ mountImageRegions(bd, block); return; }
       var plain = fixBrokenArabicText(block.plainText || stripHtml(src) || "");
       bd.textContent = plain;
       return;
@@ -2967,9 +3340,14 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     bd.dataset.wordCount = wordList.length;
     // الصور تحت النص دايمًا (تحديد أو اختبار)
     if(imgsHtml){
-      var hold = document.createElement("div");
-      hold.innerHTML = imgsHtml;
-      while(hold.firstChild) bd.appendChild(hold.firstChild);
+      if(state.selecting){
+        // Magic Blur: الصورة جوه فقرة فيها نص — نفس أداة رسم المربعات
+        mountImageRegions(bd, block, true);
+      } else {
+        var hold = document.createElement("div");
+        hold.innerHTML = imgsHtml;
+        while(hold.firstChild) bd.appendChild(hold.firstChild);
+      }
     }
   }
 
@@ -3259,7 +3637,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         }
 
         // مايك + سبيكر يظهران دائمًا أثناء الاختبار (حتى لو مفيش إخفاء في الفقرة)
-        var imgOnlyBlock = /<img/i.test(block.originalHtml || "") && !String(block.plainText || "").trim();
+        var imgOnlyBlock = /<img/i.test(block.originalHtml || "") && !String(block.plainText || "").trim() && !(block.blankIds && block.blankIds.length);
         if(!useClean && !imgOnlyBlock){
           var rateRow = document.createElement("div");
           rateRow.className = "block-rate";
@@ -3274,8 +3652,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           rateRow.innerHTML =
             rateHtml +
             '<span class="voice-btns">'+
-              '<button type="button" class="mic-mini" data-key="'+block.key+'" title="اضغط واستمر للتسجيل">🎤 اضغط واستمر</button>'+
-              '<button type="button" class="spk-mini" data-key="'+block.key+'" title="اسمع تسجيلك" disabled>🔊 اسمع</button>'+
+              '<button type="button" class="mic-mini" data-key="'+block.key+'" title="اضغط واستمر للتسجيل، أو اضغط مرة للبدء ومرة للإيقاف">🎤 سجّل</button>'+
+              '<button type="button" class="spk-mini'+(hasVoiceRec(block.key)?'':' nodata')+'" data-key="'+block.key+'" title="اسمع تسجيلك">🔊 اسمع</button>'+
             '</span>';
           docCard.appendChild(rateRow);
           var saidEl = document.createElement("div");
@@ -3297,7 +3675,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         span.classList.toggle("revealed", revealed);
         span.classList.toggle("locked", !revealed && !unlocked);
         // ✕ only on parts the app actually hid (blanks)
-        if(!span.dataset.pinAttached){
+        if(!span.dataset.pinAttached && !span.classList.contains("img-blank")){
           span.dataset.pinAttached = "1";
           var hideText = span.getAttribute("data-hide-text") || span.textContent || "";
           var xBtn = document.createElement("button");
@@ -3362,7 +3740,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       });
       wrap.querySelectorAll(".spk-mini").forEach(function(btn){
         var key = btn.dataset.key;
-        btn.disabled = !hasVoiceRec(key);
+        btn.disabled = false; btn.classList.toggle("nodata", !hasVoiceRec(key));
         btn.addEventListener("click", function(){ playVoiceRec(key, btn); });
       });
       if(allBlanksRevealed()) maybeShowFinishHint();
@@ -3515,6 +3893,62 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   var activeRecKey = null;
   var activeAudio = null;
 
+  // ---- مايك دافي: نفس الـ stream بيتعاد استخدامه ثواني بعد التسجيل (تسجيل أسرع ومن غير طلب إذن كل مرة)، ونقفله قبل التشغيل ----
+  var micCache = { stream: null, timer: null };
+  function releaseMic(){
+    clearTimeout(micCache.timer); micCache.timer = null;
+    if(micCache.stream){ try{ micCache.stream.getTracks().forEach(function(t){ t.stop(); }); }catch(e){} micCache.stream = null; }
+  }
+  function scheduleMicRelease(ms){ clearTimeout(micCache.timer); micCache.timer = setTimeout(releaseMic, ms || 12000); }
+  function getMicStream(){
+    clearTimeout(micCache.timer);
+    var st = micCache.stream;
+    if(st && st.getAudioTracks().some(function(t){ return t.readyState === "live"; })) return Promise.resolve(st);
+    micCache.stream = null;
+    return navigator.mediaDevices.getUserMedia({ audio: true }).then(function(s2){ micCache.stream = s2; return s2; });
+  }
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) releaseMic(); });
+
+  // ---- حفظ التسجيلات على الجهاز (IndexedDB) عشان تفضل بعد قفل الصفحة — لازم للسماعة في «محتاج مراجعة» ----
+  var VDB = { db: null, ready: null };
+  function vdbOpen(){
+    if(VDB.ready) return VDB.ready;
+    VDB.ready = new Promise(function(resolve){
+      try{
+        var rq = indexedDB.open("najm_voice_db", 1);
+        rq.onupgradeneeded = function(){ rq.result.createObjectStore("rec"); };
+        rq.onsuccess = function(){ VDB.db = rq.result; resolve(VDB.db); };
+        rq.onerror = function(){ resolve(null); };
+      }catch(e){ resolve(null); }
+    });
+    return VDB.ready;
+  }
+  function vdbPut(key, blob){
+    vdbOpen().then(function(db){ if(!db) return; try{ db.transaction("rec", "readwrite").objectStore("rec").put(blob, key); }catch(e){} });
+  }
+  function refreshSpkButtons(){
+    Array.prototype.forEach.call(document.querySelectorAll(".spk-mini[data-key]"), function(b){
+      var has = hasVoiceRec(b.getAttribute("data-key"));
+      b.disabled = false; b.classList.toggle("nodata", !has);
+    });
+  }
+  function vdbLoadAll(){
+    vdbOpen().then(function(db){
+      if(!db) return;
+      try{
+        var st = db.transaction("rec", "readonly").objectStore("rec"), rq = st.openCursor();
+        rq.onsuccess = function(){
+          var cur = rq.result;
+          if(cur){
+            if(!voiceStore[cur.key]){ try{ voiceStore[cur.key] = { url: URL.createObjectURL(cur.value), blob: cur.value }; }catch(e){} }
+            cur.continue();
+          } else { refreshSpkButtons(); }
+        };
+      }catch(e){}
+    });
+  }
+  vdbLoadAll();
+
   function voiceKey(blockKey){ return (state.malzamaKey || "") + "::" + blockKey; }
   function hasVoiceRec(blockKey){ return !!(voiceStore[voiceKey(blockKey)] && voiceStore[voiceKey(blockKey)].url); }
 
@@ -3547,8 +3981,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     stopActiveAudio();
     btn.classList.add("on");
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
-      function killStream(){ stream.getTracks().forEach(function(t){ t.stop(); }); }
+    getMicStream().then(function(stream){
+      function killStream(){ scheduleMicRelease(12000); }
       if(press.released){ // سيّب الزر أثناء طلب الإذن/تجهيز المايك — ما نبدأش تسجيل يفضل شغّال
         killStream();
         btn.classList.remove("on");
@@ -3566,16 +4000,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       rec.onstop = function(){
         killStream();
         btn.classList.remove("on");
-        activeRecorder = null;
-        activeRecKey = null;
-        if(!chunks.length || (Date.now() - startedAt) < 350){ showToast("اضغط واستمر وأنت بتتكلم"); return; }
+        if(btn._orig){ btn.textContent = btn._orig; btn._orig = null; }
+        if(btn._micToggle) btn._micToggle.active = false;
+        if(activeRecorder === rec){ activeRecorder = null; activeRecKey = null; }
+        if(!chunks.length || (Date.now() - startedAt) < 350){ showToast("التسجيل قصير أوي — اضغط مرة، اتكلم، واضغط مرة تانية للإيقاف"); return; }
         var blob = new Blob(chunks, { type: chunks[0].type || mime || "audio/webm" });
         var prev = voiceStore[voiceKey(blockKey)];
         if(prev && prev.url) try{ URL.revokeObjectURL(prev.url); }catch(e){}
         var url = URL.createObjectURL(blob);
         voiceStore[voiceKey(blockKey)] = { url: url, blob: blob };
-        var spk = document.querySelector('.spk-mini[data-key="'+CSS.escape(blockKey)+'"]');
-        if(spk) spk.disabled = false;
+        vdbPut(voiceKey(blockKey), blob);
+        Array.prototype.forEach.call(document.querySelectorAll('.spk-mini[data-key="'+CSS.escape(blockKey)+'"]'), function(sp){ sp.disabled = false; sp.classList.remove("nodata"); });
         var out = $("said-" + blockKey);
         if(out){ out.style.display="block"; out.textContent = "🎤 تم التسجيل — اضغط 🔊 للسماع"; }
         showToast("اتسجل — 🔊 للسماع");
@@ -3583,7 +4018,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       rec.onerror = function(){
         killStream();
         btn.classList.remove("on");
-        activeRecorder = null;
+        if(activeRecorder === rec){ activeRecorder = null; activeRecKey = null; }
         showToast("فشل التسجيل");
       };
       try{ rec.start(); }catch(e){
@@ -3606,17 +4041,31 @@ https://github.com/nodeca/pako/blob/main/LICENSE
   function bindHoldMic(btn, blockKey){
     if(!btn || btn._holdBound) return;
     btn._holdBound = true;
-    var press = null;
+    var press = null, tg = btn._micToggle = { active: false, timer: null };
+    function endToggle(){
+      tg.active = false; clearTimeout(tg.timer);
+      if(press) press.released = true;
+      stopVoiceRec();
+    }
     function onDown(e){
       e.preventDefault();
+      if(tg.active){ endToggle(); return; }                 // الضغطة التانية بتوقف التسجيل
       if(press && !press.released) return;
-      press = { released:false };
+      press = { released:false, t0: Date.now() };
       try{ btn.setPointerCapture(e.pointerId); }catch(err){}
       startVoiceRecHold(blockKey, btn, press);
     }
     function onUp(){
-      if(!press || press.released) return;
-      press.released = true;
+      if(!press || press.released || tg.active) return;
+      if(Date.now() - press.t0 < 450){                      // ضغطة سريعة = ابدأ التسجيل واستمر لحد الضغطة الجاية
+        tg.active = true;
+        btn._orig = btn._orig || btn.textContent;
+        btn.textContent = "⏹ إيقاف التسجيل";
+        showToast("🎙️ بيسجّل… اتكلم، واضغط تاني للإيقاف");
+        tg.timer = setTimeout(endToggle, 90000);
+        return;
+      }
+      press.released = true;                                // ضغطة طويلة = سجّل طول ما إيدك على الزر
       stopVoiceRec();
     }
     btn.addEventListener("pointerdown", onDown);
@@ -3636,15 +4085,26 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return;
     }
     stopActiveAudio();
-    var audio = new Audio(rec.url);
+    if(activeRecorder) stopVoiceRec();
+    releaseMic(); // المايك المفتوح بيخلّي الصوت واطي أو صامت على الموبايل
+    var audio = new Audio();
+    audio.setAttribute("playsinline", "");
+    audio.preload = "auto"; audio.volume = 1; audio.muted = false;
+    audio.src = rec.url;
     activeAudio = audio;
     btn.classList.add("on");
     audio.onended = function(){ btn.classList.remove("on"); activeAudio = null; };
-    audio.onerror = function(){ btn.classList.remove("on"); showToast("مقدرش أشغّل التسجيل"); };
-    audio.play().catch(function(){ btn.classList.remove("on"); showToast("اضغط تاني للتشغيل"); });
+    audio.onerror = function(){ btn.classList.remove("on"); activeAudio = null; showToast("المتصفح مقدرش يشغّل التسجيل ده — سجّل تاني"); };
+    var pr = audio.play();
+    if(pr && pr.catch) pr.catch(function(err){
+      btn.classList.remove("on"); activeAudio = null;
+      var n = err && err.name;
+      showToast(n === "NotAllowedError" ? "المتصفح منع التشغيل — اضغط 🔊 مرة تانية" : (n === "NotSupportedError" ? "صيغة التسجيل مش مدعومة هنا — سجّل تاني" : "مقدرتش أشغّل الصوت — تأكد إن الصوت مفتوح وجهازك مش على الصامت"));
+    });
   }
 
   /* ---------- Review list modal — إعادة اختبار ---------- */
+  var HL_COLORS = ["#fde047", "#86efac", "#f9a8d4", "#93c5fd", "#fdba74", "#c4b5fd"]; // أصفر · أخضر · وردي · أزرق · برتقالي · بنفسجي
   function renderReviewModal(){
     var map = loadReviewMap(state.malzamaKey);
     var keys = Object.keys(map).sort(function(a,b){ return map[b].updatedAt - map[a].updatedAt; });
@@ -3681,14 +4141,17 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         body = '<div class="txt rev-hidden" title="اضغط للإظهار"><span class="blank">'+escapeHtml(text)+'</span></div>';
       }
       var numInfo = blockNumInfo(k);
+      var hlColor = entry.color || HL_COLORS[0];
+      item.style.setProperty("--hl", hlColor);
       item.innerHTML =
-        '<div class="rev-row">'+body+'</div>'+
+        '<div class="rev-row">'+body+'<button type="button" class="rev-color" title="غيّر لون التظليل"></button></div>'+
+        '<div class="rev-palette hidden">'+HL_COLORS.map(function(c){ return '<button type="button" data-c="'+c+'" style="background:'+c+'"'+(c === hlColor ? ' class="on"' : '')+' title="'+c+'"></button>'; }).join("")+'</div>'+
         '<div class="rev-actions">'+
           (numInfo ? '<button type="button" class="rev-goto" title="روح للفقرة دي في الملزمة">📍 '+numInfo.num+'</button>' : '')+
           '<button type="button" class="rev-reveal">👁 إظهار المخفي</button>'+
           '<span class="voice-btns">'+
-            '<button type="button" class="mic-mini" data-key="'+k+'" title="اضغط واستمر">🎤 اضغط واستمر</button>'+
-            '<button type="button" class="spk-mini" data-key="'+k+'" title="اسمع" '+(has?"":"disabled")+'>🔊 اسمع</button>'+
+            '<button type="button" class="mic-mini" data-key="'+k+'" title="اضغط واستمر للتسجيل، أو اضغط مرة للبدء ومرة للإيقاف">🎤 سجّل</button>'+
+            '<button type="button" class="spk-mini'+(has?'':' nodata')+'" data-key="'+k+'" title="اسمع">🔊 اسمع</button>'+
           '</span>'+
           '<button type="button" class="done-rev" data-key="'+k+'">✓ خلصت</button>'+
         '</div>';
@@ -3698,6 +4161,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if(t){ t.classList.remove("rev-hidden"); t.classList.add("rev-shown"); }
       }
       item.querySelector(".rev-reveal").addEventListener("click", revealRev);
+      var palEl = item.querySelector(".rev-palette");
+      item.querySelector(".rev-color").addEventListener("click", function(){ palEl.classList.toggle("hidden"); });
+      Array.prototype.forEach.call(palEl.querySelectorAll("button"), function(pb){
+        pb.addEventListener("click", function(){
+          var c = pb.getAttribute("data-c");
+          item.style.setProperty("--hl", c);
+          Array.prototype.forEach.call(palEl.querySelectorAll("button"), function(x){ x.classList.toggle("on", x === pb); });
+          var m = loadReviewMap(state.malzamaKey);
+          if(m[k]){ m[k].color = c; saveReviewMap(state.malzamaKey, m); }
+          palEl.classList.add("hidden");
+        });
+      });
       var goEl = item.querySelector(".rev-goto");
       if(goEl && numInfo) goEl.addEventListener("click", function(){
         $("modalReview").classList.remove("show");
@@ -3998,6 +4473,102 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     return { rawPages: rechunked.length?rechunked:pages, heading: docHeading || fallbackTitle };
   }
 
+  // نرسم جدول HTML كصورة PNG (SVG foreignObject → canvas). لو المتصفح منعها بنرجع null ونكتفي بالأعمدة كفقرات.
+  function rasterizeTable(html, wpx){
+    if(typeof window.__najmRasterize === "function") return window.__najmRasterize(html, wpx);
+    // الأول SVG (بيحافظ على التنسيق كامل)، ولو المتصفح منعه (مثلًا سفاري) نرسم الجدول مباشرة على canvas
+    return rasterizeTableSvg(html, wpx).then(function(url){
+      return url || rasterizeTableCanvas(html, wpx);
+    });
+  }
+  // رسم مباشر للجدول على canvas (بديل أضمن على كل المتصفحات؛ النص والألوان والحدود بس، من غير صور داخل الخلايا)
+  function rasterizeTableCanvas(html, wpx){
+    return new Promise(function(resolve){
+      try{
+        var host = document.createElement("div");
+        host.style.cssText = "position:fixed;left:-99999px;top:0;width:" + wpx + "px;background:#fff;";
+        host.innerHTML = html;
+        document.body.appendChild(host);
+        var tbl = host.querySelector("table");
+        if(!tbl){ document.body.removeChild(host); resolve(null); return; }
+        var tr = tbl.getBoundingClientRect();
+        var W = Math.ceil(tr.width) || wpx, H = Math.ceil(tr.height);
+        var rtl = (getComputedStyle(tbl).direction === "rtl");
+        var cells = [];
+        Array.prototype.forEach.call(tbl.querySelectorAll("td,th"), function(td){
+          var r = td.getBoundingClientRect(), cs = getComputedStyle(td);
+          var txt = "";
+          td.childNodes.forEach(function(n){
+            if(n.nodeType === 1 && n.tagName === "BR") txt += "\n"; else txt += (n.textContent || "");
+          });
+          var bold = !!td.firstElementChild && /^(B|STRONG)$/.test(td.firstElementChild.tagName) && (td.firstElementChild.textContent || "").trim() === (td.textContent || "").trim();
+          cells.push({ x: r.left - tr.left, y: r.top - tr.top, w: r.width, h: r.height, bg: cs.backgroundColor, text: txt.replace(/\u00a0/g, " ").trim(), bold: bold });
+        });
+        document.body.removeChild(host);
+        if(!H || H < 20 || !cells.length){ resolve(null); return; }
+        var sc = 1.5, c = document.createElement("canvas");
+        c.width = Math.round(W * sc); c.height = Math.round(H * sc);
+        var cx = c.getContext("2d");
+        cx.fillStyle = "#fff"; cx.fillRect(0, 0, c.width, c.height);
+        cx.scale(sc, sc);
+        cx.textBaseline = "top";
+        cells.forEach(function(ce){
+          if(ce.bg && ce.bg !== "rgba(0, 0, 0, 0)" && ce.bg !== "transparent"){ cx.fillStyle = ce.bg; cx.fillRect(ce.x, ce.y, ce.w, ce.h); }
+          cx.strokeStyle = "#444"; cx.lineWidth = 1; cx.strokeRect(ce.x + .5, ce.y + .5, ce.w - 1, ce.h - 1);
+          if(!ce.text) return;
+          cx.save();
+          cx.beginPath(); cx.rect(ce.x + 1, ce.y + 1, ce.w - 2, ce.h - 2); cx.clip();
+          cx.fillStyle = "#111";
+          cx.font = (ce.bold ? "bold " : "") + "15px Tahoma, Arial, sans-serif";
+          cx.direction = rtl ? "rtl" : "ltr";
+          cx.textAlign = rtl ? "right" : "left";
+          var tx = rtl ? (ce.x + ce.w - 8) : (ce.x + 8), maxW = Math.max(10, ce.w - 16), ty = ce.y + 6;
+          ce.text.split("\n").forEach(function(par){
+            var words = par.split(/\s+/), line = "";
+            words.forEach(function(wd){
+              var test = line ? (line + " " + wd) : wd;
+              if(line && cx.measureText(test).width > maxW){ cx.fillText(line, tx, ty); ty += 25; line = wd; }
+              else line = test;
+            });
+            if(line){ cx.fillText(line, tx, ty); ty += 25; }
+          });
+          cx.restore();
+        });
+        resolve(c.toDataURL("image/png"));
+      }catch(e){ resolve(null); }
+    });
+  }
+  function rasterizeTableSvg(html, wpx){
+    return new Promise(function(resolve){
+      var done = false;
+      function fin(v){ if(!done){ done = true; resolve(v); } }
+      try{
+        var host = document.createElement("div");
+        host.style.cssText = "position:fixed;left:-99999px;top:0;width:" + wpx + "px;background:#fff;";
+        host.innerHTML = html;
+        document.body.appendChild(host);
+        var tbl = host.firstElementChild;
+        var h = Math.ceil(tbl.getBoundingClientRect().height) || host.scrollHeight;
+        var xhtml = new XMLSerializer().serializeToString(tbl);
+        document.body.removeChild(host);
+        if(!h || h < 20){ fin(null); return; }
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + wpx + '" height="' + h + '"><foreignObject x="0" y="0" width="' + wpx + '" height="' + h + '"><div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff">' + xhtml + '</div></foreignObject></svg>';
+        var img = new Image();
+        img.onload = function(){
+          try{
+            var sc = 1.5, c = document.createElement("canvas");
+            c.width = Math.round(wpx * sc); c.height = Math.round(h * sc);
+            var cx = c.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, c.width, c.height); cx.scale(sc, sc); cx.drawImage(img, 0, 0);
+            fin(c.toDataURL("image/png"));
+          }catch(e){ fin(null); }
+        };
+        img.onerror = function(){ fin(null); };
+        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+        setTimeout(function(){ fin(null); }, 9000);
+      }catch(e){ fin(null); }
+    });
+  }
+
   function handleDocx(file){
     return loadLib("JSZip").then(function(){ return handleDocxInner(file); });
   }
@@ -4140,8 +4711,136 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
           var headingLevels = loadHeadingStyleLevels(stylesXml);
           var doc = new DOMParser().parseFromString(docXml, "application/xml");
+
+          // ===== الجداول: صورة للجدول كما هو + كل عمود كفقرة =====
+          function topTableOf(el){
+            var n = el.parentNode, top = null;
+            while(n){ if(n.namespaceURI === WNS && n.localName === "tbl") top = n; n = n.parentNode; }
+            return top;
+          }
+          function cellContent(tc){
+            var htmlParts = [], plainParts = [], allBold = true, anyText = false;
+            wEls(tc, "p").forEach(function(p){
+              var toks = paragraphTokens(p); fixTokSpacing(toks);
+              var runs = toks.filter(function(t){ return t.t === "text"; }).map(function(t){ return { text: t.text, bold: t.bold, sup: t.sup, sub: t.sub }; });
+              var imgs = toks.filter(function(t){ return t.t === "img" && t.src.charAt(0) !== "!"; }).map(function(t){ return '<img src="' + t.src + '" style="max-width:100%;height:auto;"/>'; });
+              var plain = fixBrokenArabicText(runsToPlainText(runs)).trim();
+              if(plain){ anyText = true; if(!runs.every(function(r){ return r.bold || !r.text.trim(); })) allBold = false; }
+              if(plain || imgs.length){ htmlParts.push(runsToHtml(runs).trim() + imgs.join("")); }
+              if(plain) plainParts.push(plain);
+            });
+            return { html: htmlParts.join("<br/>"), text: plainParts.join(" "), bold: anyText && allBold };
+          }
+          function analyzeTable(tbl){
+            var rowsEl = Array.prototype.filter.call(tbl.childNodes, function(n){ return n.nodeType === 1 && n.namespaceURI === WNS && n.localName === "tr"; });
+            if(rowsEl.length < 2) return null;
+            var grid = [], ncols = 0;
+            rowsEl.forEach(function(tr){
+              var col = 0, cells = [];
+              Array.prototype.forEach.call(tr.childNodes, function(tc){
+                if(tc.nodeType !== 1 || tc.namespaceURI !== WNS || tc.localName !== "tc") return;
+                var tcPr = childW(tc, "tcPr"), span = 1, vm = null, fill = null, wdx = 0;
+                if(tcPr){
+                  var gs = childW(tcPr, "gridSpan"); if(gs) span = +(wAttrVal(gs) || gs.getAttribute("w:val")) || 1;
+                  var vmEl = childW(tcPr, "vMerge"); if(vmEl) vm = (wAttrVal(vmEl) || vmEl.getAttribute("w:val")) === "restart" ? "restart" : "continue";
+                  var shd = childW(tcPr, "shd"); if(shd){ var f = shd.getAttribute("w:fill"); if(f && f !== "auto") fill = "#" + f; }
+                  var tcW = childW(tcPr, "tcW"); if(tcW) wdx = +(tcW.getAttribute("w:w")) || 0;
+                }
+                cells.push({ col: col, span: span, vm: vm, fill: fill, w: wdx, tc: tc });
+                col += span;
+              });
+              if(col > ncols) ncols = col;
+              grid.push(cells);
+            });
+            if(ncols < 2) return null;
+            // rowspan من vMerge
+            grid.forEach(function(cells, r){
+              cells.forEach(function(c){
+                c.rowspan = 1;
+                if(c.vm === "restart"){
+                  for(var r2 = r + 1; r2 < grid.length; r2++){
+                    var nx = grid[r2].filter(function(x){ return x.col === c.col; })[0];
+                    if(nx && nx.vm === "continue") c.rowspan++; else break;
+                  }
+                }
+                c.content = (c.vm === "continue") ? { html: "", text: "", bold: false } : cellContent(c.tc);
+              });
+            });
+            // عرض الأعمدة
+            var gridCols = [], tg = childW(tbl, "tblGrid");
+            if(tg) Array.prototype.forEach.call(tg.childNodes, function(g){ if(g.nodeType === 1 && g.localName === "gridCol") gridCols.push(+g.getAttribute("w:w") || 0); });
+            var tblPr = childW(tbl, "tblPr");
+            var rtl = !!(tblPr && childW(tblPr, "bidiVisual"));
+            if(!rtl){
+              var sample = grid.map(function(cs){ return cs.map(function(c){ return c.content.text; }).join(" "); }).join(" ");
+              var arN = (sample.match(/[\u0600-\u06FF]/g) || []).length, laN = (sample.match(/[A-Za-z]/g) || []).length;
+              rtl = arN > laN;
+            }
+            return { grid: grid, ncols: ncols, gridCols: gridCols, rtl: rtl, headerFlag: !!(rowsEl[0] && childW(childW(rowsEl[0], "trPr") || rowsEl[0], "tblHeader")) };
+          }
+          function tableToHtml(t){
+            var sum = t.gridCols.reduce(function(a, b){ return a + b; }, 0);
+            var W = sum > 0 ? Math.max(360, Math.min(900, Math.round(sum / 15))) : 800;
+            var widths = [];
+            for(var i = 0; i < t.ncols; i++){ widths.push(sum > 0 && t.gridCols[i] ? (t.gridCols[i] / sum * W) : (W / t.ncols)); }
+            var h = '<table xmlns="http://www.w3.org/1999/xhtml" style="border-collapse:collapse;direction:' + (t.rtl ? "rtl" : "ltr") + ';width:' + W + 'px;table-layout:fixed;background:#fff;font-family:Tahoma,Arial,sans-serif;font-size:15px;line-height:1.7;color:#111;">';
+            h += "<colgroup>" + widths.map(function(x){ return '<col style="width:' + Math.round(x) + 'px"/>'; }).join("") + "</colgroup>";
+            t.grid.forEach(function(cells){
+              h += "<tr>";
+              cells.forEach(function(c){
+                if(c.vm === "continue") return;
+                h += '<td colspan="' + c.span + '" rowspan="' + c.rowspan + '" style="border:1px solid #444;padding:6px 8px;vertical-align:top;text-align:' + (t.rtl ? "right" : "left") + ';' + (c.fill ? "background:" + c.fill + ";" : "") + '">' + (c.content.html || "&#160;") + "</td>";
+              });
+              h += "</tr>";
+            });
+            return { html: h + "</table>", width: W };
+          }
+          function tableColumnBlocks(t){
+            var first = t.grid[0] || [];
+            var headerish = t.headerFlag || (first.filter(function(c){ return c.content.text; }).length > 0 && first.every(function(c){ return !c.content.text || c.content.bold || c.fill; }));
+            var out = [];
+            for(var c = 0; c < t.ncols; c++){
+              var items = [], head = "";
+              t.grid.forEach(function(cells, r){
+                var cell = cells.filter(function(x){ return x.col === c; })[0];
+                if(!cell || cell.vm === "continue" || !cell.content.text) return;
+                if(r === 0 && headerish) head = cell.content.text; else items.push(cell.content.text);
+              });
+              if(!items.length) continue;
+              var sep = /[\u0600-\u06FF]/.test(items.join(" ")) ? " ؛ " : "; ";
+              out.push((head ? "<b>" + escapeHtml(head) + "</b>: " : "") + items.map(escapeHtml).join(sep));
+            }
+            return out;
+          }
+          var tableList = [];
+          wEls(doc, "tbl").forEach(function(tb){ if(!insideFallback(tb) && !topTableOf(tb.parentNode || tb) ){ tableList.push(tb); } });
+          var tableStats = { count: 0, imgOk: 0, imgFail: 0 };
+          var tableJobs = tableList.slice(0, 40).map(function(tb){
+            return new Promise(function(res){
+              var t = null;
+              try{ t = analyzeTable(tb); }catch(e){ t = null; }
+              if(!t){ res(null); return; }
+              var th = tableToHtml(t), cols = tableColumnBlocks(t);
+              tableStats.count++;
+              rasterizeTable(th.html, th.width).then(function(url){
+                var blocks = [];
+                if(url){ blocks.push(figHtml(url)); tableStats.imgOk++; } else { tableStats.imgFail++; }
+                cols.forEach(function(b){ blocks.push(b); });
+                res({ tb: tb, blocks: blocks });
+              });
+            });
+          });
+          return Promise.all(tableJobs).then(function(done){
+          var tableMap = new Map(), tableUsed = new Map();
+          done.forEach(function(x){ if(x) tableMap.set(x.tb, x.blocks); });
           var bodyParas = wEls(doc, "p").filter(function(p){ return !insideFallback(p); });
           var paragraphs = bodyParas.map(function(pEl){
+            var topTb = topTableOf(pEl);
+            if(topTb && tableMap.has(topTb)){
+              if(tableUsed.has(topTb)) return { level: null, text: "", blocks: [], _segs: [], _skipText: true };
+              tableUsed.set(topTb, true);
+              return { level: null, text: "", blocks: tableMap.get(topTb).slice(), _segs: [], _skipText: true };
+            }
             var pPr = childW(pEl, "pPr");
             var styleEl = pPr ? childW(pPr, "pStyle") : null;
             var styleId = styleEl ? (wAttrVal(styleEl) || styleEl.getAttribute("w:val")) : null;
@@ -4244,10 +4943,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               unsupportedMedia: missingCount,
               extraImgs: orphanBlocks.length,
               skippedRepeats: skippedRepeats,
-              unresolvedDrawings: unresolvedDrawings
+              unresolvedDrawings: unresolvedDrawings,
+              tables: tableStats.count, tableImgFail: tableStats.imgFail
             });
           }
           chain.then(finish).catch(finish);
+          });
         }).catch(function(err){ reject("مقدرش أقرا ملف الوورد \""+file.name+"\": " + (err&&err.message?err.message:err)); });
       };
       reader.onerror = function(){ reject("مقدرش أفتح الملف \""+file.name+"\""); };
@@ -4304,6 +5005,58 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }catch(e){ return null; }
   }
 
+  // إحصائيات سريعة للصورة (شفافية + تباين + نعومة) عشان نعرف لو زخرفة (ظل نص / خلفية / شعار) مش صورة علمية
+  function pdfImageDecorStats(imgObj){
+    try{
+      var w = imgObj.width || 0, h = imgObj.height || 0;
+      if(!w || !h) return null;
+      var data = imgObj.data, ch = 0;
+      if(data){
+        var n = w * h;
+        ch = data.length === n * 4 ? 4 : (data.length === n * 3 ? 3 : (data.length === n ? 1 : 0));
+        if(!ch) return null;
+      } else if(imgObj.bitmap){
+        var sc = Math.max(1, Math.ceil(Math.max(w, h) / 160));
+        var tw = Math.max(1, Math.round(w / sc)), th = Math.max(1, Math.round(h / sc));
+        var c = document.createElement("canvas"); c.width = tw; c.height = th;
+        var cx = c.getContext("2d"); cx.drawImage(imgObj.bitmap, 0, 0, tw, th);
+        data = cx.getImageData(0, 0, tw, th).data; w = tw; h = th; ch = 4;
+      } else return null;
+      var vis = 0, tot = 0, sum = 0, sum2 = 0, gsum = 0, gcnt = 0;
+      for(var y = 0; y < h; y += 4){
+        var prev = -1, prevVis = false;
+        for(var x = 0; x < w; x++){
+          var i = (y * w + x) * ch, r, g, b, a = 255;
+          if(ch === 4){ r = data[i]; g = data[i+1]; b = data[i+2]; a = data[i+3]; }
+          else if(ch === 3){ r = data[i]; g = data[i+1]; b = data[i+2]; }
+          else { r = g = b = data[i]; }
+          tot++;
+          var isVis = a > 20;
+          if(isVis){
+            vis++;
+            var lum = 0.299 * r + 0.587 * g + 0.114 * b;
+            sum += lum; sum2 += lum * lum;
+            if(prevVis){ gsum += Math.abs(lum - prev); gcnt++; }
+            prev = lum;
+          }
+          prevVis = isVis;
+        }
+      }
+      if(!tot) return null;
+      var mean = vis ? sum / vis : 0;
+      var std = vis ? Math.sqrt(Math.max(0, sum2 / vis - mean * mean)) : 0;
+      return { cov: vis / tot, std: std, grad: gcnt ? gsum / gcnt : 0 };
+    }catch(e){ return null; }
+  }
+  // زخرفة؟ (ظلال نصوص، خطوط ملوّنة شفافة، شرائط، خلفيات متدرّجة، شعارات)
+  function pdfLooksDecorative(st, w, h){
+    if(!st || !w || !h) return false;
+    if(Math.max(w / h, h / w) > 10) return true;                       // شريط رفيع
+    if(st.cov < 0.5 && !(st.cov >= 0.3 && st.grad > 4.5)) return true; // أغلبها شفاف (ظل/شعار/زخرفة)
+    if(st.grad < 1.15 && st.std < 30) return true;                     // ناعمة جدًا (خلفية متدرّجة/لون واحد)
+    return false;
+  }
+
   // بترجع [{src, y}] — y = مكان الصورة في الصفحة عشان نحطها بين الأسطر في مكانها الصح
   function extractEmbeddedImagesFromPage(page){
     var OPS = pdfjsLib.OPS;
@@ -4348,10 +5101,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           jobs.push({ name: nm, inline: inline ? args[0] : null, y: yc });
         }
       }
-      var out = [], chain = Promise.resolve(), urlCache = {};
+      var out = [], chain = Promise.resolve(), urlCache = {}, decorCount = 0;
       jobs.forEach(function(job){
         chain = chain.then(function(){
           if(!job.inline && urlCache[job.name] !== undefined){
+            if(urlCache[job.name] === "decor"){ decorCount++; return; }
             if(urlCache[job.name]) out.push({ src: urlCache[job.name], y: job.y });
             return;
           }
@@ -4359,14 +5113,15 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             if(!obj){ if(!job.inline) urlCache[job.name] = null; return; }
             var w = obj.width || 0, h = obj.height || 0;
             if(w < 30 || h < 30) return;                       // أيقونات/نقاط
-            if(Math.max(w/h, h/w) > 25) return;                // خطوط فاصلة رفيعة
+            if(Math.max(w/h, h/w) > 10){ decorCount++; if(!job.inline) urlCache[job.name] = "decor"; return; } // شرائط رفيعة
+            if(pdfLooksDecorative(pdfImageDecorStats(obj), w, h)){ decorCount++; if(!job.inline) urlCache[job.name] = "decor"; return; } // ظلال/زخارف/خلفيات/شعارات
             var url = pdfImageObjToDataUrl(obj, 1000);
             if(!job.inline) urlCache[job.name] = url || null;
             if(url) out.push({ src: url, y: job.y });
           });
         });
       });
-      return chain.then(function(){ return out; });
+      return chain.then(function(){ out.decor = decorCount; return out; });
     }).catch(function(){ return []; });
   }
 
@@ -4379,12 +5134,13 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       reader.onload = function(e){
         var typedarray = new Uint8Array(e.target.result);
         pdfjsLib.getDocument({ data: typedarray }).promise.then(function(pdf){
-          var pageLinesList = [], pageImgsList = [], pending = Promise.resolve();
+          var pageLinesList = [], pageImgsList = [], pagesList = [], pending = Promise.resolve();
           for(var i=1;i<=pdf.numPages;i++){
             (function(pageNum){
               pending = pending.then(function(){
                 return pdf.getPage(pageNum).then(function(page){
                   return page.getTextContent().then(function(tc){
+                    pagesList.push(page);
                     pageLinesList.push(groupIntoLines(tc.items));
                     return extractEmbeddedImagesFromPage(page).then(function(imgs){
                       pageImgsList.push(imgs || []);
@@ -4394,17 +5150,23 @@ https://github.com/nodeca/pako/blob/main/LICENSE
               });
             })(i);
           }
-          return pending.then(function(){ return { pageLinesList: pageLinesList, pageImgsList: pageImgsList }; });
+          return pending.then(function(){ return { pageLinesList: pageLinesList, pageImgsList: pageImgsList, pagesList: pagesList }; });
         }).then(function(pack){
-          var cleaned = filterNoiseLines(pack.pageLinesList);
-          var totalImgs = 0;
+          var cleaned0 = filterNoiseLines(pack.pageLinesList);
+          return pdfAttachTables(pack.pagesList, cleaned0).then(function(tr){ return { pack: pack, cleaned: tr.lines, boxes: tr.boxes, tables: tr.count, tableImgFail: tr.imgFail }; });
+        }).then(function(ctx){
+          var pack = ctx.pack, cleaned = ctx.cleaned;
+          var totalImgs = 0, totalDecor = 0;
+          pack.pageImgsList.forEach(function(im){ totalDecor += (im && im.decor) || 0; });
           // ادمج الصور بين الأسطر حسب مكانها في الصفحة — كل صورة بلوك مستقل
           var repCounts = {}, skippedRepeats = 0;
           pack.pageImgsList.forEach(function(imgs){
             imgs.forEach(function(im){ im.sig = im.src.length + ":" + hash32(im.src); repCounts[im.sig] = (repCounts[im.sig] || 0) + 1; });
           });
           var merged = cleaned.map(function(lines, idx){
+            var tboxes = ctx.boxes[idx] || [];
             var imgs = (pack.pageImgsList[idx] || []).filter(function(im){
+              if(tboxes.some(function(b){ return im.y <= b.top && im.y >= b.bottom; })) return false; // الصورة جوه جدول اتصوّر كله
               if(repCounts[im.sig] > 2){ skippedRepeats++; return false; } // شعار/خلفية متكررة
               return true;
             });
@@ -4421,7 +5183,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             fallbackTitle: file.name.replace(/\.pdf$/i,""),
             heading: parsed.heading,
             imgCount: totalImgs,
-            skippedRepeats: skippedRepeats
+            skippedRepeats: skippedRepeats,
+            skippedDecor: totalDecor,
+            tables: ctx.tables,
+            tableImgFail: ctx.tableImgFail
           });
         }).catch(function(err){ reject("مقدرش أقرا ملف الـ PDF \""+file.name+"\": " + (err && err.message ? err.message : err)); });
       };
@@ -4458,22 +5223,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if(it.bold) line.boldVotes++;
     });
     lines.sort(function(a,b){ return b.y - a.y; }); // top → bottom
-    return lines.map(function(line){
-      var its = line.items.slice();
-      // Detect if line is mostly Arabic → read right-to-left (sort x descending)
-      var sample = its.map(function(t){ return t.str; }).join("");
-      var arChars = (sample.match(/[\u0600-\u06FF]/g) || []).length;
-      var enChars = (sample.match(/[A-Za-z]/g) || []).length;
-      var rtl = arChars >= enChars;
-      its.sort(function(a,b){ return rtl ? (b.x - a.x) : (a.x - b.x); });
-      // إزالة عناصر مكررة بنفس الموضع تقريبًا (PDF أحيانًا يرسم النص مرتين)
-      var deduped = [];
-      its.forEach(function(cur){
-        var prev = deduped[deduped.length-1];
-        if(prev && Math.abs(prev.x - cur.x) < 1.5 && prev.str === cur.str) return;
-        deduped.push(cur);
-      });
-      its = deduped;
+    function joinItems(its, rtl){
       var parts = [];
       for(var i=0;i<its.length;i++){
         var cur = its[i];
@@ -4483,14 +5233,217 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         if(gap > Math.max(0.8, prev.size * 0.1)) parts.push(" ");
         parts.push(cur.str);
       }
-      var text = spaceDigitsArabic(fixBrokenArabicText(parts.join("").replace(/\s+/g, " ").trim()));
+      return spaceDigitsArabic(fixBrokenArabicText(parts.join("").replace(/\s+/g, " ").trim()));
+    }
+    function isRtlStr(str){
+      var a = (str.match(/[\u0600-\u06FF]/g) || []).length, e = (str.match(/[A-Za-z]/g) || []).length;
+      return a >= e;
+    }
+    return lines.map(function(line){
+      var its = line.items.slice();
+      // Detect if line is mostly Arabic → read right-to-left (sort x descending)
+      var sample = its.map(function(t){ return t.str; }).join("");
+      var rtl = isRtlStr(sample);
+      its.sort(function(a,b){ return rtl ? (b.x - a.x) : (a.x - b.x); });
+      // إزالة عناصر مكررة بنفس الموضع تقريبًا (PDF أحيانًا يرسم النص مرتين)
+      var deduped = [];
+      its.forEach(function(cur){
+        var prev = deduped[deduped.length-1];
+        if(prev && Math.abs(prev.x - cur.x) < 1.5 && prev.str === cur.str) return;
+        deduped.push(cur);
+      });
+      its = deduped;
+      var text = joinItems(its, rtl);
+      // خلايا السطر: نقسم السطر عند الفراغات الأفقية الكبيرة (أساس اكتشاف الجداول)
+      var geo = its.slice().sort(function(a,b){ return a.x - b.x; });
+      var thr = Math.max(10, line.size * 1.15);
+      var cellsRaw = [], cc = null, minX = Infinity, maxX = -Infinity;
+      geo.forEach(function(it){
+        var ex = it.x + (it.w || 0);
+        if(it.x < minX) minX = it.x;
+        if(ex > maxX) maxX = ex;
+        if(cc && (it.x - cc.x1) <= thr){ cc.items.push(it); if(ex > cc.x1) cc.x1 = ex; }
+        else { cc = { x0: it.x, x1: ex, items: [it] }; cellsRaw.push(cc); }
+      });
+      var cells = cellsRaw.map(function(c){
+        var str = c.items.map(function(t){ return t.str; }).join("");
+        var r = isRtlStr(str);
+        var ci = c.items.slice().sort(function(a,b){ return r ? (b.x - a.x) : (a.x - b.x); });
+        return { x0: c.x0, x1: c.x1, text: joinItems(ci, r) };
+      }).filter(function(c){ return c.text; });
       return {
         y: line.y,
         size: line.size,
         text: text,
-        bold: line.total > 0 && (line.boldVotes / line.total) >= 0.45
+        bold: line.total > 0 && (line.boldVotes / line.total) >= 0.45,
+        cells: cells,
+        x0: isFinite(minX) ? minX : 0,
+        x1: isFinite(maxX) ? maxX : 0
       };
     }).filter(function(l){ return l.text; });
+  }
+
+  /* ---------- جداول الـ PDF: صورة للجدول + تحتها فقرات احتياطية (كل صف فقرة) ----------
+     الـ PDF مفيهوش بنية جداول، فبنكتشف الجدول من محاذاة الخلايا على كذا سطر ورا بعض،
+     وبنرسم مكانه من الصفحة كصورة، وبنضيف نص الصفوف كفقرات متتالية احتياطي. */
+  function pdfFindTables(lines){
+    var tabs = [], n = lines.length, i = 0;
+    function multi(l){ return !!(l && l.cells && l.cells.length >= 2); }
+    function near(a, b, t){ return Math.abs(a - b) <= t; }
+    function colMatch(c, p){ return near(c.x0, p.x0, 9) || near(c.x1, p.x1, 9) || near((c.x0 + c.x1) / 2, (p.x0 + p.x1) / 2, 9); }
+    function aligned(prev, cur){
+      var m = 0;
+      cur.cells.forEach(function(c){ if(prev.cells.some(function(p){ return colMatch(c, p); })) m++; });
+      return m >= Math.max(1, Math.floor(Math.min(cur.cells.length, prev.cells.length) * 0.6));
+    }
+    var MARK = /^(?:[\d\u0660-\u0669]{1,3}|[A-Za-z\u0621-\u064A])?\s*[.)\-:\u2022\u25CF\u2013]?$/;
+    while(i < n){
+      if(!multi(lines[i])){ i++; continue; }
+      var members = [i], multis = [i], pending = [], j = i + 1;
+      while(j < n){
+        var lastAny = pending.length ? lines[pending[pending.length - 1]] : lines[members[members.length - 1]];
+        var cur = lines[j], lastMulti = lines[multis[multis.length - 1]];
+        if((lastAny.y - cur.y) > Math.max(lastAny.size, cur.size) * 3.4) break;
+        if(multi(cur)){
+          var ok = aligned(lastMulti, cur) || (multis.length > 1 && aligned(lines[multis[multis.length - 2]], cur));
+          if(!ok) break;
+          pending.forEach(function(k){ members.push(k); });
+          pending = [];
+          members.push(j); multis.push(j); j++;
+        } else {
+          if(pending.length >= 2) break;               // سطرين تكملة كحد أقصى
+          var c0 = cur.cells && cur.cells[0];
+          if(!c0) break;
+          var cx = (c0.x0 + c0.x1) / 2;
+          var inside = lastMulti.cells.some(function(p){ return cx >= p.x0 - 8 && cx <= p.x1 + 8 && (c0.x1 - c0.x0) <= (p.x1 - p.x0) + 24; });
+          if(!inside) break;
+          pending.push(j); j++;
+        }
+      }
+      // سطور تكملة لازقة في آخر صف (خلية اتلفّت لسطرين) نضمّها للجدول
+      var tailPrev = lines[members[members.length - 1]];
+      for(var q = 0; q < pending.length; q++){
+        var pl = lines[pending[q]];
+        if((tailPrev.y - pl.y) <= pl.size * 1.7){ members.push(pending[q]); tailPrev = pl; } else break;
+      }
+      var endIdx = members[members.length - 1];
+      var cols = 0, totalLen = 0, cellCnt = 0, markerRows = 0;
+      multis.forEach(function(k){
+        var L = lines[k];
+        cols = Math.max(cols, L.cells.length);
+        L.cells.forEach(function(c){ totalLen += c.text.length; cellCnt++; });
+        var a0 = L.cells[0].text.trim(), a1 = L.cells[L.cells.length - 1].text.trim();
+        if(MARK.test(a0) || MARK.test(a1)) markerRows++;
+      });
+      var mc = multis.length, avgLen = cellCnt ? totalLen / cellCnt : 0;
+      var listLike = cols <= 2 && markerRows / mc > 0.6;
+      var twoColLayout = cols <= 2 && mc >= 12 && avgLen > 45;   // تخطيط عمودين للنص العادي مش جدول
+      var accept = !listLike && !twoColLayout && ((mc >= 3 && cols >= 3) || (mc >= 4 && cols === 2));
+      if(accept) tabs.push({ start: members[0], end: endIdx, members: members, multis: multis });
+      i = Math.max(endIdx + 1, i + 1);
+    }
+    return tabs;
+  }
+
+  function pdfTableRows(lines, tab){
+    var rows = [];
+    tab.members.forEach(function(k){
+      var L = lines[k];
+      if(L.cells.length >= 2){
+        rows.push({ cells: L.cells.map(function(c){ return { x0: c.x0, x1: c.x1, text: c.text }; }), bold: !!L.bold });
+      } else if(rows.length){
+        var row = rows[rows.length - 1], c = L.cells[0], cx = (c.x0 + c.x1) / 2, best = null, bd = Infinity;
+        row.cells.forEach(function(p){ var d = Math.abs((p.x0 + p.x1) / 2 - cx); if(d < bd){ bd = d; best = p; } });
+        if(best){ best.text = (best.text + " " + c.text).trim(); best.x0 = Math.min(best.x0, c.x0); best.x1 = Math.max(best.x1, c.x1); }
+      }
+    });
+    var ar = 0, en = 0;
+    rows.forEach(function(r){ r.cells.forEach(function(c){ ar += (c.text.match(/[\u0600-\u06FF]/g) || []).length; en += (c.text.match(/[A-Za-z]/g) || []).length; }); });
+    var rtl = ar >= en;
+    return rows.map(function(r){
+      var cs = r.cells.slice().sort(function(a, b){ return rtl ? (b.x1 - a.x1) : (a.x0 - b.x0); });
+      var txt = cs.map(function(c){ return c.text.trim(); }).filter(Boolean).join(" — ");
+      if(!txt) return "";
+      var html = escapeHtml(txt);
+      return r.bold ? "<b>" + html + "</b>" : html;
+    }).filter(Boolean);
+  }
+
+  // بنرسم الصفحة مرة واحدة وبنقص منها كل جدول كصورة
+  function pdfRenderTables(page, tabs){
+    return new Promise(function(resolve){
+      var finished = false;
+      function fin(){ if(finished) return; finished = true; clearTimeout(timer); resolve(); }
+      var timer = setTimeout(fin, 30000);
+      try{
+        var v1 = page.getViewport({ scale: 1 });
+        var scale = Math.min(2.4, Math.sqrt(9e6 / Math.max(1, v1.width * v1.height)));
+        if(!(scale >= 0.5)) scale = 0.5;
+        var vp = page.getViewport({ scale: scale });
+        var cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.ceil(vp.width)); cv.height = Math.max(1, Math.ceil(vp.height));
+        var ctx = cv.getContext("2d");
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, cv.width, cv.height);
+        page.render({ canvasContext: ctx, viewport: vp }).promise.then(function(){
+          tabs.forEach(function(tb){
+            try{
+              var r = vp.convertToViewportRectangle([tb.box.left, tb.box.bottom, tb.box.right, tb.box.top]);
+              var x0 = Math.max(0, Math.floor(Math.min(r[0], r[2]))), x1 = Math.min(cv.width, Math.ceil(Math.max(r[0], r[2])));
+              var y0 = Math.max(0, Math.floor(Math.min(r[1], r[3]))), y1 = Math.min(cv.height, Math.ceil(Math.max(r[1], r[3])));
+              var w = x1 - x0, h = y1 - y0;
+              if(w < 40 || h < 20) return;
+              var c2 = document.createElement("canvas");
+              c2.width = w; c2.height = h;
+              var cx2 = c2.getContext("2d");
+              cx2.fillStyle = "#ffffff"; cx2.fillRect(0, 0, w, h);
+              cx2.drawImage(cv, x0, y0, w, h, 0, 0, w, h);
+              tb.imgSrc = c2.toDataURL("image/jpeg", 0.9);
+              c2.width = c2.height = 0;
+            }catch(e){}
+          });
+          cv.width = cv.height = 0;
+          fin();
+        }, function(){ fin(); });
+      }catch(e){ fin(); }
+    });
+  }
+
+  // يستبدل أسطر كل جدول في الصفحة بعنصر واحد {table:true} (صورة + صفوف احتياطي)
+  function pdfAttachTables(pages, linesList){
+    var out = [], boxes = [], count = 0, imgFail = 0, chain = Promise.resolve();
+    linesList.forEach(function(lines, idx){
+      chain = chain.then(function(){
+        var tabs = [];
+        try{ tabs = pdfFindTables(lines).slice(0, 12); }catch(e){ tabs = []; }
+        if(!tabs.length){ out[idx] = lines; boxes[idx] = []; return; }
+        tabs.forEach(function(tb){
+          var x0 = Infinity, x1 = -Infinity;
+          tb.members.forEach(function(k){ x0 = Math.min(x0, lines[k].x0); x1 = Math.max(x1, lines[k].x1); });
+          var first = lines[tb.start], last = lines[tb.end];
+          var prev = tb.start > 0 ? lines[tb.start - 1] : null, next = tb.end < lines.length - 1 ? lines[tb.end + 1] : null;
+          var tTop = first.y + first.size * 0.95, tBot = last.y - last.size * 0.4;
+          var top = prev ? Math.min(tTop + 10, Math.max(tTop, prev.y - prev.size * 0.35)) : tTop + 10;
+          var bottom = next ? Math.max(tBot - 10, Math.min(tBot, next.y + next.size * 0.95)) : tBot - 10;
+          tb.box = { left: Math.max(0, x0 - 12), right: x1 + 12, top: top, bottom: Math.max(0, bottom) };
+          tb.rowsHtml = pdfTableRows(lines, tb);
+        });
+        return pdfRenderTables(pages[idx], tabs).then(function(){
+          var list = [], bx = [], ti = 0, k = 0;
+          while(k < lines.length){
+            if(ti < tabs.length && k === tabs[ti].start){
+              var tb = tabs[ti++];
+              count++;
+              if(!tb.imgSrc) imgFail++;
+              list.push({ table: true, y: lines[tb.start].y, size: lines[tb.start].size, imgSrc: tb.imgSrc || "", rowsHtml: tb.rowsHtml });
+              if(tb.imgSrc) bx.push({ top: tb.box.top, bottom: tb.box.bottom });
+              k = tb.end + 1;
+            } else { list.push(lines[k]); k++; }
+          }
+          out[idx] = list; boxes[idx] = bx;
+        });
+      });
+    });
+    return chain.then(function(){ return { lines: out, boxes: boxes, count: count, imgFail: imgFail }; });
   }
 
   /* Drop lines that are clearly page furniture, not real content:
@@ -4531,7 +5484,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
   function pdfLinesToRawPages(pageLinesList, fallbackTitle){
     var allSizes = [];
-    pageLinesList.forEach(function(lines){ lines.forEach(function(l){ if(l.img) return; allSizes.push(Math.round(l.size)); }); });
+    pageLinesList.forEach(function(lines){ lines.forEach(function(l){ if(l.img || l.table) return; allSizes.push(Math.round(l.size)); }); });
     var freq = {}; allSizes.forEach(function(s){ freq[s]=(freq[s]||0)+1; });
     var baseline = 12;
     var best = 0;
@@ -4573,37 +5526,80 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       ensureSection();
       curSection.blocks.push(html);
     }
+    // أسطر زخرفية/ترقيم: حروف متباعدة (G A L A L A)، رقم صفحة، تاريخ
+    function isNoiseText(txt){
+      var tk = txt.split(/\s+/).filter(Boolean);
+      if(tk.length >= 5){
+        var singles = tk.filter(function(x){ return /^[A-Za-z\u0600-\u06FF]$/.test(x); }).length;
+        if(singles / tk.length >= 0.8) return true;
+      }
+      if(/^\d{1,3}$/.test(txt)) return true;
+      if(/^\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}$/.test(txt)) return true;
+      return false;
+    }
+    // بداية بند (نقطة/رقم/شرطة) = فقرة جديدة
+    var BULLET_RE = /^(?:[\u2022\u25CF\u25AA\u25A0\u2023\u25E6\u2043\u00B7\u2219\u25CB\u2756\u27A2\u27A4*#]\s*|[-\u2013\u2014]\s+|\d{1,2}\s*[.)\u0589:]\s+|\d{1,2}\*|[\u0661-\u0669]{1,2}[.)]\s*|[a-eA-E][.)]\s+)/;
+    var SENT_END = /[.!?\u061F]["')\]\u00BB]?$/;
 
     pageLinesList.forEach(function(lines, pageIdx){
-      var bufferHtml = [];
+      var bufferParts = [];
       var bufferPlainLen = 0;
       var sawHeadingThisPage = false;
       var lastLinePlain = "";
+      var prevY = null, prevSize = 0;
+
+      var textLines = lines.filter(function(l){ return !l.img && !l.table && (l.text || "").trim() && !isNoiseText((l.text || "").trim()); });
+      var boldCount = textLines.filter(function(l){ return l.bold; }).length;
+      var boldBody = textLines.length >= 3 && boldCount / textLines.length >= 0.6; // صفحة كلها bold: الـ bold شكل مش عنوان
+      var gaps = [];
+      for(var gi = 1; gi < textLines.length; gi++){ var gp = textLines[gi-1].y - textLines[gi].y; if(gp > 0) gaps.push(gp); }
+      gaps.sort(function(a, b){ return a - b; });
+      var step = gaps.length ? gaps[Math.floor(gaps.length * 0.4)] : 0; // المسافة المعتادة بين أسطر الفقرة الواحدة
 
       function flushBuffer(){
-        if(!bufferHtml.length) return;
-        pushBlock(bufferHtml.join(" "));
-        bufferHtml = [];
+        if(!bufferParts.length) return;
+        var html = "";
+        bufferParts.forEach(function(p, i){
+          if(i > 0){
+            var prev = bufferParts[i-1];
+            // كلمة اتقسمت بشرطة في آخر السطر (chloroquine-\nresistant) نوصّلها من غير مسافة
+            html += (/[A-Za-z]-$/.test(prev.text) && /^[a-z]/.test(p.text)) ? "" : " ";
+          }
+          html += p.html;
+        });
+        pushBlock(html);
+        bufferParts = [];
         bufferPlainLen = 0;
       }
 
       lines.forEach(function(l){
+        if(l.table){ // جدول: صورة الجدول ثم تحتها صفوفه كفقرات متتالية (احتياطي)
+          flushBuffer();
+          ensureSection();
+          if(l.imgSrc) curSection.blocks.push('<div class="doc-fig"><img src="'+l.imgSrc+'" alt="جدول"></div>');
+          (l.rowsHtml || []).forEach(function(h){ if(h) curSection.blocks.push(h); });
+          lastPushedPlain = ""; lastLinePlain = "";
+          prevY = null;
+          return;
+        }
         if(l.img){ // صورة: بلوك مستقل في مكانها بين الأسطر
           flushBuffer();
           ensureSection();
           curSection.blocks.push('<div class="doc-fig"><img src="'+l.img+'" alt="رسم علمي"></div>');
           lastPushedPlain = ""; lastLinePlain = "";
+          prevY = null;
           return;
         }
         var txt = (l.text || "").trim();
         if(!txt) return;
+        if(isNoiseText(txt)) return;
         var nrm = normLine(txt);
         // تخطّي سطر مكرر حرفيًا من السطر السابق في نفس الصفحة
         if(nrm && nrm === lastLinePlain) return;
         lastLinePlain = nrm;
 
         var isHeading = l.size >= headingMin && txt.length > 0 && txt.length <= 80 && !/^[0-9\s.\-–|]+$/.test(txt);
-        var isTitleLike = (l.bold || l.size >= largeMin) && txt.length <= 90 && !/[.!?؟]{2,}/.test(txt);
+        var isTitleLike = ((l.bold && !boldBody) || l.size >= largeMin) && txt.length <= 90 && !/[.!?؟]{2,}/.test(txt) && !/[,،]$/.test(txt) && !BULLET_RE.test(txt);
 
         if(isHeading){
           flushBuffer();
@@ -4615,22 +5611,35 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           newSection(sub);
           lastPushedPlain = normLine(txt);
           sawHeadingThisPage = true;
+          prevY = l.y; prevSize = l.size;
           return;
         }
         if(isTitleLike){
           flushBuffer();
           pushBlock(lineToHtml(l));
+          prevY = l.y; prevSize = l.size;
           return;
         }
         var html = lineToHtml(l);
         if(txt.length <= 55 && /[:：]$/.test(txt)){
           flushBuffer();
           pushBlock(html);
+          prevY = l.y; prevSize = l.size;
           return;
         }
-        bufferHtml.push(html);
+        // فقرة جديدة؟ (بند / فراغ رأسي أكبر من المعتاد / تغيّر واضح في حجم الخط)
+        if(bufferParts.length){
+          var gap = (prevY != null) ? (prevY - l.y) : 0;
+          var bigGap = step > 0 && gap > step * 1.6 && gap > l.size * 1.6;
+          var sizeJump = prevSize && Math.abs(l.size - prevSize) > prevSize * 0.25;
+          if(BULLET_RE.test(txt) || bigGap || sizeJump) flushBuffer();
+        } else if(false){ }
+        bufferParts.push({ html: html, text: txt });
         bufferPlainLen += txt.length + 1;
-        if(bufferPlainLen > 180) flushBuffer();
+        prevY = l.y; prevSize = l.size;
+        // حماية: الفقرة الطويلة جدًا تتقسم عند نهاية جملة (مش في نص الجملة)
+        if(bufferPlainLen > 1000 && SENT_END.test(txt)) flushBuffer();
+        else if(bufferPlainLen > 2200) flushBuffer();
       });
       flushBuffer();
     });
@@ -4820,7 +5829,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           });
         }
       }
-      if(resolved.existed) updatedCount++; else newCount++;
+      if(resolved.existed) updatedCount++; else { newCount++; folderAssignNew(key); }
       lastKey=key; lastTitle=title; lastSub=r.fallbackTitle;
       r._keptSels = hasSels;
     });
@@ -4831,8 +5840,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     }
     setUploadStatus("");
     // ملخص الصور من كل الملفات المرفوعة
-    var totalImgs = 0, totalUnsup = 0, totalSkipped = 0, totalUnres = 0;
+    var totalImgs = 0, totalUnsup = 0, totalSkipped = 0, totalUnres = 0, totalDecor = 0, totalTables = 0, totalTblFail = 0;
     results.forEach(function(r){
+      if(r.tables) totalTables += r.tables;
+      if(r.tableImgFail) totalTblFail += r.tableImgFail;
+      if(r.skippedDecor) totalDecor += r.skippedDecor;
       if(r.unresolvedDrawings) totalUnres += r.unresolvedDrawings;
       if(r.imgCount) totalImgs += r.imgCount;
       if(r.unsupportedMedia) totalUnsup += r.unsupportedMedia;
@@ -4841,6 +5853,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
     var imgNote = (totalImgs > 0 ? (" · 🖼️ "+ar(totalImgs)+" صورة") : " · بدون صور مضمّنة") +
       (totalUnsup > 0 ? (" · ⚠️ "+ar(totalUnsup)+" صورة بصيغة غير مدعومة (ظاهرة كمربع رمادي — احذفها أو أعدها كـ PNG)") : "") +
       (totalSkipped > 0 ? (" · تم تجاهل "+ar(totalSkipped)+" صورة متكررة (شعار/خلفية)") : "") +
+      (totalDecor > 0 ? (" · تم تجاهل "+ar(totalDecor)+" زخرفة (ظلال/خلفيات/شعارات)") : "") +
+      (totalTables > 0 ? (" · 📊 " + ar(totalTables) + " جدول (صورة + فقرات احتياطي)" + (totalTblFail > 0 ? " — " + ar(totalTblFail) + " منهم فقرات بس (المتصفح مقدرش يرسمه كصورة)" : "")) : "") +
       (totalUnres > 0 ? (" · ⚠️ "+ar(totalUnres)+" مخطط/رسم SmartArt في الملف مقدرتش أحوّله لصورة — أضفه بزر ➕") : "");
     if(isOfficial){
       $("exportBox").classList.remove("hidden");
@@ -4921,7 +5935,8 @@ https://github.com/nodeca/pako/blob/main/LICENSE
         selections: selsNow
       };
     }
-    return Object.keys(byKey).map(function(k){ return byKey[k]; });
+    var fstE = loadFolderState();
+    return Object.keys(byKey).map(function(k){ byKey[k].folder = folderIdOf(k, fstE); return byKey[k]; });
   }
 
   var SW_SOURCE = [
@@ -5043,7 +6058,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           var sig = hash32(JSON.stringify(it.rawPages));
           var st = pubState[it.key];
           if(st && st.sig === sig && st.fileId){
-            out.push({ key: it.key, title: it.title, subtitle: it.subtitle || "", selections: it.selections, fileId: st.fileId, rev: st.rev });
+            out.push({ key: it.key, title: it.title, subtitle: it.subtitle || "", selections: it.selections, folder: it.folder, fileId: st.fileId, rev: st.rev });
             return;
           }
           showToast("بنشر (" + ar(i) + "/" + ar(n) + "): " + it.title);
@@ -5055,12 +6070,12 @@ https://github.com/nodeca/pako/blob/main/LICENSE
             pubState[it.key] = { sig: sig, fileId: j.fileId, rev: rev };
             lsSet(PUB_STATE_KEY, JSON.stringify(pubState)); // نحفظ أول بأول — لو فشل نكمّل من حيث وقفنا
             uploaded++;
-            out.push({ key: it.key, title: it.title, subtitle: it.subtitle || "", selections: it.selections, fileId: j.fileId, rev: rev });
+            out.push({ key: it.key, title: it.title, subtitle: it.subtitle || "", selections: it.selections, folder: it.folder, fileId: j.fileId, rev: rev });
           });
         });
       });
       return chain.then(function(){
-        var index = { format: "najm-library", v: 2, updatedAt: Date.now(), items: out };
+        var index = { format: "najm-library", v: 2, updatedAt: Date.now(), items: out, folders: loadFolderState().list };
         return apiPost(apiUrlWith(api, { action: "putIndex", key: key }), JSON.stringify(index));
       }).then(function(j){
         if(!j || !j.ok) throw new Error((j && j.error) || "فشل نشر الفهرس");
@@ -5092,11 +6107,11 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       return chain.then(function(){
         return loadLib("JSZip").then(function(){
           var zip = new JSZip();
-          var index = { version: 2, items: [] };
+          var index = { version: 2, items: [], folders: loadFolderState().list };
           if(shareApiUrl()) index.api = shareApiUrl();
           slim.forEach(function(x){
             var file = "lib-" + hash32(x.item.key) + ".json";
-            index.items.push({ key: x.item.key, title: x.item.title, subtitle: x.item.subtitle, file: file, selections: x.item.selections });
+            index.items.push({ key: x.item.key, title: x.item.title, subtitle: x.item.subtitle, file: file, selections: x.item.selections, folder: x.item.folder });
             zip.file(file, JSON.stringify({ rawPages: x.rawPages }));
           });
           zip.file("library.json", JSON.stringify(index));
@@ -5108,7 +6123,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
           });
         }).catch(function(){
           // مفيش نت لتحميل أداة الضغط: نزّل ملف واحد بالطريقة القديمة (مضغوط الحجم)
-          var payload = { api: shareApiUrl() || undefined, items: slim.map(function(x){ return { key: x.item.key, title: x.item.title, subtitle: x.item.subtitle, rawPages: x.rawPages, selections: x.item.selections }; }) };
+          var payload = { api: shareApiUrl() || undefined, folders: loadFolderState().list, items: slim.map(function(x){ return { key: x.item.key, title: x.item.title, subtitle: x.item.subtitle, rawPages: x.rawPages, selections: x.item.selections, folder: x.item.folder }; }) };
           triggerDownload(new Blob([JSON.stringify(payload)], { type: "application/json" }), "library.json");
           clearUnpublished();
           showToast("اتنزّل library.json (بدون ZIP) — ارفعه جنب index.html");
